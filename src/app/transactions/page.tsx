@@ -4,13 +4,15 @@ import {
   getTransactions,
   getUserAccounts,
   getUserGoals,
-} from "@/core/actions/transactions";
-import { getBankAccounts } from "@/core/actions/bank-accounts";
-import { getDigitalWallets } from "@/core/actions/digital-wallets";
-import { getContacts } from "@/core/actions/contacts";
-import TransactionsTable from "@/components/transactions/TransactionsTable";
-import TransactionsFilter from "@/components/transactions/TransactionsFilter";
-import NewTransactionDialog from "@/components/transactions/NewTransactionDialog";
+} from "@/features/transactions/actions";
+import { getBankAccounts } from "@/features/bank-accounts/actions";
+import { getDigitalWallets } from "@/features/digital-wallets/actions";
+import { getContacts } from "@/features/contacts/actions";
+import {
+  TransactionsTable,
+  TransactionsFilter,
+  NewTransactionDialog,
+} from "@/features/transactions/components";
 import { getTransactionStats } from "@/lib/transactionUtils";
 import { fmt } from "@/lib/formatters";
 import styles from "./transactions.module.css";

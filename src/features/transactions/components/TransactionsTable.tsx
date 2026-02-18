@@ -39,7 +39,8 @@ function TransactionsTable({
         { key: "description", label: "Detalle", width: "auto" },
         { key: "currency", label: "Moneda", width: "90px" },
         { key: "amount", label: "Monto", width: "130px", align: "right" },
-        { key: "id", label: "Estado", width: "120px" },
+        { key: "state", label: "Estado", width: "120px" },
+        { key: "id", label: "Acciones", width: "180px" },
       ]}
       renderRow={(transaction) => (
         <TransactionRow

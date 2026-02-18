@@ -29,10 +29,12 @@ import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { eventBus, EVENTS } from "@/lib/eventBus";
 import { logger } from "@/lib/logger";
-import TransactionForm from "@/components/transactions/TransactionForm";
-import TransactionsTable from "@/components/transactions/TransactionsTable";
-import TransactionsSummary from "@/components/transactions/TransactionsSummary";
-import TransactionsFilter from "@/components/transactions/TransactionsFilter";
+import {
+  TransactionForm,
+  TransactionsTable,
+  TransactionsSummary,
+  TransactionsFilter,
+} from "@/features/transactions/components";
 import type {
   Transaction,
   Account,

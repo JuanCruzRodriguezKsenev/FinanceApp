@@ -9,7 +9,14 @@ import type {
   Contact,
 } from "@/types";
 import styles from "./TransactionRow.module.css";
-import { deleteTransaction } from "@/core/actions/transactions";
+import {
+  deleteTransaction,
+  submitTransaction,
+  confirmTransaction,
+  rejectTransaction,
+  cancelTransaction,
+  reconcileTransaction,
+} from "@/features/transactions/actions";
 import { useTransition, memo } from "react";
 import { TableCell } from "@/components/ui/Table";
 import {
@@ -17,6 +24,7 @@ import {
   getTransactionTypeName,
 } from "@/constants/transactionLabels";
 import { fmt } from "@/lib/formatters";
+import TransactionStatusBadge from "./TransactionStatusBadge";
 
 interface Props {
   transaction: Transaction;
@@ -44,6 +52,18 @@ function TransactionRow({
         }
       });
     }
+  };
+
+  const handleStateChange = async (
+    label: string,
+    action: () => Promise<ReturnType<typeof submitTransaction>>,
+  ) => {
+    startTransition(async () => {
+      const result = await action();
+      if (result.isErr()) {
+        alert(`No se pudo ${label.toLowerCase()}`);
+      }
+    });
   };
 
   const formattedAmount = fmt.number(transaction.amount);
@@ -123,6 +143,68 @@ function TransactionRow({
         ? "Entrada"
         : "—";
 
+  const actionItems: Array<{
+    key: string;
+    label: string;
+    className: string;
+    onClick: () => void;
+  }> = [];
+
+  if (transaction.state === "DRAFT") {
+    actionItems.push({
+      key: "submit",
+      label: "Enviar",
+      className: styles.actionPrimary,
+      onClick: () =>
+        handleStateChange("enviar", () => submitTransaction(transaction.id)),
+    });
+    actionItems.push({
+      key: "cancel",
+      label: "Cancelar",
+      className: styles.actionSecondary,
+      onClick: () =>
+        handleStateChange("cancelar", () => cancelTransaction(transaction.id)),
+    });
+  }
+
+  if (transaction.state === "PENDING") {
+    actionItems.push({
+      key: "confirm",
+      label: "Confirmar",
+      className: styles.actionPrimary,
+      onClick: () =>
+        handleStateChange("confirmar", () =>
+          confirmTransaction(transaction.id),
+        ),
+    });
+    actionItems.push({
+      key: "reject",
+      label: "Rechazar",
+      className: styles.actionDanger,
+      onClick: () =>
+        handleStateChange("rechazar", () => rejectTransaction(transaction.id)),
+    });
+    actionItems.push({
+      key: "cancel",
+      label: "Cancelar",
+      className: styles.actionSecondary,
+      onClick: () =>
+        handleStateChange("cancelar", () => cancelTransaction(transaction.id)),
+    });
+  }
+
+  if (transaction.state === "CONFIRMED") {
+    actionItems.push({
+      key: "reconcile",
+      label: "Conciliar",
+      className: styles.actionPrimary,
+      onClick: () =>
+        handleStateChange("conciliar", () =>
+          reconcileTransaction(transaction.id),
+        ),
+    });
+  }
+
   return (
     <>
       <TableCell className={styles.cellDate}>{formattedDate}</TableCell>
@@ -147,8 +229,25 @@ function TransactionRow({
           {formattedAmount}
         </span>
       </TableCell>
+      <TableCell className={styles.cellState}>
+        <TransactionStatusBadge state={transaction.state} />
+      </TableCell>
       <TableCell className={styles.flagsCell}>
         <div className={styles.flagsContent}>
+          {actionItems.length > 0 && (
+            <div className={styles.actionGroup}>
+              {actionItems.map((action) => (
+                <button
+                  key={action.key}
+                  onClick={action.onClick}
+                  disabled={isPending}
+                  className={`${styles.actionButton} ${action.className}`}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
           {transaction.isTransferBetweenOwnAccounts && (
             <span className={styles.badge} title="Transferencia Interna">
               🔄

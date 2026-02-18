@@ -56,6 +56,11 @@
   color: var(--text-secondary);
 }
 
+.cellState {
+  font-size: var(--font-size-xs);
+  text-align: center;
+}
+
 .cellAmount {
   font-weight: 700;
   font-size: var(--font-size-base);
@@ -89,6 +94,62 @@
   gap: 0.375rem;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.actionGroup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.actionPrimary {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.16);
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+.actionPrimary:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.25);
+  transform: translateY(-1px);
+}
+
+.actionSecondary {
+  color: #475569;
+  background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.actionSecondary:hover:not(:disabled) {
+  background: rgba(148, 163, 184, 0.28);
+  transform: translateY(-1px);
+}
+
+.actionDanger {
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.actionDanger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.28);
+  transform: translateY(-1px);
 }
 
 .badge {

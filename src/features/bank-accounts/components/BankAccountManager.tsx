@@ -9,7 +9,7 @@ import {
   createBankAccount,
   getBankAccounts,
   deleteBankAccount,
-} from "@/core/actions/bank-accounts";
+} from "@/features/bank-accounts/actions";
 import { useFormInputs } from "@/hooks/useForm";
 import { useMessage } from "@/hooks/useMessage";
 import {

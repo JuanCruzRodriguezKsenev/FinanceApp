@@ -2,12 +2,12 @@
 "use client";
 
 import { memo, useEffect, useRef, useTransition } from "react";
-import { createTransactionWithAutoDetection } from "@/core/actions/transactions";
+import { createTransactionWithAutoDetection } from "@/features/transactions/actions";
 import Button from "@/components/ui/Buttons/Button";
 import { useMessage } from "@/hooks/useMessage";
 import { getCategorySelectOptions } from "@/constants/transactionLabels";
 import { eventBus, EVENTS } from "@/lib/eventBus";
-import { useTransactionForm } from "./useTransactionForm";
+import { useTransactionForm } from "../hooks/useTransactionForm";
 import type { AppError } from "@/lib/result";
 import styles from "./TransactionForm.module.css";
 import type {

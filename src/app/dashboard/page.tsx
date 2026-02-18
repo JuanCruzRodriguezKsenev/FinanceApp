@@ -5,10 +5,10 @@ import {
   getTransactions,
   getUserAccounts,
   getUserGoals,
-} from "@/core/actions/transactions";
-import { getBankAccounts } from "@/core/actions/bank-accounts";
-import { getDigitalWallets } from "@/core/actions/digital-wallets";
-import { getContacts } from "@/core/actions/contacts";
+} from "@/features/transactions/actions";
+import { getBankAccounts } from "@/features/bank-accounts/actions";
+import { getDigitalWallets } from "@/features/digital-wallets/actions";
+import { getContacts } from "@/features/contacts/actions";
 import DashboardContent from "./DashboardContent";
 import styles from "./dashboard.module.css";
 

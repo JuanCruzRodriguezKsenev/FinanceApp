@@ -29,6 +29,14 @@ import {
   detectCategoryFromDescription,
 } from "@/lib/transaction-detector";
 import { createIdempotencyKey } from "@/lib/idempotency";
+import {
+  TransactionStateMachine,
+  type TransactionStateContext,
+} from "@/lib/state-machines/transaction.service";
+import {
+  TransactionState,
+  type TransactionEventType,
+} from "@/lib/state-machines/transaction.machine";
 import { randomUUID } from "crypto";
 import type {
   Transaction,
@@ -36,6 +44,29 @@ import type {
   TransactionCategory,
   PaymentMethod,
 } from "@/types";
+
+const resolveTransactionState = (state?: string | null): TransactionState => {
+  if (!state) {
+    return TransactionState.DRAFT;
+  }
+
+  return Object.values(TransactionState).includes(state as TransactionState)
+    ? (state as TransactionState)
+    : TransactionState.DRAFT;
+};
+
+const createStateMachineFromRecord = (record: {
+  state?: string | null;
+  stateMachine?: unknown;
+}): TransactionStateMachine => {
+  const resolvedState = resolveTransactionState(record.state);
+  const context =
+    record.stateMachine && typeof record.stateMachine === "object"
+      ? (record.stateMachine as TransactionStateContext)
+      : {};
+
+  return new TransactionStateMachine(resolvedState, context);
+};
 
 export async function createTransaction(
   formData: FormData,
@@ -138,12 +169,18 @@ export async function createTransaction(
     return ok(undefined);
   }
 
+  const fsm = new TransactionStateMachine(TransactionState.DRAFT, {
+    createdAt: new Date().toISOString(),
+  });
+
   try {
     await db.transaction(async (tx) => {
       // Crear transacción
       await tx.insert(transactions).values({
         userId: session.user.id,
         idempotencyKey,
+        state: fsm.getState(),
+        stateMachine: fsm.getContext(),
         type,
         category,
         amount,
@@ -410,9 +447,15 @@ export async function createTransactionWithAutoDetection(data: {
       return ok(existingTransaction as Transaction);
     }
 
+    const fsm = new TransactionStateMachine(TransactionState.DRAFT, {
+      createdAt: new Date().toISOString(),
+    });
+
     const baseValues = {
       userId: session.user.id,
       idempotencyKey: idempotencyBaseKey,
+      state: fsm.getState(),
+      stateMachine: fsm.getContext(),
       type: resolvedType,
       category,
       amount: data.amount.toString(),
@@ -656,6 +699,102 @@ export async function createTransactionWithAutoDetection(data: {
     logger.error("Failed to create transaction", error as Error);
     return err(databaseError("insert", "Error al crear la transacción"));
   }
+}
+
+async function applyTransactionEvent(
+  transactionId: string,
+  event: TransactionEventType,
+  context?: TransactionStateContext,
+): Promise<Result<Transaction, AppError>> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return err(authorizationError("transactions"));
+  }
+
+  const [transaction] = await db
+    .select()
+    .from(transactions)
+    .where(
+      and(
+        eq(transactions.id, transactionId),
+        eq(transactions.userId, session.user.id),
+      ),
+    );
+
+  if (!transaction) {
+    return err(notFoundError("transaction", transactionId));
+  }
+
+  const fsm = createStateMachineFromRecord(transaction);
+  if (!fsm.canTransition(event)) {
+    return err(
+      validationError("state", `Cannot ${event} from ${fsm.getState()} state`),
+    );
+  }
+
+  fsm.send(event, {
+    ...context,
+    transitionedAt: new Date().toISOString(),
+  });
+
+  const [updated] = await db
+    .update(transactions)
+    .set({
+      state: fsm.getState(),
+      stateMachine: fsm.getContext(),
+      updatedAt: new Date(),
+    })
+    .where(eq(transactions.id, transactionId))
+    .returning();
+
+  revalidatePath("/transactions");
+  revalidatePath("/dashboard");
+
+  if (!updated) {
+    return err(databaseError("update", "Error al actualizar la transacción"));
+  }
+
+  return ok(updated as Transaction);
+}
+
+export async function submitTransaction(
+  transactionId: string,
+): Promise<Result<Transaction, AppError>> {
+  return applyTransactionEvent(transactionId, "SUBMIT", {
+    submittedAt: new Date().toISOString(),
+  });
+}
+
+export async function confirmTransaction(
+  transactionId: string,
+): Promise<Result<Transaction, AppError>> {
+  return applyTransactionEvent(transactionId, "CONFIRM", {
+    confirmedAt: new Date().toISOString(),
+  });
+}
+
+export async function rejectTransaction(
+  transactionId: string,
+): Promise<Result<Transaction, AppError>> {
+  return applyTransactionEvent(transactionId, "REJECT", {
+    rejectedAt: new Date().toISOString(),
+  });
+}
+
+export async function cancelTransaction(
+  transactionId: string,
+): Promise<Result<Transaction, AppError>> {
+  return applyTransactionEvent(transactionId, "CANCEL", {
+    cancelledAt: new Date().toISOString(),
+  });
+}
+
+export async function reconcileTransaction(
+  transactionId: string,
+): Promise<Result<Transaction, AppError>> {
+  return applyTransactionEvent(transactionId, "RECONCILE", {
+    reconciledAt: new Date().toISOString(),
+  });
 }
 
 export async function getTransactions(filters?: {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Dialog from "@/components/ui/Dialog/Dialog";
-import TransactionForm from "@/components/transactions/TransactionForm";
+import TransactionForm from "./TransactionForm";
 import type {
   Account,
   SavingsGoal,

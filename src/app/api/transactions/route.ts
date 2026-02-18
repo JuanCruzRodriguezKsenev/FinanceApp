@@ -1,4 +1,4 @@
-import { createTransaction } from "@/core/actions/transactions";
+import { createTransaction } from "@/features/transactions/actions";
 
 type TransactionPayload = {
   type?: string;
