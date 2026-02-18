@@ -1,11 +1,581 @@
-arquitectura
-    hexagonal
-    vertical
+═══════════════════════════════════════════════════════════════════════════════
+📋 PATRONES POR IMPLEMENTAR - ANÁLISIS DETALLADO
+═══════════════════════════════════════════════════════════════════════════════
 
-maquinas de estados finitos
+---
 
-message broker
+## 1️⃣ ARQUITECTURA HEXAGONAL (Ports & Adapters)
+────────────────────────────────────────────────────────
 
-idempotencia
+### ¿Qué es?
+Patrón que aísla la lógica de negocio en el centro, comunicándose con el mundo exterior
+a través de puertos (interfaces) y adaptadores (implementaciones concretas).
 
-side Car
+### Estructura:
+```
+Core (Lógica de negocio)
+    ↕ Ports (Interfaces)
+        ↕ Adapters (Implementaciones)
+            ├─ Database Adapter
+            ├─ API Adapter
+            ├─ Cache Adapter
+            └─ Queue Adapter
+```
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ El proyecto necesita múltiples formas de persistencia (SQL, NoSQL, etc)
+✅ Quieres cambiar de DB sin reescribir lógica de negocio
+✅ Necesitas testear sin dependencias externas
+✅ Planeas integrar 3+ sistemas externos
+✅ El equipo es 5+ personas
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ El proyecto es pequeño (<5K LOC)
+❌ Solo tienes 1 DB y 1 sistema externo
+❌ Necesitas shipped fast (MVP)
+❌ El equipo es 1-2 personas
+❌ No hay planes de cambiar infraestructura
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+```
+src/
+├── core/                          ← CORE (Lógica de negocio)
+│   ├── ports/                     ← PUERTOS (Interfaces)
+│   │   ├── database.port.ts       │  interface TransactionRepository { ... }
+│   │   ├── cache.port.ts          │  interface CacheService { ... }
+│   │   └── notifications.port.ts  │  interface NotificationService { ... }
+│   │
+│   ├── usecases/                  ← CASOS DE USO
+│   │   └── transactions.usecase.ts│  class CreateTransaction { ... }
+│   │
+│   └── entities/                  ← ENTIDADES
+│       └── transaction.entity.ts  │  class Transaction { ... }
+│
+├── adapters/                      ← ADAPTADORES (Implementaciones)
+│   ├── database/
+│   │   └── drizzle.adapter.ts     │  implements TransactionRepository
+│   ├── cache/
+│   │   └── redis.adapter.ts       │  implements CacheService
+│   └── notifications/
+│       └── email.adapter.ts       │  implements NotificationService
+│
+└── di/                            ← INYECCIÓN DE DEPENDENCIAS
+    └── container.ts              │  Define qué adapter usar
+```
+
+### Impacto en tu proyecto ahora:
+- **ACTUAL**: Actions usan DB directamente (acoplado)
+- **CON HEXAGONAL**: Actions llaman a puertos, no importan implementación
+
+### Complejidad:
+🔴 ALTA - Requiere refactor completo, +30% código overhead, curva de aprendizaje
+
+### ROI (Return On Investment):
+💰 MEDIO - Útil si anticipas cambios de infraestructura o muchos tests
+
+---
+
+## 2️⃣ ARQUITECTURA VERTICAL (Screaming Architecture)
+──────────────────────────────────────────────────────
+
+### ¿Qué es?
+Organización del código por dominio/característica (VERTICAL), no por tipo de archivo.
+
+### Estructura ACTUAL (Horizontal):
+```
+src/
+├── components/        ← Todos los componentes juntos
+├── hooks/            ← Todos los hooks juntos
+├── core/actions/     ← Todas las acciones juntas
+├── lib/              ← Todas las librerías juntas
+└── types/            ← Todos los tipos juntos
+```
+
+### Estructura VERTICAL (Propuesta):
+```
+src/
+├── features/
+│   ├── transactions/          ← TODO lo de transacciones
+│   │   ├── components/
+│   │   ├── actions/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   ├── services/
+│   │   └── utils/
+│   │
+│   ├── bank-accounts/         ← TODO lo de cuentas
+│   │   ├── components/
+│   │   ├── actions/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   ├── services/
+│   │   └── utils/
+│   │
+│   └── contacts/              ← TODO lo de contactos
+│       ├── components/
+│       ├── actions/
+│       └── ...
+│
+└── shared/                    ← COMPARTIDO (result, validators, etc)
+    ├── lib/
+    ├── components/
+    └── types/
+```
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ El proyecto crecerá a 100K+ LOC
+✅ Múltiples equipos trabajando en paralelo
+✅ Características pueden ser deshabilitadas independientemente
+✅ Plan de monetizar features (algunas de pago)
+✅ Quieres evitar searching en carpetas enormes
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ El proyecto es <20K LOC
+❌ Poca probabilidad de crecer masivamente
+❌ El equipo es pequeño (<3 personas)
+❌ Las características están muy interconectadas
+❌ Ya estás en medio de un release
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+**RECOMENDACIÓN: ¡YA HICISTE PARTE! Tu estructura es parcialmente vertical:**
+
+```
+src/
+├── features/transactions/      ← ✅ YA TIENE ESTRUCTURA
+├── features/bank-accounts/     ← ✅ YA TIENE ESTRUCTURA
+├── features/contacts/          ← ✅ YA TIENE ESTRUCTURA
+│
+└── core/                        ← SOLO TIENES ACTIONS AQUÍ
+    └── actions/                ← MOVER A features/*/actions/
+```
+
+### Cambios necesarios (Small Refactor):
+```bash
+# Antes:
+src/core/actions/transactions.ts
+src/core/actions/bank-accounts.ts
+src/components/transactions/TransactionForm.tsx
+src/hooks/useTransactionForm.ts
+
+# Después:
+src/features/transactions/
+├── actions/
+├── components/
+└── hooks/
+```
+
+### Complejidad:
+🟡 MEDIA - Es un refactor rutinario, 2-3 horas
+
+### ROI (Return On Investment):
+💰 ALTO - Búsqueda + mantenimiento más fácil, visible improvement
+
+---
+
+## 3️⃣ MÁQUINAS DE ESTADOS FINITOS (FSM)
+──────────────────────────────────────
+
+### ¿Qué es?
+Sistema que solo puede estar en UNO de un conjunto finito de estados, con transiciones
+definidas entre ellos. Previene estados INVÁLIDOS.
+
+### Estados Ejemplo - Transacción:
+```
+DRAFT → PENDING → CONFIRMED → RECONCILED [✅ VÁLIDOS]
+
+pero NUNCA:
+DRAFT → RECONCILED (sin pasar por PENDING/CONFIRMED) ❌
+CONFIRMED → DRAFT ❌ (no volver atrás)
+```
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ Tienes procesos con estados múltiples (transacciones, órdenes, pagos)
+✅ Necesitas evitar transiciones inválidas (ejemplo: PAYMENT_FAILED → SHIPPED)
+✅ Estados requieren acciones específicas (entry/exit hooks)
+✅ Quieres auditar cambios de estado
+✅ Lógica tiene muchos `if (status === 'X')` spreads
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ Tu aplicación tiene <3 estados
+❌ Los estados son simples booleanos
+❌ No hay validación de transiciones compleja
+❌ Cambios de estado son raros
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+**YA TIENES UNO PARCIAL!** En `TransactionForm.machine.ts`
+
+Extender para:
+
+```
+src/lib/state-machines/
+├── transaction.machine.ts        ← CREAR
+│   States: DRAFT, PENDING, CONFIRMED, FAILED, RECONCILED
+│   Actions: create(), confirm(), reconcile()
+│   Guards: canConfirm(), canReconcile()
+│
+├── bank-account.machine.ts       ← CREAR
+│   States: ACTIVE, LOCKED, CLOSED, RESTRICTED
+│   Actions: lock(), restrict(), close()
+│
+└── payment-authorization.machine.ts ← CRIAR
+    States: PENDING, AUTHORIZED, DENIED, EXPIRED
+    Actions: authorize(), deny()
+```
+
+### Implementación:
+```typescript
+// src/lib/state-machines/transaction.machine.ts
+export const transactionMachine = createMachine({
+  id: 'transaction',
+  initial: 'draft',
+  states: {
+    draft: {
+      on: { SUBMIT: 'pending' },
+      entry: () => console.log('Draft created')
+    },
+    pending: {
+      on: { 
+        CONFIRM: 'confirmed',
+        REJECT: 'draft'
+      }
+    },
+    confirmed: {
+      on: { RECONCILE: 'reconciled' }
+    },
+    reconciled: {
+      type: 'final'
+    }
+  }
+});
+```
+
+### Complejidad:
+🟡 MEDIA - Requiere XState library, curva de aprendizaje media
+
+### ROI (Return On Investment):
+💰 ALTO - Previene bugs de lógica de negocio, muy visible
+
+---
+
+## 4️⃣ MESSAGE BROKER (Cola de Mensajes)
+────────────────────────────────────────
+
+### ¿Qué es?
+Sistema que desacopla productores (que generan eventos) de consumidores (que los procesan).
+Permite procesamiento asincrónico confiable.
+
+### Ejemplo:
+```
+Usuario crea transacción
+    ↓ (Publish event)
+TransactionCreated {id: '123', amount: 250}
+    ↓ (Message Broker - Redis/RabbitMQ)
+    ├─→ Consumer: Email (enviar confirmación)
+    ├─→ Consumer: Analytics (registrar evento)
+    ├─→ Consumer: Notification (push alert)
+    └─→ Consumer: Reconciliation (comparar con banco)
+
+(Los consumidores usan su propia cola, no bloquean la respuesta)
+```
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ Tienes operaciones que toman >100ms (emails, APIs, cálculos pesados)
+✅ Necesitas procesar múltiples things en paralelo
+✅ Quieres reintentos automáticos (si falla, reintentar 3 veces)
+✅ Necesitas audit trail de eventos
+✅ Múltiples sistemas necesitan reaccionar al mismo evento
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ Todas tus operaciones son fast (<10ms)
+❌ No necesitas procesamiento asincrónico
+❌ No hay reintentar lógica compleja
+❌ Las operaciones son simples (write to DB)
+❌ Aún no tienes scaling problems
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+**Opción A: Redis Pub/Sub (Recomendado - simple, ya tienes DB)**
+**Opción B: Bull Queue (Recomendado - con persistencia)**
+**Opción C: RabbitMQ (si escalas masivamente)**
+
+```
+src/
+├── lib/
+│   └── event-broker/
+│       ├── types.ts           ← Define eventos
+│       ├── publish.ts         ← publicar eventos
+│       └── consumers/
+│           ├── transaction-email.consumer.ts
+│           ├── transaction-analytics.consumer.ts
+│           ├── transaction-notification.consumer.ts
+│           └── transaction-reconciliation.consumer.ts
+│
+└── core/actions/
+    └── transactions.ts
+        // Cuando creas transacción:
+        await createTransaction(data);
+        await publishEvent('transaction.created', { id, amount });
+        // NO esperar consumidores, responder fast
+```
+
+### Implementación mínima:
+```typescript
+// src/lib/event-broker/types.ts
+export type TransactionEvent = 
+  | { type: 'transaction.created'; data: Transaction }
+  | { type: 'transaction.confirmed'; data: Transaction }
+  | { type: 'transaction.failed'; data: Transaction };
+
+// src/lib/event-broker/publish.ts
+export async function publishEvent(event: TransactionEvent) {
+  // Redis pub/sub o Bull queue
+  await eventBroker.publish('transactions', JSON.stringify(event));
+}
+
+// src/lib/event-broker/consumers/email.consumer.ts
+eventBroker.on('transaction.created', async (event) => {
+  // Enviar email
+});
+```
+
+### Complejidad:
+🔴 ALTA - Requiere Redis/RabbitMQ, manejar fallidas, idempotencia
+
+### ROI (Return On Investment):
+💰 MUY ALTO - Si tienes muchos eventos, mejora performance dramáticamente
+
+### COSTO DE NO IMPLEMENTAR:
+⚠️ Las requests se vuelven lentas con más features
+⚠️ Emails/notificaciones bloquean transacciones
+⚠️ No hay auditoría de qué pasó
+
+---
+
+## 5️⃣ IDEMPOTENCIA (Operaciones Seguras)
+──────────────────────────────────────────
+
+### ¿Qué es?
+Propiedad donde ejecutar la misma operación 1x o 100x produce el MISMO resultado.
+Ejemplo:
+```
+POST /transfer {to: 'juan', amount: 1000}
+  ↓
+Request #1: SUCCESS - Juan recibe $1000
+Request #1 (retry): SUCCESS - Juan SIGUE con $1000 (no $2000)
+```
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ Tienes transacciones financieras (CRÍTICO)
+✅ Usuarios pueden hacer double-submit
+✅ Internet es inestable (usuarios hacen retry)
+✅ Tienes múltiples servidores (requests duplicado)
+✅ Cumplimiento normativo requiere (STP - Argentina)
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ Solo lectures (GET)
+❌ Operaciones que son naturalmente idempotentes (delete, set)
+❌ Nadie hace double-submit
+❌ No hay dinero involucrado
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+**CRÍTICO PARA TI - Implementar en TODAS las transacciones:**
+
+```typescript
+// src/core/actions/transactions.ts
+export async function createTransaction(data: T): Promise<Result<...>> {
+  // 1. Generar idempotency key
+  const idempotencyKey = data.idempotencyKey ?? generateUUID();
+  
+  // 2. Verificar si ya existe
+  const existing = await db.transaction.findUnique({
+    where: { idempotencyKey }
+  });
+  if (existing) {
+    return ok(existing); // ✅ Idempotente!
+  }
+  
+  // 3. Crear nueva
+  const result = await db.transaction.create({
+    data: {
+      ...data,
+      idempotencyKey  // ← GUARDAR PARA FUTURE REQUESTS
+    }
+  });
+  
+  return ok(result);
+}
+```
+
+### Componentes necesarios:
+
+1. **Idempotency Key (en request)**
+```typescript
+// Desde cliente
+const response = await fetch('/api/transactions', {
+  method: 'POST',
+  headers: {
+    'Idempotency-Key': 'uuid-del-cliente'  // ← El cliente lo genera
+  },
+  body: JSON.stringify(transactionData)
+});
+```
+
+2. **Storage (en DB)**
+```sql
+-- Agregar a table transactions
+ALTER TABLE financial_transaction 
+ADD COLUMN idempotency_key VARCHAR UNIQUE;
+CREATE INDEX idx_idempotency_key ON financial_transaction(idempotency_key);
+```
+
+3. **Middleware (en routes)**
+```typescript
+// src/app/api/transactions/route.ts
+export async function POST(req: Request) {
+  const idempotencyKey = req.headers.get('Idempotency-Key');
+  if (!idempotencyKey) {
+    return new Response('Idempotency-Key required', { status: 400 });
+  }
+  
+  // Verificar existe
+  const existing = await lookupIdempotencyKey(idempotencyKey);
+  if (existing) {
+    return Response.json(existing, { status: 200 });  // Ya procesado
+  }
+  
+  // Crear nuevo
+  const result = await createTransaction(data, idempotencyKey);
+  return Response.json(result, { status: 201 });
+}
+```
+
+### Complejidad:
+🟡 MEDIA - Lógica simple, pero atención al detalle
+
+### ROI (Return On Investment):
+💰 INFINITO - Previene pérdidas de dinero del usuario
+
+### RIESGO DE NO IMPLEMENTAR:
+🚨 CRÍTICO - Usuario ve $500 debitado 2x por conexión lenta
+
+---
+
+## 6️⃣ SIDECAR PATTERN (Servicios Auxiliares)
+─────────────────────────────────────────────
+
+### ¿Qué es?
+Patrón para ejecutar servicios auxiliares junto a tu aplicación principal, sin modificarla.
+Típicamente en containers separados pero comunicándose localmente.
+
+### Ejemplo:
+```
+App Principal (Finance App)
+    ↓
++─────────────────────────────────────────+
+│                                         │
+│  Main App (Next.js)  ← Sidecar ← Logging
+│                      ← Sidecar ← Metrics
+│                      ← Sidecar ← Config
+│                                         │
++─────────────────────────────────────────+
+```
+
+### Sidecars comunes:
+- **Logging Sidecar** - Recoge logs de app, los envía a ELK/Datadog
+- **Metrics Sidecar** - Observa métricas (latency, errors, requests)
+- **Config Sidecar** - Maneja feature flags sin redeploy
+- **Security Sidecar** - Valida requests (WAF)
+- **Cache Sidecar** - Redis local para rápida latencia
+
+### 🟢 DEBERÍA IMPLEMENTAR SI:
+✅ Ya tienes 3+ servicios que necesitan logging/metrics
+✅ La infraestructura es Kubernetes/Docker
+✅ Necesitas cambiar config sin redeploy
+✅ Escalas a 100+ instancias
+✅ Observability es crítico
+
+### 🔴 NO DEBERÍA IMPLEMENTAR SI:
+❌ Estás en early stage (MVP)
+❌ Aún en single-server deployment
+❌ Presupuesto limitado (agrega complejidad)
+❌ No tienes experiencia con Docker/K8s
+❌ Las features en sidecar pueden ir en app
+
+### 📍 DÓNDE IMPLEMENTAR EN TU PROJECT:
+**Actualmente: NO necesario**
+
+Si escalas:
+```
+docker-compose.yml
+├── app (Finance App)
+├── redis-sidecar (Cache)
+├── logging-sidecar (Fluent Bit → ELK)
+└── metrics-sidecar (Prometheus)
+```
+
+### Complejidad:
+🔴 ALTA - Requiere Docker, K8s knowledge, deployment complexity
+
+### ROI (Return On Investment):
+💰 MEDIO - Útil en escala, no en MVP
+
+### Para TU PROYECTO ahora:
+```bash
+# Lo que SÍ necesitas implementar
+✅ Logging centralizado (logger.ts - YA HECHO)
+✅ Metrics básicas (npm i prom-client)
+
+# Lo que NO necesitas (Sidecar):
+❌ Servicios separados
+❌ Docker orchestration
+❌ Config server externo
+```
+
+---
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 MATRIZ DE DECISIÓN - PRIORIDAD vs COMPLEJIDAD
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────┬──────────────────┬──────────────┬──────────────┐
+│ Patrón                  │ Prioridad Ahora  │ Complejidad  │ Cuándo       │
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ Hexagonal               │ 🟡 MEDIA         │ 🔴 ALTA      │ Cuando hay 3+│
+│                         │                  │              │  DB/adapters│
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ Vertical                │ 🟢 ALTA          │ 🟡 MEDIA     │ YA - 2h      │
+│                         │                  │              │ refactor     │
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ FSM (State Machines)    │ 🟢 ALTA          │ 🟡 MEDIA     │ SOON - 1h    │
+│                         │                  │              │ setup        │
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ Message Broker          │ 🟡 MEDIA         │ 🔴 ALTA      │ 10K+ events/ │
+│                         │                  │              │  day         │
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ Idempotencia            │ 🔴 CRÍTICO       │ 🟡 MEDIA     │ AHORA! (24h) │
+│                         │                  │              │ financiero   │
+├─────────────────────────┼──────────────────┼──────────────┼──────────────┤
+│ Sidecar                 │ 🟠 NO AHORA      │ 🔴 ALTA      │ 100+ instanc │
+│                         │                  │              │  deployment  │
+└─────────────────────────┴──────────────────┴──────────────┴──────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+🎯 RECOMENDACIÓN FINAL PARA TU PROYECTO
+═══════════════════════════════════════════════════════════════════════════════
+
+PRÓXIMOS 7 DÍAS (Implementar AHORA):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 1. ✅ Idempotencia (Financiero - CRÍTICO)           [Día 1 - 4 horas]  │
+│ 2. ✅ Máquinas de Estados Finitos (FSM)             [Día 2-3 - 4h]    │
+│ 3. ✅ Arquitectura Vertical (Refactor mild)         [Día 4-5 - 2h]    │
+└─────────────────────────────────────────────────────────────────────────┘
+
+PRÓXIMAS 4 SEMANAS (Cuando necesites):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 4. 📅 Message Broker (Cuando >100 eventos/día)     [Semana 3 - 8h]    │
+│ 5. 📅 Hexagonal Arch (Cuando 3+ adaptadores)       [Semana 4 - 12h]   │
+└─────────────────────────────────────────────────────────────────────────┘
+
+NO EN ROADMAP (MVP):
+┌─────────────────────────────────────────────────────────────────────────┐
+│ 6. ❌ Sidecar (Cuando escalas a productción)                           │
+└─────────────────────────────────────────────────────────────────────────┘
