@@ -10,6 +10,7 @@ import {
   NavbarDivider,
 } from "@/components/ui/Navbar";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import LogoutButton from "@/components/auth/LogoutButton";
 import styles from "./AppNavbar.module.css";
 
 export function AppNavbar() {
@@ -119,6 +120,9 @@ export function AppNavbar() {
             <NavbarItem href="/profile">👤 Perfil</NavbarItem>
             <NavbarItem href="/settings">⚙️ Settings</NavbarItem>
           </NavbarNav>
+          <div style={{ marginTop: "8px" }}>
+            <LogoutButton />
+          </div>
         </div>
 
         {/* Theme Toggle */}

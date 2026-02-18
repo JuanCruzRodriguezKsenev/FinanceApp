@@ -71,12 +71,24 @@ export default async function TransactionsPage({ searchParams }: Props) {
   const digitalWallets = walletsResult.isOk() ? walletsResult.value : [];
   const contacts = contactsResult.isOk() ? contactsResult.value : [];
 
-  const accountMap = new Map(accounts.map((acc) => [acc.id, acc]));
-  const bankAccountMap = new Map(bankAccounts.map((acc) => [acc.id, acc]));
-  const walletMap = new Map(
-    digitalWallets.map((wallet) => [wallet.id, wallet]),
+  // Deep serialize ALL data for client components (converts Dates to strings)
+  const serializedAccounts = JSON.parse(JSON.stringify(accounts));
+  const serializedGoals = JSON.parse(JSON.stringify(goals));
+  const serializedBankAccounts = JSON.parse(JSON.stringify(bankAccounts));
+  const serializedWallets = JSON.parse(JSON.stringify(digitalWallets));
+  const serializedContacts = JSON.parse(JSON.stringify(contacts));
+
+  // Create maps from SERIALIZED data
+  const accountMap = new Map(serializedAccounts.map((acc) => [acc.id, acc]));
+  const bankAccountMap = new Map(
+    serializedBankAccounts.map((acc) => [acc.id, acc]),
   );
-  const contactMap = new Map(contacts.map((contact) => [contact.id, contact]));
+  const walletMap = new Map(
+    serializedWallets.map((wallet) => [wallet.id, wallet]),
+  );
+  const contactMap = new Map(
+    serializedContacts.map((contact) => [contact.id, contact]),
+  );
 
   // Normalize transaction data for type safety
   const transactions = rawTransactions.map((t) => ({
@@ -86,6 +98,15 @@ export default async function TransactionsPage({ searchParams }: Props) {
     isCashWithdrawal: t.isCashWithdrawal ?? false,
     isTransferToThirdParty: t.isTransferToThirdParty ?? false,
   }));
+
+  // Deep serialize transactions for client components
+  const serializedTransactions = JSON.parse(JSON.stringify(transactions));
+
+  // Serialize maps for client components (Maps can't be passed to client components)
+  const serializedAccountMap = Object.fromEntries(accountMap);
+  const serializedBankAccountMap = Object.fromEntries(bankAccountMap);
+  const serializedWalletMap = Object.fromEntries(walletMap);
+  const serializedContactMap = Object.fromEntries(contactMap);
 
   // Calculate summary statistics using helper function
   const { totalIncome, totalExpenses, totalSavings, balance } =
@@ -99,11 +120,11 @@ export default async function TransactionsPage({ searchParams }: Props) {
           <p>Visualiza y administra todas tus transacciones financieras</p>
         </div>
         <NewTransactionDialog
-          accounts={accounts}
-          goals={goals}
-          bankAccounts={bankAccounts}
-          digitalWallets={digitalWallets}
-          contacts={contacts}
+          accounts={serializedAccounts}
+          goals={serializedGoals}
+          bankAccounts={serializedBankAccounts}
+          digitalWallets={serializedWallets}
+          contacts={serializedContacts}
           triggerClassName={styles.addButton}
         />
       </div>
@@ -214,14 +235,14 @@ export default async function TransactionsPage({ searchParams }: Props) {
         </div>
 
         <TransactionsTable
-          transactions={transactions}
-          accountMap={accountMap}
-          bankAccountMap={bankAccountMap}
-          walletMap={walletMap}
-          contactMap={contactMap}
+          transactions={serializedTransactions}
+          accountMap={serializedAccountMap}
+          bankAccountMap={serializedBankAccountMap}
+          walletMap={serializedWalletMap}
+          contactMap={serializedContactMap}
         />
 
-        {transactions.length === 0 && (
+        {serializedTransactions.length === 0 && (
           <div className={styles.emptyState}>
             <svg
               xmlns="http://www.w3.org/2000/svg"

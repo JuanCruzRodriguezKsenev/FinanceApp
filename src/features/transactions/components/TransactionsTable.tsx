@@ -14,10 +14,10 @@ import TransactionRow from "./TransactionRow";
 
 interface Props {
   transactions: Transaction[];
-  accountMap: Map<string, Account>;
-  bankAccountMap: Map<string, BankAccount>;
-  walletMap: Map<string, DigitalWallet>;
-  contactMap: Map<string, Contact>;
+  accountMap: Record<string, Account>;
+  bankAccountMap: Record<string, BankAccount>;
+  walletMap: Record<string, DigitalWallet>;
+  contactMap: Record<string, Contact>;
 }
 
 function TransactionsTable({
@@ -27,6 +27,12 @@ function TransactionsTable({
   walletMap,
   contactMap,
 }: Props) {
+  // Convert records to Maps for internal use
+  const accountMapObj = new Map(Object.entries(accountMap));
+  const bankAccountMapObj = new Map(Object.entries(bankAccountMap));
+  const walletMapObj = new Map(Object.entries(walletMap));
+  const contactMapObj = new Map(Object.entries(contactMap));
+
   return (
     <Table
       data={transactions}
@@ -45,10 +51,10 @@ function TransactionsTable({
       renderRow={(transaction) => (
         <TransactionRow
           transaction={transaction}
-          accountMap={accountMap}
-          bankAccountMap={bankAccountMap}
-          walletMap={walletMap}
-          contactMap={contactMap}
+          accountMap={accountMapObj}
+          bankAccountMap={bankAccountMapObj}
+          walletMap={walletMapObj}
+          contactMap={contactMapObj}
         />
       )}
       emptyMessage="No hay transacciones"

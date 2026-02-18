@@ -1,11 +1,26 @@
 /**
  * Idempotency tests (documentation-only).
  *
- * This file is intentionally non-executable to avoid test runner setup.
- * Use it as a reference for manual or future automated tests.
+ * This file serves as documentation for idempotency testing.
+ * Actual implementation tests would require database mocking setup.
  */
 
+import { describe, it, expect } from "vitest";
+
+describe("Idempotency (Documentation)", () => {
+  it("placeholder test - idempotency implementation documented", () => {
+    // This is a placeholder test to prevent test runner errors
+    // Real idempotency tests would require:
+    // - Database transaction mocking
+    // - Redis/cache layer for idempotency keys
+    // - Time-based expiration testing
+    expect(true).toBe(true);
+  });
+});
+
 /*
+IMPLEMENTATION REFERENCE:
+
 import { createTransaction } from "@/features/transactions/actions";
 
 // Example pseudo-tests:

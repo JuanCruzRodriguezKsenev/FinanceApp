@@ -51,3 +51,16 @@ export function canTransitionEvent(
 ): boolean {
   return canTransition(from, EVENT_TO_STATE[event]);
 }
+
+export function getValidTransitions(
+  from: TransactionState,
+): TransactionState[] {
+  return VALID_TRANSITIONS[from] ?? [];
+}
+
+export function getValidEvents(from: TransactionState): TransactionEventType[] {
+  const validTargetStates = getValidTransitions(from);
+  return Object.entries(EVENT_TO_STATE)
+    .filter(([_, targetState]) => validTargetStates.includes(targetState))
+    .map(([event]) => event as TransactionEventType);
+}

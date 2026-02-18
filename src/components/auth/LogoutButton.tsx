@@ -1,35 +1,36 @@
 // src/components/auth/LogoutButton.tsx
 "use client";
 
-import { signOut } from "next-auth/react";
 import Button from "@/components/ui/Buttons/Button";
 import { logger } from "@/lib/logger";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { logoutAction } from "@/shared/lib/auth/actions";
 
 export default function LogoutButton() {
-  const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
-  const handleLogout = async () => {
-    setIsLoading(true);
-    try {
-      await signOut({ redirect: false });
-      router.push("/auth/login");
-    } catch (error) {
-      logger.error("Logout failed", error as Error);
-      setIsLoading(false);
-    }
+  const handleLogout = () => {
+    startTransition(async () => {
+      try {
+        await logoutAction();
+      } catch (error) {
+        // Ignore NEXT_REDIRECT errors - they're expected
+        if (error instanceof Error && error.message === "NEXT_REDIRECT") {
+          return;
+        }
+        logger.error("Logout failed", error as Error);
+      }
+    });
   };
 
   return (
     <Button
       variant="outline"
       onClick={handleLogout}
-      disabled={isLoading}
-      isLoading={isLoading}
+      disabled={isPending}
+      isLoading={isPending}
     >
-      {isLoading ? "Cerrando sesión..." : "Cerrar sesión"}
+      {isPending ? "Cerrando sesión..." : "Cerrar sesión"}
     </Button>
   );
 }

@@ -74,6 +74,14 @@ export default async function DashboardPage({ searchParams }: Props) {
   const digitalWallets = walletsResult.isOk() ? walletsResult.value : [];
   const contacts = contactsResult.isOk() ? contactsResult.value : [];
 
+  // Deep serialize ALL data for client components (converts Dates to strings)
+  const serializedTransactions = JSON.parse(JSON.stringify(transactions));
+  const serializedAccounts = JSON.parse(JSON.stringify(accounts));
+  const serializedGoals = JSON.parse(JSON.stringify(goals));
+  const serializedBankAccounts = JSON.parse(JSON.stringify(bankAccounts));
+  const serializedWallets = JSON.parse(JSON.stringify(digitalWallets));
+  const serializedContacts = JSON.parse(JSON.stringify(contacts));
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -82,12 +90,12 @@ export default async function DashboardPage({ searchParams }: Props) {
       </header>
 
       <DashboardContent
-        transactions={transactions}
-        accounts={accounts as any}
-        goals={goals}
-        bankAccounts={bankAccounts}
-        digitalWallets={digitalWallets}
-        contacts={contacts}
+        transactions={serializedTransactions}
+        accounts={serializedAccounts}
+        goals={serializedGoals}
+        bankAccounts={serializedBankAccounts}
+        digitalWallets={serializedWallets}
+        contacts={serializedContacts}
       />
     </div>
   );
