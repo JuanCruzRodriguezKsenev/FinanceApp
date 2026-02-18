@@ -21,6 +21,14 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 - ✅ Result Pattern base en `src/lib/result/`
 - ✅ Result Pattern aplicado a `transactions` y páginas consumidoras
 - ✅ Result Pattern aplicado a `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
+- ✅ **Circuit Breaker System** implementado en `src/lib/circuit-breaker/`
+  - Circuit breaker para prevenir cascading failures
+  - Estados: CLOSED, OPEN, HALF_OPEN
+  - Métricas detalladas y monitoreo global
+  - Factory presets para API, database, cache, webhook
+  - Decorador y utilidades para wrapping de funciones
+  - Suite completa de tests con 20+ casos
+  - Documentación: USAGE.md con best practices
 
 ---
 
@@ -92,6 +100,28 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ index.ts (exports)
 ```
 
+### Infraestructura de Circuit Breaker
+
+#### `src/lib/circuit-breaker/`
+
+```typescript
+✅ types.ts (CircuitBreakerState, Config, ICircuitBreaker, CircuitBreakerOpenError)
+✅ circuit-breaker.ts (Implementación de máquina de estados)
+✅ index.ts (withCircuitBreaker, decorator, factory, registry)
+✅ circuit-breaker.test.ts (20+ test cases)
+✅ USAGE.md (Best practices y ejemplos)
+```
+
+**Características:**
+
+- 🔴 Estado CLOSED: Operación normal, todas las llamadas pasan
+- 🟠 Estado OPEN: Demasiados fallos, rechaza todas las llamadas
+- 🟡 Estado HALF_OPEN: Intento de recuperación, llamadas limitadas
+- 📊 Métricas: Total de llamadas, fallos, tasa de éxito, último error
+- 🏭 Factory presets: `externalAPI`, `database`, `cache`, `webhook`
+- 🔧 Global registry: Monitoreo centralizado de todos los breakers
+- 🧪 Configuración personalizable: thresholds, timeout, callbacks
+
 ### Server Actions (Backend)
 
 #### 1. `src/core/actions/bank-accounts.ts`
@@ -105,7 +135,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ searchBankAccountByCBUOrAlias()
 ```
 
-- Gestión completa de CRUD
+- Gestión completa de CRUD con Result Pattern
 - Validación de seguridad
 - Búsqueda inteligente
 
@@ -119,7 +149,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ updateWalletBalance()
 ```
 
-- Manejo de wallets
+- Manejo de wallets con Result Pattern
 - Vinculación a cuentas
 - Actualización de saldos
 
@@ -134,7 +164,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ deleteContact()
 ```
 
-- Gestión de contactos
+- Gestión de contactos con Result Pattern
 - Búsqueda flexible
 - Información completa
 

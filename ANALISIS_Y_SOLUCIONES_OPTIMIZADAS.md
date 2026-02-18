@@ -36,14 +36,24 @@ Proyecto bien estructurado con patrones modernos de Next.js 16.1.6 y React 19.2.
 - ✅ TransactionForm migrado a useReducer (machine + hook dedicados)
 - ✅ Dependabot y ordenamiento de imports configurados
 - ✅ Ejemplos/documentación movidos a carpeta `examples/`
-- ✅ Result Pattern base implementado en `src/lib/result/`
-- ✅ Result Pattern aplicado a `src/core/actions/transactions.ts` y consumidores
-- ✅ Result Pattern aplicado a `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
+- ✅ Result Pattern base implementado en `src/lib/result/` (types, errors, helpers, index)
+- ✅ Result Pattern aplicado a `transactions.ts` (10+ funciones) y consumidores (TransactionForm, TransactionRow, pages)
+- ✅ Result Pattern aplicado a `bank-accounts.ts` (6 funciones) + BankAccountManager consumer
+- ✅ Result Pattern aplicado a `contacts.ts` (11 funciones)
+- ✅ Result Pattern aplicado a `digital-wallets.ts` (5 funciones)
+- ✅ Result Pattern helpers para `auth.ts` (loginActionResult, registerActionResult)
+- ✅ **Circuit Breaker System** implementado en `src/lib/circuit-breaker/`
+  - Types: CircuitBreakerState, CircuitBreakerConfig, ICircuitBreaker, CircuitBreakerOpenError
+  - Implementation: Máquina de estados (CLOSED → OPEN → HALF_OPEN), métricas, control manual
+  - Utilities: withCircuitBreaker, decorador, factory presets (externalAPI, database, cache, webhook)
+  - Registry: Monitoreo global, estado agregado de todos los breakers
+  - Tests: Suite completa con 20+ casos de prueba (state transitions, error handling, realistic scenarios)
+  - Documentación: USAGE.md con patrones, mejores prácticas, ejemplos reales
 
 **Pendiente (siguiente fase):**
 
-- ⏳ Circuit Breaker
-- ⏳ Validadores reutilizables
+- ⏳ Validadores reutilizables (`src/lib/validators/`)
+- ⏳ Aplicar Circuit Breaker a server actions (cuando sea necesario)
 
 ### 🔴 Problemas Críticos Confirmados
 

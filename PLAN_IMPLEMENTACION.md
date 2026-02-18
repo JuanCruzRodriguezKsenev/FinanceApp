@@ -120,19 +120,28 @@ Implementar todas las mejoras identificadas en el análisis, con enfoque en:
 - ✅ Result Pattern base creado en `src/lib/result/`
 - ✅ Migración a Result en `transactions` + páginas consumidoras
 - ✅ Migración a Result en `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
+- ✅ **Circuit Breaker System** implementado en `src/lib/circuit-breaker/`
+  - ✅ Types: CircuitBreakerState, Config, ICircuitBreaker, CircuitBreakerOpenError
+  - ✅ Implementation: Máquina de estados (CLOSED → OPEN → HALF_OPEN)
+  - ✅ Utilities: withCircuitBreaker, decorator, factory presets
+  - ✅ Global Registry: Monitoreo de todos los breakers
+  - ✅ Comprehensive tests: 20+ test cases
+  - ✅ Documentation: USAGE.md con patrones y best practices
 
 **Métricas actuales (post-implementación):**
 
-| Métrica                     | Estado actual                               |
-| --------------------------- | ------------------------------------------- |
-| console.\* en código        | 0 en producción (excepciones intencionales) |
-| Archivos duplicados         | 0                                           |
-| useState en TransactionForm | 1 reducer + state centralizado              |
+| Métrica                        | Estado actual                               |
+| ------------------------------ | ------------------------------------------- |
+| console.\* en código           | 0 en producción (excepciones intencionales) |
+| Archivos duplicados            | 0                                           |
+| useState en TransactionForm    | 1 reducer + state centralizado              |
+| Infraestructura de resiliencia | Circuit Breaker (CLOSED → OPEN → HALF_OPEN) |
+| Result Pattern coverage        | 38+ funciones de server actions             |
 
 **Pendiente inmediato:**
 
-- ⏳ Circuit Breaker
-- ⏳ Validadores reutilizables
+- ⏳ Validadores reutilizables (`src/lib/validators/`)
+- ⏳ Aplicar Circuit Breaker a server actions (cuando sea necesario)
 
 ---
 
