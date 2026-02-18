@@ -1,6 +1,6 @@
 # 🚀 START HERE - Finance App 3.0
 
-> **Complete, production-ready app. Build on top, don't start from scratch.**
+> **Core infrastructure is ready. Keep building on top.**
 
 ---
 
@@ -10,9 +10,8 @@
 ✅ **Database** - Neon PostgreSQL with proper schema  
 ✅ **Server Actions** - 38+ type-safe operations  
 ✅ **Components** - BankAccountManager, Transactions system  
-✅ **Type Safety** - 100% TypeScript coverage
-
-**Everything compiles. Everything works. Ship it.**
+✅ **Type Safety** - 100% TypeScript coverage  
+🚧 **Hardening** - UI smoke tests + polish pending
 
 ---
 
@@ -217,47 +216,49 @@ export async function createTransaction(
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Structure (Current)
 
 ```
 src/
-├── app/                          # Next.js 16 app directory
+├── app/                          # Next.js app directory
 │   ├── api/
 │   ├── auth/
 │   ├── dashboard/
 │   ├── layout.tsx
 │   └── page.tsx
 │
-├── components/                   # React components
-│   ├── BankAccountManager.tsx   # ⭐ Main UI component
+├── features/                     # Vertical architecture by domain
 │   ├── transactions/
-│   └── ui/                       # Shadcn UI components
+│   │   ├── actions/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── index.ts
+│   ├── bank-accounts/
+│   │   ├── actions/
+│   │   ├── components/
+│   │   └── index.ts
+│   ├── contacts/
+│   │   ├── actions/
+│   │   └── index.ts
+│   └── digital-wallets/
+│       ├── actions/
+│       └── index.ts
 │
-├── core/
-│   ├── actions/                  # Server actions (38+)
-│   │   ├── auth.ts              # Authentication
-│   │   ├── bank-accounts.ts     # Bank account operations
-│   │   ├── contacts.ts          # Contact management
-│   │   ├── digital-wallets.ts   # Wallet operations
-│   │   └── transactions.ts      # Transaction operations
-│   └── hooks/                    # Custom React hooks
+├── shared/                       # Cross-cutting feature code
+│   └── lib/
+│       └── auth/
+│
+├── components/                   # Global UI (shadcn)
+│   └── ui/
 │
 ├── db/
 │   ├── index.ts                 # Database client
 │   └── schema/                  # Drizzle ORM schemas
 │
-├── lib/                          # ⭐⭐⭐ Core infrastructure
-│   ├── result/                  # Error handling pattern
-│   │   ├── types.ts             # Result, Ok, Err types
-│   │   ├── errors.ts            # AppError definitions
-│   │   ├── helpers.ts           # Combinators (combine, fromPromise, etc)
-│   │   └── index.ts
-│   │
-│   ├── circuit-breaker/         # Resilience pattern
-│   │   ├── circuit-breaker.ts   # State machine implementation
-│   │   ├── types.ts             # CircuitBreakerState, etc
-│   │   ├── index.ts             # Exports & factory
-│   │   └── circuit-breaker.examples.ts # Usage examples
+├── lib/                          # Core infrastructure
+│   ├── result/
+│   ├── circuit-breaker/
+│   └── validators/
 │   │
 │   ├── validators/              # Data validation
 │   │   ├── string-validators.ts

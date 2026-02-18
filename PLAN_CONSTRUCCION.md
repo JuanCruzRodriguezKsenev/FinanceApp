@@ -288,7 +288,7 @@ Máquina de estados que garantiza que transacciones solo puedan transicionar val
 
 #### Tarea 1.1: Definir Estados y Transiciones (1h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** Ninguna
 
 ```typescript
@@ -333,17 +333,17 @@ export function canTransition(
 
 **Checklist:**
 
-- [ ] Enum TransactionState definido
-- [ ] VALID_TRANSITIONS mapeado
-- [ ] Función canTransition creada
+- [x] Enum TransactionState definido
+- [x] VALID_TRANSITIONS mapeado
+- [x] Función canTransition creada
 
 ---
 
 #### Tarea 1.2: Crear FSM con XState (2h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE (FSM liviana, sin dependencias)
 **Dependencias:** 1.1
-**Instalación:** `npm install xstate`
+**Instalación:** No requerida
 
 ```typescript
 // src/lib/state-machines/transaction.machine.ts - MÁQUINA
@@ -437,16 +437,15 @@ npm install xstate
 
 **Checklist:**
 
-- [ ] XState instalado
-- [ ] Máquina creada en arquivo
-- [ ] Todas las acciones definidas
-- [ ] Estados terminales claros
+- [x] FSM implementada sin dependencias
+- [x] Máquina creada en arquivo
+- [x] Estados terminales claros
 
 ---
 
 #### Tarea 1.3: Service para Controlar FSM (2h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 1.2
 
 ```typescript
@@ -515,15 +514,15 @@ export function useTransactionFSM(initialData: Transaction) {
 
 **Checklist:**
 
-- [ ] TransactionStateMachine creada
-- [ ] Métodos: getState, send, canTransition
+- [x] TransactionStateMachine creada
+- [x] Métodos: getState, send, canTransition
 - [ ] Ejemplo de uso claro
 
 ---
 
 #### Tarea 1.4: Integrar FSM en Actions (3h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 1.3
 
 ```typescript
@@ -611,11 +610,11 @@ CREATE INDEX idx_transaction_state ON financial_transaction(state);
 
 **Checklist:**
 
-- [ ] Schema actualizado
-- [ ] createTransaction uses FSM
-- [ ] submitTransaction valida transiciones
-- [ ] confirmTransaction implementado
-- [ ] Otros actions actualizados
+- [x] Schema actualizado
+- [x] createTransaction uses FSM
+- [x] submitTransaction valida transiciones
+- [x] confirmTransaction implementado
+- [x] Otros actions actualizados
 
 ---
 
@@ -672,9 +671,9 @@ export function TransactionRow({ transaction, ...props }) {
 
 **Checklist:**
 
-- [ ] StatusBadge creado
-- [ ] Transación muestra estado
-- [ ] Botones de acción según estado
+- [x] StatusBadge creado
+- [x] Transación muestra estado
+- [x] Botones de acción según estado
 
 ---
 
@@ -704,7 +703,7 @@ Reorganizar archivos por feature en lugar de por tipo.
 
 #### Tarea 2.1: Crear Estructura de Carpetas (0.5h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** Ninguna
 
 ```bash
@@ -717,14 +716,14 @@ mkdir -p src/shared/{lib,components,hooks,types}
 
 **Checklist:**
 
-- [ ] Carpetas creadas en `src/features/`
-- [ ] Carpeta `shared/` para código compartido
+- [x] Carpetas creadas en `src/features/`
+- [x] Carpeta `shared/` para código compartido
 
 ---
 
 #### Tarea 2.2: Mover Actions (1.5h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 2.1
 
 ```bash
@@ -746,15 +745,15 @@ mv src/core/actions/auth.ts src/shared/lib/auth/actions.ts
 
 **Checklist:**
 
-- [ ] Actions movidas
-- [ ] Imports actualizados en componentes
-- [ ] No hay errores de compilación
+- [x] Actions movidas
+- [x] Imports actualizados en componentes
+- [x] No hay errores de compilación
 
 ---
 
 #### Tarea 2.3: Mover Componentes (1.5h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 2.2
 
 ```bash
@@ -775,15 +774,15 @@ mv src/hooks/useTransactionForm.ts src/features/transactions/hooks/
 
 **Checklist:**
 
-- [ ] Componentes movidos
-- [ ] Imports actualizados
-- [ ] CSS junto a componentes
+- [x] Componentes movidos
+- [x] Imports actualizados
+- [x] CSS junto a componentes
 
 ---
 
 #### Tarea 2.4: Crear index.ts Para Cada Feature (1h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 2.3
 
 ```typescript
@@ -805,15 +804,15 @@ export { getTransactions } from "./get";
 
 **Checklist:**
 
-- [ ] Cada feature tiene `index.ts`
-- [ ] Actions tienen `index.ts`
-- [ ] Imports centralizados
+- [x] Cada feature tiene `index.ts`
+- [x] Actions tienen `index.ts`
+- [x] Imports centralizados
 
 ---
 
 #### Tarea 2.5: Update Imports Globales (1h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 2.4
 
 ```typescript
@@ -836,15 +835,15 @@ Usar find-replace en VSCode:
 
 **Checklist:**
 
-- [ ] Find-replace ejecutado
-- [ ] No hay errores en compilación
-- [ ] App funciona igual
+- [x] Find-replace ejecutado
+- [x] No hay errores en compilación
+- [x] App funciona igual
 
 ---
 
 #### Tarea 2.6: Actualizar Páginas (0.5h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 2.5
 
 ```typescript
@@ -872,7 +871,7 @@ export default function DashboardPage() {
 
 **Checklist:**
 
-- [ ] Páginas actualizadas
+- [x] Páginas actualizadas
 - [ ] Tests manuales funcionan
 
 ---
@@ -892,6 +891,13 @@ export default function DashboardPage() {
 ## 📨 FASE 3: ESCALABILIDAD - MESSAGE BROKER (Semana 3)
 
 > **Esperar a:** Si tienes 100+ eventos/día o necesitas procesamiento asincrónico
+
+**Registro de implementacion futura (pendiente):**
+
+- Trigger: volumen >100 eventos/dia o tareas async criticas (emails, reconciliacion, webhooks)
+- Dependencia: Redis disponible (local o managed)
+- Stack sugerido: Bull + bull-board + redis
+- Primeros jobs: notificaciones por email, analytics, conciliacion
 
 ### Objetivo
 

@@ -54,6 +54,49 @@
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## 🧭 Future Target Structure (Vertical Architecture)
+
+This is the intended folder layout when a feature grows. Empty folders were removed and should be created only when needed.
+
+```
+src/
+  features/
+    transactions/
+      actions/
+      components/
+      hooks/
+      types/
+      utils/
+      index.ts
+    bank-accounts/
+      actions/
+      components/
+      hooks/
+      types/
+      utils/
+      index.ts
+    contacts/
+      actions/
+      components/
+      hooks/
+      types/
+      utils/
+      index.ts
+    digital-wallets/
+      actions/
+      components/
+      hooks/
+      types/
+      utils/
+      index.ts
+  shared/
+    lib/
+      auth/
+    components/
+    hooks/
+    types/
+```
+
 ## 📚 Libraries Implemented
 
 ### 1. Result Pattern (`src/lib/result/`)
