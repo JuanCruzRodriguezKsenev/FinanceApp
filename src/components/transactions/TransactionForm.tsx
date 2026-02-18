@@ -1,12 +1,13 @@
 // src/components/transactions/TransactionForm.tsx
 "use client";
 
-import { memo, useEffect, useRef, useState, useTransition } from "react";
+import { memo, useEffect, useRef, useTransition } from "react";
 import { createTransactionWithAutoDetection } from "@/core/actions/transactions";
 import Button from "@/components/ui/Buttons/Button";
 import { useMessage } from "@/hooks/useMessage";
 import { getCategorySelectOptions } from "@/constants/transactionLabels";
 import { eventBus, EVENTS } from "@/lib/eventBus";
+import { useTransactionForm } from "./useTransactionForm";
 import styles from "./TransactionForm.module.css";
 import type {
   Account,
@@ -74,52 +75,45 @@ function TransactionForm({
   variant = "page",
 }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [type, setType] = useState<TransactionType>("expense");
-  const [flowMethod, setFlowMethod] = useState<"cash" | "transfer">("cash");
-  const [currencyOpen, setCurrencyOpen] = useState(false);
-  const [rubroOpen, setRubroOpen] = useState(false);
-  const [categoriaOpen, setCategoriaOpen] = useState(false);
-  const [rubroSearch, setRubroSearch] = useState("");
-  const [categoriaSearch, setCategoriaSearch] = useState("");
   const currencyRef = useRef<HTMLDivElement | null>(null);
   const rubroRef = useRef<HTMLDivElement | null>(null);
   const categoriaRef = useRef<HTMLDivElement | null>(null);
-  const [formState, setFormState] = useState({
-    amount: "",
-    currency: "ARS",
-    date: new Date().toISOString().split("T")[0],
-    description: "",
-    categoryDetail: "",
-    fromAccountId: "",
-    toAccountId: "",
-    fromBankAccountId: "",
-    toBankAccountId: "",
-    fromWalletId: "",
-    toWalletId: "",
-    contactId: "",
-    category: "",
-  });
+  const { state, actions } = useTransactionForm();
+  const { type, flowMethod, dropdowns, searches, form } = state;
+  const {
+    setType,
+    setFlowMethod,
+    setDropdownOpen,
+    closeDropdowns,
+    setSearch,
+    setFormField,
+    resetAll,
+  } = actions;
   const { message, showSuccess, showError, clear } = useMessage();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        currencyRef.current &&
-        !currencyRef.current.contains(event.target as Node)
-      ) {
-        setCurrencyOpen(false);
+      const targetNode = event.target as Node;
+      const clickedCurrency =
+        currencyRef.current && currencyRef.current.contains(targetNode);
+      const clickedRubro =
+        rubroRef.current && rubroRef.current.contains(targetNode);
+      const clickedCategoria =
+        categoriaRef.current && categoriaRef.current.contains(targetNode);
+
+      if (!clickedCurrency && !clickedRubro && !clickedCategoria) {
+        closeDropdowns();
+        return;
       }
-      if (
-        rubroRef.current &&
-        !rubroRef.current.contains(event.target as Node)
-      ) {
-        setRubroOpen(false);
+
+      if (!clickedCurrency) {
+        setDropdownOpen("currency", false);
       }
-      if (
-        categoriaRef.current &&
-        !categoriaRef.current.contains(event.target as Node)
-      ) {
-        setCategoriaOpen(false);
+      if (!clickedRubro) {
+        setDropdownOpen("rubro", false);
+      }
+      if (!clickedCategoria) {
+        setDropdownOpen("categoria", false);
       }
     };
 
@@ -128,10 +122,8 @@ function TransactionForm({
   }, []);
 
   const resolveSourceInfo = () => {
-    if (formState.fromAccountId) {
-      const account = accounts.find(
-        (acc) => acc.id === formState.fromAccountId,
-      );
+    if (form.fromAccountId) {
+      const account = accounts.find((acc) => acc.id === form.fromAccountId);
       return account
         ? {
             label: account.name,
@@ -140,9 +132,9 @@ function TransactionForm({
           }
         : null;
     }
-    if (formState.fromBankAccountId) {
+    if (form.fromBankAccountId) {
       const account = bankAccounts.find(
-        (acc) => acc.id === formState.fromBankAccountId,
+        (acc) => acc.id === form.fromBankAccountId,
       );
       return account
         ? {
@@ -152,10 +144,8 @@ function TransactionForm({
           }
         : null;
     }
-    if (formState.fromWalletId) {
-      const wallet = digitalWallets.find(
-        (w) => w.id === formState.fromWalletId,
-      );
+    if (form.fromWalletId) {
+      const wallet = digitalWallets.find((w) => w.id === form.fromWalletId);
       return wallet
         ? {
             label: `${wallet.walletName} (${wallet.provider})`,
@@ -168,15 +158,15 @@ function TransactionForm({
   };
 
   const resolveTargetInfo = () => {
-    if (formState.toAccountId) {
-      const account = accounts.find((acc) => acc.id === formState.toAccountId);
+    if (form.toAccountId) {
+      const account = accounts.find((acc) => acc.id === form.toAccountId);
       return account
         ? { label: account.name, currency: account.currency }
         : null;
     }
-    if (formState.toBankAccountId) {
+    if (form.toBankAccountId) {
       const account = bankAccounts.find(
-        (acc) => acc.id === formState.toBankAccountId,
+        (acc) => acc.id === form.toBankAccountId,
       );
       return account
         ? {
@@ -185,8 +175,8 @@ function TransactionForm({
           }
         : null;
     }
-    if (formState.toWalletId) {
-      const wallet = digitalWallets.find((w) => w.id === formState.toWalletId);
+    if (form.toWalletId) {
+      const wallet = digitalWallets.find((w) => w.id === form.toWalletId);
       return wallet
         ? {
             label: `${wallet.walletName} (${wallet.provider})`,
@@ -197,19 +187,19 @@ function TransactionForm({
     return null;
   };
 
-  const parsedAmount = Number.parseFloat(formState.amount);
+  const parsedAmount = Number.parseFloat(form.amount);
   const hasAmount =
-    formState.amount.trim().length > 0 && !Number.isNaN(parsedAmount);
+    form.amount.trim().length > 0 && !Number.isNaN(parsedAmount);
   const isOutflow = type === "expense" || flowMethod === "transfer";
   const sourceInfo = resolveSourceInfo();
   const targetInfo = resolveTargetInfo();
   const isSourceCurrencyMismatch =
-    sourceInfo?.currency && formState.currency
-      ? sourceInfo.currency !== formState.currency
+    sourceInfo?.currency && form.currency
+      ? sourceInfo.currency !== form.currency
       : false;
   const isTargetCurrencyMismatch =
-    targetInfo?.currency && formState.currency
-      ? targetInfo.currency !== formState.currency
+    targetInfo?.currency && form.currency
+      ? targetInfo.currency !== form.currency
       : false;
   const sourceBalance = sourceInfo
     ? Number.parseFloat(sourceInfo.balance || "0")
@@ -222,7 +212,7 @@ function TransactionForm({
   const formattedSourceBalance = sourceInfo
     ? new Intl.NumberFormat("es-AR", {
         style: "currency",
-        currency: sourceInfo.currency || formState.currency || "ARS",
+        currency: sourceInfo.currency || form.currency || "ARS",
       }).format(sourceBalance)
     : "";
   const fundsWarning = hasInsufficientFunds
@@ -232,17 +222,17 @@ function TransactionForm({
   const rubroOptions = getCategorySelectOptions(type);
   const categoriaOptions = getCategorySelectOptions(type);
   const rubroLabel =
-    rubroOptions.find((option) => option.value === formState.category)?.label ||
-    formState.category;
+    rubroOptions.find((option) => option.value === form.category)?.label ||
+    form.category;
   const categoriaLabel =
-    categoriaOptions.find((option) => option.value === formState.categoryDetail)
-      ?.label || formState.categoryDetail;
+    categoriaOptions.find((option) => option.value === form.categoryDetail)
+      ?.label || form.categoryDetail;
 
   const handleSubmit = async () => {
     clear();
     startTransition(async () => {
-      const amount = parseFloat(formState.amount);
-      if (!formState.amount || Number.isNaN(amount)) {
+      const amount = parseFloat(form.amount);
+      if (!form.amount || Number.isNaN(amount)) {
         showError("Ingresa un monto valido");
         return;
       }
@@ -261,20 +251,20 @@ function TransactionForm({
         return;
       }
 
-      const baseDescription = formState.description.trim();
+      const baseDescription = form.description.trim();
       const description =
         baseDescription || categoriaLabel || rubroLabel || "Movimiento";
-      const date = new Date(formState.date);
+      const date = new Date(form.date);
       const paymentMethod = flowMethod === "cash" ? "cash" : "bank_transfer";
-      const currency = formState.currency || "ARS";
-      const fromAccountId = formState.fromAccountId || undefined;
-      const toAccountId = formState.toAccountId || undefined;
-      const fromBankAccountId = formState.fromBankAccountId || undefined;
-      const toBankAccountId = formState.toBankAccountId || undefined;
-      const fromWalletId = formState.fromWalletId || undefined;
-      const toWalletId = formState.toWalletId || undefined;
-      const contactId = formState.contactId || undefined;
-      const category = formState.category || undefined;
+      const currency = form.currency || "ARS";
+      const fromAccountId = form.fromAccountId || undefined;
+      const toAccountId = form.toAccountId || undefined;
+      const fromBankAccountId = form.fromBankAccountId || undefined;
+      const toBankAccountId = form.toBankAccountId || undefined;
+      const fromWalletId = form.fromWalletId || undefined;
+      const toWalletId = form.toWalletId || undefined;
+      const contactId = form.contactId || undefined;
+      const category = form.category || undefined;
       const transactionType =
         flowMethod === "transfer" ? undefined : (type as TransactionType);
 
@@ -309,23 +299,7 @@ function TransactionForm({
         });
 
         onSuccess?.();
-        setFormState({
-          amount: "",
-          currency: "ARS",
-          date: new Date().toISOString().split("T")[0],
-          description: "",
-          categoryDetail: "",
-          fromAccountId: "",
-          toAccountId: "",
-          fromBankAccountId: "",
-          toBankAccountId: "",
-          fromWalletId: "",
-          toWalletId: "",
-          contactId: "",
-          category: "",
-        });
-        setType("expense");
-        setFlowMethod("cash");
+        resetAll();
       }
     });
   };
@@ -422,7 +396,7 @@ function TransactionForm({
               placeholder="0"
               required
               className={styles.amountInput}
-              value={formatNumberWithThousands(formState.amount)}
+              value={formatNumberWithThousands(form.amount)}
               onChange={(e) => {
                 const value = e.target.value;
                 // Permitir solo números, puntos y comas
@@ -432,10 +406,7 @@ function TransactionForm({
                 // Reemplazar coma por punto para el decimal
                 const normalized = withoutThousands.replace(",", ".");
 
-                setFormState((prev) => ({
-                  ...prev,
-                  amount: normalized,
-                }));
+                setFormField("amount", normalized);
               }}
               onWheel={(e) => e.currentTarget.blur()}
             />
@@ -449,15 +420,15 @@ function TransactionForm({
                 type="button"
                 className={styles.currencyTrigger}
                 aria-haspopup="listbox"
-                aria-expanded={currencyOpen}
-                onClick={() => setCurrencyOpen((prev) => !prev)}
+                aria-expanded={dropdowns.currencyOpen}
+                onClick={() =>
+                  setDropdownOpen("currency", !dropdowns.currencyOpen)
+                }
               >
-                <span className={styles.currencyCode}>
-                  {formState.currency}
-                </span>
+                <span className={styles.currencyCode}>{form.currency}</span>
                 <span className={styles.currencyChevron}>▾</span>
               </button>
-              {currencyOpen && (
+              {dropdowns.currencyOpen && (
                 <div
                   className={styles.currencyMenu}
                   role="listbox"
@@ -475,18 +446,15 @@ function TransactionForm({
                       key={option.value}
                       type="button"
                       role="option"
-                      aria-selected={option.value === formState.currency}
+                      aria-selected={option.value === form.currency}
                       className={`${styles.currencyOption} ${
-                        option.value === formState.currency
+                        option.value === form.currency
                           ? styles.currencyOptionActive
                           : ""
                       }`}
                       onClick={() => {
-                        setFormState((prev) => ({
-                          ...prev,
-                          currency: option.value,
-                        }));
-                        setCurrencyOpen(false);
+                        setFormField("currency", option.value);
+                        setDropdownOpen("currency", false);
                       }}
                     >
                       <span className={styles.currencyOptionCode}>
@@ -513,12 +481,9 @@ function TransactionForm({
                   <select
                     id="fromAccountId"
                     name="fromAccountId"
-                    value={formState.fromAccountId}
+                    value={form.fromAccountId}
                     onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        fromAccountId: e.target.value,
-                      }))
+                      setFormField("fromAccountId", e.target.value)
                     }
                   >
                     <option value="">Seleccionar...</option>
@@ -538,12 +503,9 @@ function TransactionForm({
                   <select
                     id="toAccountId"
                     name="toAccountId"
-                    value={formState.toAccountId}
+                    value={form.toAccountId}
                     onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        toAccountId: e.target.value,
-                      }))
+                      setFormField("toAccountId", e.target.value)
                     }
                   >
                     <option value="">Seleccionar...</option>
@@ -563,12 +525,9 @@ function TransactionForm({
                   <select
                     id="fromBankAccountId"
                     name="fromBankAccountId"
-                    value={formState.fromBankAccountId}
+                    value={form.fromBankAccountId}
                     onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        fromBankAccountId: e.target.value,
-                      }))
+                      setFormField("fromBankAccountId", e.target.value)
                     }
                   >
                     <option value="">Seleccionar...</option>
@@ -588,12 +547,9 @@ function TransactionForm({
                   <select
                     id="toBankAccountId"
                     name="toBankAccountId"
-                    value={formState.toBankAccountId}
+                    value={form.toBankAccountId}
                     onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        toBankAccountId: e.target.value,
-                      }))
+                      setFormField("toBankAccountId", e.target.value)
                     }
                   >
                     <option value="">Seleccionar...</option>
@@ -613,12 +569,9 @@ function TransactionForm({
                   <select
                     id="fromWalletId"
                     name="fromWalletId"
-                    value={formState.fromWalletId}
+                    value={form.fromWalletId}
                     onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        fromWalletId: e.target.value,
-                      }))
+                      setFormField("fromWalletId", e.target.value)
                     }
                   >
                     <option value="">Seleccionar...</option>
@@ -638,13 +591,8 @@ function TransactionForm({
                   <select
                     id="toWalletId"
                     name="toWalletId"
-                    value={formState.toWalletId}
-                    onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        toWalletId: e.target.value,
-                      }))
-                    }
+                    value={form.toWalletId}
+                    onChange={(e) => setFormField("toWalletId", e.target.value)}
                   >
                     <option value="">Seleccionar...</option>
                     {digitalWallets.map((w) => (
@@ -662,13 +610,8 @@ function TransactionForm({
                 <select
                   id="contactId"
                   name="contactId"
-                  value={formState.contactId}
-                  onChange={(e) =>
-                    setFormState((prev) => ({
-                      ...prev,
-                      contactId: e.target.value,
-                    }))
-                  }
+                  value={form.contactId}
+                  onChange={(e) => setFormField("contactId", e.target.value)}
                 >
                   <option value="">Seleccionar...</option>
                   {contacts.map((c) => (
@@ -700,8 +643,8 @@ function TransactionForm({
                   type="button"
                   className={styles.currencyTrigger}
                   aria-haspopup="listbox"
-                  aria-expanded={rubroOpen}
-                  onClick={() => setRubroOpen((prev) => !prev)}
+                  aria-expanded={dropdowns.rubroOpen}
+                  onClick={() => setDropdownOpen("rubro", !dropdowns.rubroOpen)}
                   style={{ minWidth: "100%", justifyContent: "space-between" }}
                 >
                   <span
@@ -716,7 +659,7 @@ function TransactionForm({
                   </span>
                   <span className={styles.currencyChevron}>▾</span>
                 </button>
-                {rubroOpen && (
+                {dropdowns.rubroOpen && (
                   <div
                     className={styles.currencyMenu}
                     role="listbox"
@@ -735,8 +678,8 @@ function TransactionForm({
                     <input
                       type="text"
                       placeholder="Buscar rubro..."
-                      value={rubroSearch}
-                      onChange={(e) => setRubroSearch(e.target.value)}
+                      value={searches.rubro}
+                      onChange={(e) => setSearch("rubro", e.target.value)}
                       className={styles.searchInput}
                       autoFocus
                     />
@@ -744,26 +687,23 @@ function TransactionForm({
                       .filter((option) =>
                         option.label
                           .toLowerCase()
-                          .includes(rubroSearch.toLowerCase()),
+                          .includes(searches.rubro.toLowerCase()),
                       )
                       .map((option) => (
                         <button
                           key={option.value}
                           type="button"
                           role="option"
-                          aria-selected={option.value === formState.category}
+                          aria-selected={option.value === form.category}
                           className={`${styles.currencyOption} ${
-                            option.value === formState.category
+                            option.value === form.category
                               ? styles.currencyOptionActive
                               : ""
                           }`}
                           onClick={() => {
-                            setFormState((prev) => ({
-                              ...prev,
-                              category: option.value,
-                            }));
-                            setRubroOpen(false);
-                            setRubroSearch("");
+                            setFormField("category", option.value);
+                            setDropdownOpen("rubro", false);
+                            setSearch("rubro", "");
                           }}
                         >
                           <span className={styles.currencyOptionText}>
@@ -784,8 +724,10 @@ function TransactionForm({
                   type="button"
                   className={styles.currencyTrigger}
                   aria-haspopup="listbox"
-                  aria-expanded={categoriaOpen}
-                  onClick={() => setCategoriaOpen((prev) => !prev)}
+                  aria-expanded={dropdowns.categoriaOpen}
+                  onClick={() =>
+                    setDropdownOpen("categoria", !dropdowns.categoriaOpen)
+                  }
                   style={{ minWidth: "100%", justifyContent: "space-between" }}
                 >
                   <span
@@ -800,7 +742,7 @@ function TransactionForm({
                   </span>
                   <span className={styles.currencyChevron}>▾</span>
                 </button>
-                {categoriaOpen && (
+                {dropdowns.categoriaOpen && (
                   <div
                     className={styles.currencyMenu}
                     role="listbox"
@@ -819,8 +761,8 @@ function TransactionForm({
                     <input
                       type="text"
                       placeholder="Buscar categoria..."
-                      value={categoriaSearch}
-                      onChange={(e) => setCategoriaSearch(e.target.value)}
+                      value={searches.categoria}
+                      onChange={(e) => setSearch("categoria", e.target.value)}
                       className={styles.searchInput}
                       autoFocus
                     />
@@ -828,28 +770,23 @@ function TransactionForm({
                       .filter((option) =>
                         option.label
                           .toLowerCase()
-                          .includes(categoriaSearch.toLowerCase()),
+                          .includes(searches.categoria.toLowerCase()),
                       )
                       .map((option) => (
                         <button
                           key={option.value}
                           type="button"
                           role="option"
-                          aria-selected={
-                            option.value === formState.categoryDetail
-                          }
+                          aria-selected={option.value === form.categoryDetail}
                           className={`${styles.currencyOption} ${
-                            option.value === formState.categoryDetail
+                            option.value === form.categoryDetail
                               ? styles.currencyOptionActive
                               : ""
                           }`}
                           onClick={() => {
-                            setFormState((prev) => ({
-                              ...prev,
-                              categoryDetail: option.value,
-                            }));
-                            setCategoriaOpen(false);
-                            setCategoriaSearch("");
+                            setFormField("categoryDetail", option.value);
+                            setDropdownOpen("categoria", false);
+                            setSearch("categoria", "");
                           }}
                         >
                           <span className={styles.currencyOptionText}>
@@ -870,13 +807,8 @@ function TransactionForm({
                 id="date"
                 name="date"
                 type="date"
-                value={formState.date}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    date: e.target.value,
-                  }))
-                }
+                value={form.date}
+                onChange={(e) => setFormField("date", e.target.value)}
                 required
               />
             </div>
@@ -888,13 +820,8 @@ function TransactionForm({
                 name="description"
                 type="text"
                 placeholder="Ej: Uber al trabajo"
-                value={formState.description}
-                onChange={(e) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
+                value={form.description}
+                onChange={(e) => setFormField("description", e.target.value)}
               />
             </div>
           </div>
