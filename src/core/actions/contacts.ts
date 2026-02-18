@@ -66,7 +66,6 @@ export async function createContact(data: {
     return { success: true, data: newContact[0] as any };
   } catch (error) {
     logger.error("Failed to create contact", error as Error, {
-      userId: session.user.id,
       name: data.name,
     });
     return {
@@ -97,9 +96,7 @@ export async function getContacts(): Promise<{
 
     return { success: true, data: userContacts as Contact[] };
   } catch (error) {
-    logger.error("Failed to fetch contacts", error as Error, {
-      userId: session.user.id,
-    });
+    logger.error("Failed to fetch contacts", error as Error);
     return { success: false, error: "Error al obtener contactos" };
   }
 }
@@ -139,7 +136,6 @@ export async function searchContacts(searchTerm: string): Promise<{
     return { success: true, data: results as Contact[] };
   } catch (error) {
     logger.error("Failed to search contacts", error as Error, {
-      userId: session.user.id,
       searchTerm,
     });
     return { success: false, error: "Error al buscar contactos" };
@@ -173,7 +169,6 @@ export async function createContactFolder(data: {
     return { success: true, data: folder[0] };
   } catch (error) {
     logger.error("Failed to create contact folder", error as Error, {
-      userId: session.user.id,
       folderName: data.name,
     });
     return { success: false, error: "Error al crear la carpeta" };
@@ -363,7 +358,6 @@ export async function updateContact(
     return { success: true, data: updated[0] as any };
   } catch (error) {
     logger.error("Failed to update contact", error as Error, {
-      userId: session.user.id,
       contactId,
     });
     return {
@@ -402,7 +396,6 @@ export async function deleteContact(
     return { success: true };
   } catch (error) {
     logger.error("Failed to delete contact", error as Error, {
-      userId: session.user.id,
       contactId,
     });
     return {

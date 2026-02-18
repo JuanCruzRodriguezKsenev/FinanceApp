@@ -48,7 +48,6 @@ export async function createDigitalWallet(data: {
     return { success: true, data: newWallet[0] as any };
   } catch (error) {
     logger.error("Failed to create digital wallet", error as Error, {
-      userId: session.user.id,
       provider: data.provider,
     });
     return {
@@ -79,9 +78,7 @@ export async function getDigitalWallets(): Promise<{
 
     return { success: true, data: wallets as DigitalWallet[] };
   } catch (error) {
-    logger.error("Failed to fetch digital wallets", error as Error, {
-      userId: session.user.id,
-    });
+    logger.error("Failed to fetch digital wallets", error as Error);
     return { success: false, error: "Error al obtener billeteras digitales" };
   }
 }
@@ -126,7 +123,6 @@ export async function updateDigitalWallet(
     return { success: true, data: updated[0] as any };
   } catch (error) {
     logger.error("Failed to update digital wallet", error as Error, {
-      userId: session.user.id,
       walletId,
     });
     return {
@@ -168,7 +164,6 @@ export async function deleteDigitalWallet(
     return { success: true };
   } catch (error) {
     logger.error("Failed to delete digital wallet", error as Error, {
-      userId: session.user.id,
       walletId,
     });
     return {

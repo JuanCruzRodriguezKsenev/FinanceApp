@@ -210,8 +210,10 @@ export async function createTransactionWithAutoDetection(data: {
       transferGroupId,
     };
 
+    type BalanceTx = Pick<typeof db, "select" | "update">;
+
     const updateBalance = async (
-      tx: typeof db,
+      tx: BalanceTx,
       values: {
         fromAccountId?: string;
         toAccountId?: string;
