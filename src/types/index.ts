@@ -73,6 +73,14 @@ export type TransactionType =
   | "investment" // Inversión
   | "refund"; // Reembolso
 
+export type TransactionState =
+  | "DRAFT"
+  | "PENDING"
+  | "CONFIRMED"
+  | "FAILED"
+  | "CANCELLED"
+  | "RECONCILED";
+
 export type TransactionCategory =
   // Gastos
   | "food"
@@ -253,6 +261,8 @@ export interface Transaction {
   id: string;
   userId: string;
   idempotencyKey?: string | null;
+  state: TransactionState;
+  stateMachine?: Record<string, unknown> | null;
   type: TransactionType;
   category: TransactionCategory;
   amount: string;

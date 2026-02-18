@@ -7,6 +7,7 @@ import {
   timestamp,
   pgEnum,
   boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { users } from "./identity";
 import { relations } from "drizzle-orm";
@@ -58,6 +59,15 @@ export const transactionCategoryEnum = pgEnum("transaction_category", [
   "bank_fee",
   "interest",
   "other",
+]);
+
+export const transactionStateEnum = pgEnum("transaction_state", [
+  "DRAFT",
+  "PENDING",
+  "CONFIRMED",
+  "FAILED",
+  "CANCELLED",
+  "RECONCILED",
 ]);
 
 export const bankAccountTypeEnum = pgEnum("bank_account_type", [
@@ -309,6 +319,8 @@ export const transactions = pgTable("financial_transaction", {
   // Tipo y categoría
   type: transactionTypeEnum("type").notNull(),
   category: transactionCategoryEnum("category").notNull(),
+  state: transactionStateEnum("state").notNull().default("DRAFT"),
+  stateMachine: jsonb("state_machine"),
 
   // Monto y descripción
   amount: numeric("amount", { precision: 12, scale: 2 }).notNull(),

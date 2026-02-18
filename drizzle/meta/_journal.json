@@ -15,6 +15,13 @@
       "when": 1771448690988,
       "tag": "0001_nostalgic_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771450216053,
+      "tag": "0002_quick_siren",
+      "breakpoints": true
     }
   ]
 }
