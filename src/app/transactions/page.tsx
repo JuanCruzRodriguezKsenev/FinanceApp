@@ -35,7 +35,7 @@ export default async function TransactionsPage({ searchParams }: Props) {
 
   const params = await searchParams;
 
-  const rawTransactions = await getTransactions({
+  const rawTransactionsResult = await getTransactions({
     type: params.type,
     category: params.category,
     search: params.search,
@@ -58,8 +58,11 @@ export default async function TransactionsPage({ searchParams }: Props) {
     getContacts(),
   ]);
 
-  const accounts = accountsResult || [];
-  const goals = goalsResult || [];
+  const rawTransactions = rawTransactionsResult.isOk()
+    ? rawTransactionsResult.value
+    : [];
+  const accounts = accountsResult.isOk() ? accountsResult.value : [];
+  const goals = goalsResult.isOk() ? goalsResult.value : [];
   const bankAccounts = bankAccountsResult.data || [];
   const digitalWallets = walletsResult.data || [];
   const contacts = contactsResult.data || [];

@@ -38,7 +38,10 @@ function TransactionRow({
   const handleDelete = () => {
     if (confirm("¿Estás seguro de eliminar esta transacción?")) {
       startTransition(async () => {
-        await deleteTransaction(transaction.id);
+        const result = await deleteTransaction(transaction.id);
+        if (result.isErr()) {
+          alert("No se pudo eliminar la transacción");
+        }
       });
     }
   };

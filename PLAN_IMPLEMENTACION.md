@@ -118,6 +118,7 @@ Implementar todas las mejoras identificadas en el análisis, con enfoque en:
 - ✅ ESLint import sorting configurado
 - ✅ Ejemplos/documentación movidos a `examples/`
 - ✅ Result Pattern base creado en `src/lib/result/`
+- ✅ Migración a Result en `transactions` + páginas consumidoras
 
 **Métricas actuales (post-implementación):**
 

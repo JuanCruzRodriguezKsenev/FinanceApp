@@ -19,6 +19,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 - ✅ Consolidación de transacciones: `enhanced-transactions.ts` eliminado y lógica movida a `transactions.ts`
 - ✅ TransactionForm migrado a useReducer (machine + hook)
 - ✅ Result Pattern base en `src/lib/result/`
+- ✅ Result Pattern aplicado a `transactions` y páginas consumidoras
 
 ---
 

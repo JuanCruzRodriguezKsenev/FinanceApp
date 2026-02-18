@@ -8,6 +8,7 @@ import { useMessage } from "@/hooks/useMessage";
 import { getCategorySelectOptions } from "@/constants/transactionLabels";
 import { eventBus, EVENTS } from "@/lib/eventBus";
 import { useTransactionForm } from "./useTransactionForm";
+import type { AppError } from "@/lib/result";
 import styles from "./TransactionForm.module.css";
 import type {
   Account,
@@ -39,6 +40,23 @@ const CURRENCY_DESCRIPTIONS: Record<string, string> = {
   ARS: "Pesos argentinos",
   USD: "Dolar estadounidense",
   EUR: "Euro",
+};
+
+const resolveAppErrorMessage = (error: AppError): string => {
+  switch (error.type) {
+    case "VALIDATION":
+      return error.message;
+    case "UNAUTHORIZED":
+      return "No autenticado";
+    case "NOT_FOUND":
+      return "Recurso no encontrado";
+    case "DATABASE":
+      return error.message;
+    case "NETWORK":
+      return error.message;
+    default:
+      return "Error inesperado";
+  }
 };
 
 /**
@@ -285,14 +303,14 @@ function TransactionForm({
         type: transactionType,
       });
 
-      if (!result.success) {
-        showError(result.error || "Error al crear la transaccion");
+      if (result.isErr()) {
+        showError(resolveAppErrorMessage(result.error));
       } else {
         showSuccess("Transaccion creada correctamente");
 
         // Notificar a otros componentes a través del EventBus (Observer Pattern)
         eventBus.publish(EVENTS.TRANSACTION.CREATED, {
-          transaction: result.data,
+          transaction: result.value,
           type,
           amount,
           currency,

@@ -15,6 +15,16 @@ import { revalidatePath } from "next/cache";
 import { eq, and, desc, or, sql, asc } from "drizzle-orm";
 import { logger } from "@/lib/logger";
 import {
+  ok,
+  err,
+  authorizationError,
+  validationError,
+  databaseError,
+  notFoundError,
+  type Result,
+  type AppError,
+} from "@/lib/result";
+import {
   detectTransactionType,
   detectCategoryFromDescription,
 } from "@/lib/transaction-detector";
@@ -26,11 +36,13 @@ import type {
   PaymentMethod,
 } from "@/types";
 
-export async function createTransaction(formData: FormData) {
+export async function createTransaction(
+  formData: FormData,
+): Promise<Result<void, AppError>> {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return { error: "No autenticado" };
+    return err(authorizationError("transactions"));
   }
 
   const type = formData.get("type") as TransactionType;
@@ -47,12 +59,12 @@ export async function createTransaction(formData: FormData) {
 
   // Validaciones
   if (!type || !category || !amount || !description || !date) {
-    return { error: "Todos los campos son requeridos" };
+    return err(validationError("form", "Todos los campos son requeridos"));
   }
 
   const numAmount = parseFloat(amount);
   if (numAmount <= 0) {
-    return { error: "El monto debe ser mayor a 0" };
+    return err(validationError("amount", "El monto debe ser mayor a 0"));
   }
 
   const [fromAccount, toAccount] = await Promise.all([
@@ -75,15 +87,21 @@ export async function createTransaction(formData: FormData) {
   ]);
 
   if (fromAccount && fromAccount.currency !== currency) {
-    return {
-      error: "La moneda seleccionada no coincide con la cuenta origen.",
-    };
+    return err(
+      validationError(
+        "currency",
+        "La moneda seleccionada no coincide con la cuenta origen.",
+      ),
+    );
   }
 
   if (toAccount && toAccount.currency !== currency) {
-    return {
-      error: "La moneda seleccionada no coincide con la cuenta destino.",
-    };
+    return err(
+      validationError(
+        "currency",
+        "La moneda seleccionada no coincide con la cuenta destino.",
+      ),
+    );
   }
 
   try {
@@ -154,14 +172,14 @@ export async function createTransaction(formData: FormData) {
 
     revalidatePath("/transactions");
     revalidatePath("/dashboard");
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to create transaction", error as Error, {
       userId: session.user.id,
       type,
       amount,
     });
-    return { error: "Error al crear la transacción" };
+    return err(databaseError("insert", "Error al crear la transacción"));
   }
 }
 
@@ -182,11 +200,11 @@ export async function createTransactionWithAutoDetection(data: {
   type?: TransactionType;
   transferRecipient?: string;
   transferSender?: string;
-}): Promise<{ success: boolean; data?: Transaction; error?: string }> {
+}): Promise<Result<Transaction, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("transactions"));
     }
 
     const userBankAccounts = await db
@@ -302,11 +320,12 @@ export async function createTransactionWithAutoDetection(data: {
     );
 
     if (mismatchedCurrency) {
-      return {
-        success: false,
-        error:
+      return err(
+        validationError(
+          "currency",
           "La moneda seleccionada no coincide con la cuenta origen o destino.",
-      };
+        ),
+      );
     }
     const transferGroupId =
       resolvedType === "transfer_own_accounts" ||
@@ -548,14 +567,14 @@ export async function createTransactionWithAutoDetection(data: {
 
     revalidatePath("/transactions");
     revalidatePath("/dashboard");
+    if (!primaryTransaction) {
+      return err(databaseError("insert", "Error al crear la transacción"));
+    }
 
-    return { success: true, data: primaryTransaction as any };
+    return ok(primaryTransaction as Transaction);
   } catch (error) {
     logger.error("Failed to create transaction", error as Error);
-    return {
-      success: false,
-      error: "Error al crear la transacción",
-    };
+    return err(databaseError("insert", "Error al crear la transacción"));
   }
 }
 
@@ -566,9 +585,11 @@ export async function getTransactions(filters?: {
   search?: string;
   sortBy?: string;
   sortDirection?: "asc" | "desc";
-}) {
+}): Promise<Result<Array<Transaction>, AppError>> {
   const session = await auth();
-  if (!session?.user?.id) return [];
+  if (!session?.user?.id) {
+    return err(authorizationError("transactions"));
+  }
 
   const conditions = [eq(transactions.userId, session.user.id)];
 
@@ -629,17 +650,27 @@ export async function getTransactions(filters?: {
     }
   }
 
-  return await db.query.transactions.findMany({
-    where: and(...conditions),
-    orderBy: [orderByClause],
-  });
+  try {
+    const result = await db.query.transactions.findMany({
+      where: and(...conditions),
+      orderBy: [orderByClause],
+    });
+    return ok(result as Array<Transaction>);
+  } catch (error) {
+    logger.error("Failed to fetch transactions", error as Error, {
+      userId: session.user.id,
+    });
+    return err(databaseError("select", "Error al obtener transacciones"));
+  }
 }
 
-export async function deleteTransaction(id: string) {
+export async function deleteTransaction(
+  id: string,
+): Promise<Result<void, AppError>> {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return { error: "No autenticado" };
+    return err(authorizationError("transactions"));
   }
 
   try {
@@ -652,7 +683,7 @@ export async function deleteTransaction(id: string) {
       );
 
     if (!transaction) {
-      return { error: "Transacción no encontrada" };
+      return err(notFoundError("transaction", id));
     }
 
     const amount = parseFloat(transaction.amount);
@@ -697,20 +728,20 @@ export async function deleteTransaction(id: string) {
 
     revalidatePath("/transactions");
     revalidatePath("/dashboard");
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to delete transaction", error as Error);
-    return { error: "Error al eliminar la transacción" };
+    return err(databaseError("delete", "Error al eliminar la transacción"));
   }
 }
 
 export async function updateBalancesAfterTransaction(
   transactionId: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("transactions"));
     }
 
     const transaction = await db
@@ -724,7 +755,7 @@ export async function updateBalancesAfterTransaction(
       );
 
     if (transaction.length === 0) {
-      return { success: false, error: "Transacción no encontrada" };
+      return err(notFoundError("transaction", transactionId));
     }
 
     const tx = transaction[0];
@@ -847,23 +878,20 @@ export async function updateBalancesAfterTransaction(
         .where(eq(accounts.id, tx.toAccountId));
     }
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to update balances", error as Error);
-    return {
-      success: false,
-      error: "Error al actualizar los saldos",
-    };
+    return err(databaseError("update", "Error al actualizar los saldos"));
   }
 }
 
 export async function getTransactionsWithMetadata(): Promise<
-  Array<Transaction & { metadata?: any }>
+  Result<Array<Transaction & { metadata?: any }>, AppError>
 > {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return [];
+      return err(authorizationError("transactions"));
     }
 
     const userTransactions = await db
@@ -885,21 +913,21 @@ export async function getTransactionsWithMetadata(): Promise<
       }),
     );
 
-    return transactionsWithMetadata;
+    return ok(transactionsWithMetadata);
   } catch (error) {
     logger.error("Failed to fetch transactions with metadata", error as Error);
-    return [];
+    return err(databaseError("select", "Error al obtener transacciones"));
   }
 }
 
 export async function flagTransactionAsSuspicious(
   transactionId: string,
   reason: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("transactions"));
     }
 
     const transaction = await db
@@ -913,7 +941,7 @@ export async function flagTransactionAsSuspicious(
       );
 
     if (transaction.length === 0) {
-      return { success: false, error: "Transacción no encontrada" };
+      return err(notFoundError("transaction", transactionId));
     }
 
     const existingMetadata = await db
@@ -938,24 +966,23 @@ export async function flagTransactionAsSuspicious(
       });
     }
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to flag transaction", error as Error, {
       transactionId,
       reason,
     });
-    return {
-      success: false,
-      error: "Error al marcar la transacción",
-    };
+    return err(databaseError("update", "Error al marcar la transacción"));
   }
 }
 
-export async function getSuspiciousTransactions(): Promise<Array<any>> {
+export async function getSuspiciousTransactions(): Promise<
+  Result<Array<any>, AppError>
+> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return [];
+      return err(authorizationError("transactions"));
     }
 
     const flaggedTransactions = await db
@@ -982,42 +1009,47 @@ export async function getSuspiciousTransactions(): Promise<Array<any>> {
       }),
     );
 
-    return results.filter((r) => r !== null && r !== undefined);
+    return ok(results.filter((r) => r !== null && r !== undefined));
   } catch (error) {
     logger.error("Failed to fetch suspicious transactions", error as Error);
-    return [];
+    return err(databaseError("select", "Error al obtener transacciones"));
   }
 }
 
-export async function getUserAccounts() {
+export async function getUserAccounts(): Promise<
+  Result<Array<typeof accounts.$inferSelect>, AppError>
+> {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return [];
+    return err(authorizationError("accounts"));
   }
 
   try {
-    return await db
+    const result = await db
       .select()
       .from(accounts)
       .where(eq(accounts.userId, session.user.id));
+    return ok(result);
   } catch (error) {
     logger.error("Failed to fetch user accounts", error as Error, {
       userId: session.user.id,
     });
-    return [];
+    return err(databaseError("select", "Error al obtener cuentas"));
   }
 }
 
-export async function getUserGoals() {
+export async function getUserGoals(): Promise<
+  Result<Array<typeof savingsGoals.$inferSelect>, AppError>
+> {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return [];
+    return err(authorizationError("savings_goals"));
   }
 
   try {
-    return await db
+    const result = await db
       .select()
       .from(savingsGoals)
       .where(
@@ -1026,10 +1058,11 @@ export async function getUserGoals() {
           eq(savingsGoals.status, "active"),
         ),
       );
+    return ok(result);
   } catch (error) {
     logger.error("Failed to fetch savings goals", error as Error, {
       userId: session.user.id,
     });
-    return [];
+    return err(databaseError("select", "Error al obtener objetivos"));
   }
 }

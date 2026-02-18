@@ -37,6 +37,7 @@ Proyecto bien estructurado con patrones modernos de Next.js 16.1.6 y React 19.2.
 - ✅ Dependabot y ordenamiento de imports configurados
 - ✅ Ejemplos/documentación movidos a carpeta `examples/`
 - ✅ Result Pattern base implementado en `src/lib/result/`
+- ✅ Result Pattern aplicado a `src/core/actions/transactions.ts` y consumidores
 
 **Pendiente (siguiente fase):**
 

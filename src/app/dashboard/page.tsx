@@ -32,9 +32,9 @@ export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
 
   const [
-    rawTransactions, 
-    accounts, 
-    goals,
+    rawTransactionsResult,
+    accountsResult,
+    goalsResult,
     bankAccountsResult,
     walletsResult,
     contactsResult,
@@ -52,6 +52,12 @@ export default async function DashboardPage({ searchParams }: Props) {
     getDigitalWallets(),
     getContacts(),
   ]);
+
+  const rawTransactions = rawTransactionsResult.isOk()
+    ? rawTransactionsResult.value
+    : [];
+  const accounts = accountsResult.isOk() ? accountsResult.value : [];
+  const goals = goalsResult.isOk() ? goalsResult.value : [];
 
   // Normalize transaction data for type safety
   const transactions = rawTransactions.map((t) => ({
