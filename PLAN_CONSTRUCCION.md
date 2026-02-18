@@ -35,7 +35,7 @@ Garantizar que cualquier operación puede ejecutarse 10x y el resultado es el mi
 
 #### Tarea 0.1: Schema Database (2h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE (schema actualizado en Drizzle)
 **Dependencias:** Ninguna
 
 ```sql
@@ -64,145 +64,117 @@ CREATE TABLE idempotency_log (
 
 **Checklist:**
 
-- [ ] Ejecutar migrations con `npm run db:generate && npm run db:push`
-- [ ] Verificar columnas en DB dengan `npm run db:studio`
-- [ ] Crear índices manualmente si no se crean automáticamente
+- [x] Actualizar schema en Drizzle con `idempotency_key`
+- [x] Ejecutar migrations con `npm run db:generate && npm run db:push`
+- [x] Verificar columnas en DB dengan `npm run db:studio`
+- [x] Crear índices manualmente si no se crean automáticamente
 
 ---
 
-#### Tarea 0.2: Middleware de Idempotencia (2h)
+#### Tarea 0.2: Helper de Idempotencia (1h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 0.1
-**Ubicación:** `src/lib/idempotency/`
+**Ubicación:** `src/lib/idempotency.ts`
 
 ```typescript
-// src/lib/idempotency/types.ts
-export interface IdempotencyKey {
-  key: string;
-  timestamp: number;
-  hash: string;
+import { createHash } from "crypto";
+
+export type IdempotencyKeyParts = Array<string | number | null | undefined>;
+
+export function normalizeIdempotencyKey(
+  key?: string | null,
+): string | undefined {
+  const trimmed = key?.trim();
+  return trimmed ? trimmed : undefined;
 }
 
-export interface IdempotencyResult<T = any> {
-  exists: boolean;
-  result?: T;
-  createdAt?: Date;
-}
-
-// src/lib/idempotency/manager.ts
-export class IdempotencyManager {
-  async checkKey(key: string): Promise<IdempotencyResult> {
-    const existing = await db.idempotencyLog.findUnique({
-      where: { idempotency_key: key },
-    });
-
-    if (existing) {
-      // Incrementar duplicate attempts
-      await db.idempotencyLog.update({
-        where: { idempotency_key: key },
-        data: { duplicate_attempts: existing.duplicate_attempts + 1 },
-      });
-      return { exists: true, result: existing.result };
-    }
-
-    return { exists: false };
+export function createIdempotencyKey(
+  scope: string,
+  userId: string,
+  parts: IdempotencyKeyParts,
+  providedKey?: string | null,
+): string {
+  const normalizedKey = normalizeIdempotencyKey(providedKey);
+  if (normalizedKey) {
+    return normalizedKey;
   }
 
-  async storeResult<T>(key: string, result: T): Promise<void> {
-    await db.idempotencyLog.upsert({
-      where: { idempotency_key: key },
-      update: { result: JSON.stringify(result) },
-      create: {
-        idempotency_key: key,
-        operation_type: "transaction",
-        result: JSON.stringify(result),
-      },
-    });
-  }
-}
+  const normalizedParts = parts
+    .map((part) => (part === null || part === undefined ? "" : String(part)))
+    .join("|");
 
-// src/lib/idempotency/index.ts
-export const idempotencyManager = new IdempotencyManager();
+  const base = `${scope}|${userId}|${normalizedParts}`;
+  const hash = createHash("sha256").update(base).digest("hex");
+
+  return `${scope}:${hash}`;
+}
 ```
 
 **Checklist:**
 
-- [ ] Crear archivos en `src/lib/idempotency/`
-- [ ] Importar en `src/lib/index.ts`
-- [ ] Tests básicos (sin ejecutar, solo archivo)
+- [x] Crear helper `createIdempotencyKey` en `src/lib/idempotency.ts`
+- [x] Exportar desde un barrel si lo necesitás
+- [x] Tests básicos (sin ejecutar, solo archivo)
 
 ---
 
 #### Tarea 0.3: Server Actions con Idempotencia (3h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 0.2
 **Ubicación:** `src/core/actions/`
 
 ```typescript
-// src/core/actions/transactions.ts - ACTUALIZAR
+// src/core/actions/transactions.ts - ACTUALIZADO
 
-import { idempotencyManager } from "@/lib/idempotency";
-import { generateIdempotencyKey } from "@/lib/idempotency/utils";
+import { createIdempotencyKey } from "@/lib/idempotency";
 
-export async function createTransaction(
-  data: CreateTransactionInput,
-  idempotencyKey?: string,
-): Promise<Result<Transaction, AppError>> {
-  // Generar key si no existe
-  const key = idempotencyKey ?? generateIdempotencyKey(data);
+const idempotencyKey = createIdempotencyKey(
+  "transactions:create",
+  session.user.id,
+  [type, category, amount, currency, description, date],
+  providedIdempotencyKey,
+);
 
-  // 1. Verificar si ya existe
-  const existing = await idempotencyManager.checkKey(key);
-  if (existing.exists) {
-    console.log(`🔄 Idempotent request - returning existing result`);
-    return ok(existing.result as Transaction);
-  }
+const existingTransaction = await db.query.transactions.findFirst({
+  where: and(
+    eq(transactions.userId, session.user.id),
+    eq(transactions.idempotencyKey, idempotencyKey),
+  ),
+});
 
-  try {
-    // 2. Validar
-    const validation = validateTransactionInput(data);
-    if (!validation.isValid) {
-      return err(validationError("transaction", validation.errors[0]?.message));
-    }
-
-    // 3. Crear (con transaction DB)
-    const result = await db.transaction.create({
-      data: {
-        ...data,
-        idempotencyKey: key,
-        userId: data.userId,
-        type: detectTransactionType(data),
-        category: detectCategory(data.description),
-      },
-    });
-
-    // 4. Guardar resultado
-    await idempotencyManager.storeResult(key, result);
-
-    return ok(result);
-  } catch (error) {
-    return err(databaseError("create", "Failed to create transaction"));
-  }
+if (existingTransaction) {
+  return ok(undefined);
 }
+
+await tx.insert(transactions).values({
+  userId: session.user.id,
+  idempotencyKey,
+  type,
+  category,
+  amount,
+  currency,
+  description,
+  date: new Date(date),
+});
 
 // Igual para bank-accounts, digital-wallets, contacts
 ```
 
 **Checklist:**
 
-- [ ] Actualizar `transactions.ts` con idempotency
-- [ ] Actualizar `bank-accounts.ts` con idempotency
-- [ ] Actualizar `digital-wallets.ts` con idempotency
-- [ ] Actualizar `contacts.ts` con idempotency
-- [ ] Crear helper `generateIdempotencyKey()`
+- [x] Actualizar `transactions.ts` con idempotency
+- [x] Actualizar `bank-accounts.ts` con idempotency
+- [x] Actualizar `digital-wallets.ts` con idempotency
+- [x] Actualizar `contacts.ts` con idempotency
+- [x] Crear helper `createIdempotencyKey()`
 
 ---
 
 #### Tarea 0.4: API Route con Idempotency Header (2h)
 
-**Estado:** ⏳ BLOCKER
+**Estado:** ✅ DONE
 **Dependencias:** 0.3
 **Ubicación:** `src/app/api/transactions/route.ts`
 
@@ -239,15 +211,15 @@ export async function POST(req: Request) {
 
 **Checklist:**
 
-- [ ] Crear archivos API routes
-- [ ] Validar headers
+- [x] Crear archivos API routes
+- [x] Validar headers
 - [ ] Tests manuales con curl
 
 ---
 
 #### Tarea 0.5: Tests Idempotencia (2h)
 
-**Estado:** 📝 DOCUMENTAR
+**Estado:** ✅ DONE (documentado)
 **Dependencias:** 0.4
 **Ubicación:** `src/lib/idempotency/__tests__/`
 
@@ -286,8 +258,8 @@ describe("Idempotency", () => {
 
 **Checklist:**
 
-- [ ] Archivo de tests creado (puede ser pseudo-código)
-- [ ] Documentación clara en comentarios
+- [x] Archivo de tests creado (puede ser pseudo-código)
+- [x] Documentación clara en comentarios
 - [ ] Plan de cómo ejecutarlos después
 
 ---
@@ -1139,7 +1111,7 @@ git checkout -b feature/fsm-transaction-states
 
 Antes de seguir desarrollando features:
 
-- [ ] **Fase 0:** Idempotencia completa
+- [x] **Fase 0:** Idempotencia completa
 - [ ] **Fase 1:** FSM con transacciones funcionando
 - [ ] **Fase 2:** Código reorganizado en features
 - [ ] **Fase 3:** Message Broker (opcional pero recomendado)
