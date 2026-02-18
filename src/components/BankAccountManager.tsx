@@ -18,6 +18,7 @@ import {
   CURRENCY_OPTIONS,
 } from "@/constants/selectOptions";
 import type { BankAccount } from "@/types";
+import type { AppError } from "@/lib/result";
 import styles from "./BankAccountManager.module.css";
 
 const INITIAL_FORM_DATA = {
@@ -41,6 +42,23 @@ export function BankAccountManager() {
   const form = useFormInputs(INITIAL_FORM_DATA);
   const { message, showSuccess, showError, clear } = useMessage();
 
+  const resolveAppErrorMessage = (error: AppError): string => {
+    switch (error.type) {
+      case "VALIDATION":
+        return error.message;
+      case "UNAUTHORIZED":
+        return "No autenticado";
+      case "NOT_FOUND":
+        return "Recurso no encontrado";
+      case "DATABASE":
+        return error.message;
+      case "NETWORK":
+        return error.message;
+      default:
+        return "Error inesperado";
+    }
+  };
+
   // Cargar cuentas al montar el componente
   useEffect(() => {
     loadAccounts();
@@ -49,8 +67,10 @@ export function BankAccountManager() {
   const loadAccounts = async () => {
     setLoading(true);
     const result = await getBankAccounts();
-    if (result.success && result.data) {
-      setAccounts(result.data);
+    if (result.isOk()) {
+      setAccounts(result.value);
+    } else {
+      showError(resolveAppErrorMessage(result.error));
     }
     setLoading(false);
   };
@@ -66,13 +86,13 @@ export function BankAccountManager() {
       notes: form.data.notes || undefined,
     });
 
-    if (result.success) {
+    if (result.isOk()) {
       showSuccess("Cuenta bancaria creada exitosamente");
       form.reset();
       setShowForm(false);
       await loadAccounts();
     } else {
-      showError(`Error: ${result.error}`);
+      showError(resolveAppErrorMessage(result.error));
     }
 
     setLoading(false);
@@ -84,10 +104,10 @@ export function BankAccountManager() {
     setLoading(true);
     const result = await deleteBankAccount(accountId);
 
-    if (result.success) {
+    if (result.isOk()) {
       await loadAccounts();
     } else {
-      showError(`Error: ${result.error}`);
+      showError(resolveAppErrorMessage(result.error));
     }
 
     setLoading(false);

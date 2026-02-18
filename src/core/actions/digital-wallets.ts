@@ -8,6 +8,15 @@ import { db } from "@/db";
 import { digitalWallets } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import {
+  ok,
+  err,
+  authorizationError,
+  databaseError,
+  notFoundError,
+  type Result,
+  type AppError,
+} from "@/lib/result";
 import { eq, and } from "drizzle-orm";
 import type { DigitalWallet } from "@/types";
 
@@ -23,11 +32,11 @@ export async function createDigitalWallet(data: {
   currency: string;
   balance: string;
   linkedBankAccountId?: string;
-}): Promise<{ success: boolean; data?: DigitalWallet; error?: string }> {
+}): Promise<Result<DigitalWallet, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("digital_wallets"));
     }
 
     const newWallet = await db
@@ -45,30 +54,25 @@ export async function createDigitalWallet(data: {
       })
       .returning();
 
-    return { success: true, data: newWallet[0] as any };
+    return ok(newWallet[0] as DigitalWallet);
   } catch (error) {
     logger.error("Failed to create digital wallet", error as Error, {
       provider: data.provider,
     });
-    return {
-      success: false,
-      error: "Error al crear la billetera digital",
-    };
+    return err(databaseError("insert", "Error al crear la billetera"));
   }
 }
 
 /**
  * Obtener todas las billeteras digitales del usuario
  */
-export async function getDigitalWallets(): Promise<{
-  success: boolean;
-  data?: DigitalWallet[];
-  error?: string;
-}> {
+export async function getDigitalWallets(): Promise<
+  Result<DigitalWallet[], AppError>
+> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("digital_wallets"));
     }
 
     const wallets = await db
@@ -76,10 +80,10 @@ export async function getDigitalWallets(): Promise<{
       .from(digitalWallets)
       .where(eq(digitalWallets.userId, session.user.id));
 
-    return { success: true, data: wallets as DigitalWallet[] };
+    return ok(wallets as DigitalWallet[]);
   } catch (error) {
     logger.error("Failed to fetch digital wallets", error as Error);
-    return { success: false, error: "Error al obtener billeteras digitales" };
+    return err(databaseError("select", "Error al obtener billeteras"));
   }
 }
 
@@ -89,11 +93,11 @@ export async function getDigitalWallets(): Promise<{
 export async function updateDigitalWallet(
   walletId: string,
   data: Partial<DigitalWallet>,
-): Promise<{ success: boolean; data?: DigitalWallet; error?: string }> {
+): Promise<Result<DigitalWallet, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("digital_wallets"));
     }
 
     // Verificar que pertenece al usuario
@@ -108,7 +112,7 @@ export async function updateDigitalWallet(
       );
 
     if (existingWallet.length === 0) {
-      return { success: false, error: "Billetera no encontrada" };
+      return err(notFoundError("digital_wallet", walletId));
     }
 
     const updated = await db
@@ -120,15 +124,12 @@ export async function updateDigitalWallet(
       .where(eq(digitalWallets.id, walletId))
       .returning();
 
-    return { success: true, data: updated[0] as any };
+    return ok(updated[0] as DigitalWallet);
   } catch (error) {
     logger.error("Failed to update digital wallet", error as Error, {
       walletId,
     });
-    return {
-      success: false,
-      error: "Error al actualizar la billetera digital",
-    };
+    return err(databaseError("update", "Error al actualizar la billetera"));
   }
 }
 
@@ -137,11 +138,11 @@ export async function updateDigitalWallet(
  */
 export async function deleteDigitalWallet(
   walletId: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("digital_wallets"));
     }
 
     // Verificar que pertenece al usuario
@@ -156,20 +157,17 @@ export async function deleteDigitalWallet(
       );
 
     if (existingWallet.length === 0) {
-      return { success: false, error: "Billetera no encontrada" };
+      return err(notFoundError("digital_wallet", walletId));
     }
 
     await db.delete(digitalWallets).where(eq(digitalWallets.id, walletId));
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to delete digital wallet", error as Error, {
       walletId,
     });
-    return {
-      success: false,
-      error: "Error al eliminar la billetera digital",
-    };
+    return err(databaseError("delete", "Error al eliminar la billetera"));
   }
 }
 
@@ -179,11 +177,11 @@ export async function deleteDigitalWallet(
 export async function updateWalletBalance(
   walletId: string,
   newBalance: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("digital_wallets"));
     }
 
     // Verificar que pertenece al usuario
@@ -198,7 +196,7 @@ export async function updateWalletBalance(
       );
 
     if (existingWallet.length === 0) {
-      return { success: false, error: "Billetera no encontrada" };
+      return err(notFoundError("digital_wallet", walletId));
     }
 
     await db
@@ -209,15 +207,12 @@ export async function updateWalletBalance(
       })
       .where(eq(digitalWallets.id, walletId));
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to update wallet balance", error as Error, {
       walletId,
       newBalance,
     });
-    return {
-      success: false,
-      error: "Error al actualizar el saldo",
-    };
+    return err(databaseError("update", "Error al actualizar el saldo"));
   }
 }

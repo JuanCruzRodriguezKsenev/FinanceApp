@@ -38,6 +38,7 @@ Proyecto bien estructurado con patrones modernos de Next.js 16.1.6 y React 19.2.
 - ✅ Ejemplos/documentación movidos a carpeta `examples/`
 - ✅ Result Pattern base implementado en `src/lib/result/`
 - ✅ Result Pattern aplicado a `src/core/actions/transactions.ts` y consumidores
+- ✅ Result Pattern aplicado a `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
 
 **Pendiente (siguiente fase):**
 

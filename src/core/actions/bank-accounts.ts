@@ -9,6 +9,16 @@ import { bankAccounts, transactions } from "@/db/schema/finance";
 import { users } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import {
+  ok,
+  err,
+  authorizationError,
+  validationError,
+  databaseError,
+  notFoundError,
+  type Result,
+  type AppError,
+} from "@/lib/result";
 import { eq, and } from "drizzle-orm";
 import type { BankAccount } from "@/types";
 
@@ -28,11 +38,11 @@ export async function createBankAccount(data: {
   ownerName: string;
   ownerDocument?: string;
   notes?: string;
-}): Promise<{ success: boolean; data?: BankAccount; error?: string }> {
+}): Promise<Result<BankAccount, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     const newAccount = await db
@@ -54,31 +64,26 @@ export async function createBankAccount(data: {
       })
       .returning();
 
-    return { success: true, data: newAccount[0] as any };
+    return ok(newAccount[0] as BankAccount);
   } catch (error) {
     logger.error("Failed to create bank account", error as Error, {
       bank: data.bank,
       accountType: data.accountType,
     });
-    return {
-      success: false,
-      error: "Error al crear la cuenta bancaria",
-    };
+    return err(databaseError("insert", "Error al crear la cuenta bancaria"));
   }
 }
 
 /**
  * Obtener todas las cuentas bancarias del usuario
  */
-export async function getBankAccounts(): Promise<{
-  success: boolean;
-  data?: BankAccount[];
-  error?: string;
-}> {
+export async function getBankAccounts(): Promise<
+  Result<BankAccount[], AppError>
+> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     const accounts = await db
@@ -86,10 +91,10 @@ export async function getBankAccounts(): Promise<{
       .from(bankAccounts)
       .where(eq(bankAccounts.userId, session.user.id));
 
-    return { success: true, data: accounts as BankAccount[] };
+    return ok(accounts as BankAccount[]);
   } catch (error) {
     logger.error("Failed to fetch bank accounts", error as Error);
-    return { success: false, error: "Error al obtener cuentas bancarias" };
+    return err(databaseError("select", "Error al obtener cuentas bancarias"));
   }
 }
 
@@ -99,11 +104,11 @@ export async function getBankAccounts(): Promise<{
 export async function updateBankAccount(
   accountId: string,
   data: Partial<BankAccount>,
-): Promise<{ success: boolean; data?: BankAccount; error?: string }> {
+): Promise<Result<BankAccount, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     // Verificar que pertenece al usuario
@@ -118,7 +123,7 @@ export async function updateBankAccount(
       );
 
     if (existingAccount.length === 0) {
-      return { success: false, error: "Cuenta no encontrada" };
+      return err(notFoundError("bank_account", accountId));
     }
 
     const updated = await db
@@ -130,15 +135,12 @@ export async function updateBankAccount(
       .where(eq(bankAccounts.id, accountId))
       .returning();
 
-    return { success: true, data: updated[0] as any };
+    return ok(updated[0] as BankAccount);
   } catch (error) {
     logger.error("Failed to update bank account", error as Error, {
       accountId,
     });
-    return {
-      success: false,
-      error: "Error al actualizar la cuenta bancaria",
-    };
+    return err(databaseError("update", "Error al actualizar la cuenta"));
   }
 }
 
@@ -147,11 +149,11 @@ export async function updateBankAccount(
  */
 export async function deleteBankAccount(
   accountId: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     // Verificar que pertenece al usuario
@@ -166,7 +168,7 @@ export async function deleteBankAccount(
       );
 
     if (existingAccount.length === 0) {
-      return { success: false, error: "Cuenta no encontrada" };
+      return err(notFoundError("bank_account", accountId));
     }
 
     // Verificar que no tenga transacciones asociadas
@@ -182,23 +184,22 @@ export async function deleteBankAccount(
       );
 
     if (associatedTransactions.length > 0) {
-      return {
-        success: false,
-        error: "No se puede eliminar una cuenta con transacciones asociadas",
-      };
+      return err(
+        validationError(
+          "bank_account",
+          "No se puede eliminar una cuenta con transacciones asociadas",
+        ),
+      );
     }
 
     await db.delete(bankAccounts).where(eq(bankAccounts.id, accountId));
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to delete bank account", error as Error, {
       accountId,
     });
-    return {
-      success: false,
-      error: "Error al eliminar la cuenta bancaria",
-    };
+    return err(databaseError("delete", "Error al eliminar la cuenta"));
   }
 }
 
@@ -208,11 +209,11 @@ export async function deleteBankAccount(
 export async function updateBankAccountBalance(
   accountId: string,
   newBalance: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     // Verificar que pertenece al usuario
@@ -227,7 +228,7 @@ export async function updateBankAccountBalance(
       );
 
     if (existingAccount.length === 0) {
-      return { success: false, error: "Cuenta no encontrada" };
+      return err(notFoundError("bank_account", accountId));
     }
 
     await db
@@ -238,16 +239,13 @@ export async function updateBankAccountBalance(
       })
       .where(eq(bankAccounts.id, accountId));
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to update bank account balance", error as Error, {
       accountId,
       newBalance,
     });
-    return {
-      success: false,
-      error: "Error al actualizar el saldo",
-    };
+    return err(databaseError("update", "Error al actualizar el saldo"));
   }
 }
 
@@ -256,11 +254,11 @@ export async function updateBankAccountBalance(
  */
 export async function searchBankAccountByCBUOrAlias(
   cbuOrAlias: string,
-): Promise<{ success: boolean; data?: BankAccount; error?: string }> {
+): Promise<Result<BankAccount, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("bank_accounts"));
     }
 
     const account = await db
@@ -274,17 +272,14 @@ export async function searchBankAccountByCBUOrAlias(
       );
 
     if (account.length === 0) {
-      return { success: false, error: "Cuenta no encontrada" };
+      return err(notFoundError("bank_account", cbuOrAlias));
     }
 
-    return { success: true, data: account[0] as any };
+    return ok(account[0] as BankAccount);
   } catch (error) {
     logger.error("Failed to search bank account", error as Error, {
       cbuOrAlias,
     });
-    return {
-      success: false,
-      error: "Error al buscar la cuenta",
-    };
+    return err(databaseError("select", "Error al buscar la cuenta"));
   }
 }

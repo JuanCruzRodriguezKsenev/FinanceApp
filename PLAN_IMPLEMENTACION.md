@@ -119,6 +119,7 @@ Implementar todas las mejoras identificadas en el análisis, con enfoque en:
 - ✅ Ejemplos/documentación movidos a `examples/`
 - ✅ Result Pattern base creado en `src/lib/result/`
 - ✅ Migración a Result en `transactions` + páginas consumidoras
+- ✅ Migración a Result en `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
 
 **Métricas actuales (post-implementación):**
 

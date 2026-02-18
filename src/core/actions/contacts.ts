@@ -12,6 +12,16 @@ import {
 } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import {
+  ok,
+  err,
+  authorizationError,
+  validationError,
+  databaseError,
+  notFoundError,
+  type Result,
+  type AppError,
+} from "@/lib/result";
 import { eq, and, like, or } from "drizzle-orm";
 import type { Contact } from "@/types";
 
@@ -34,11 +44,11 @@ export async function createContact(data: {
   bankAccountType?: string;
   isFavorite?: boolean;
   notes?: string;
-}): Promise<{ success: boolean; data?: Contact; error?: string }> {
+}): Promise<Result<Contact, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const newContact = await db
@@ -63,30 +73,23 @@ export async function createContact(data: {
       })
       .returning();
 
-    return { success: true, data: newContact[0] as any };
+    return ok(newContact[0] as Contact);
   } catch (error) {
     logger.error("Failed to create contact", error as Error, {
       name: data.name,
     });
-    return {
-      success: false,
-      error: "Error al crear el contacto",
-    };
+    return err(databaseError("insert", "Error al crear el contacto"));
   }
 }
 
 /**
  * Obtener todos los contactos del usuario
  */
-export async function getContacts(): Promise<{
-  success: boolean;
-  data?: Contact[];
-  error?: string;
-}> {
+export async function getContacts(): Promise<Result<Contact[], AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const userContacts = await db
@@ -94,25 +97,23 @@ export async function getContacts(): Promise<{
       .from(contacts)
       .where(eq(contacts.userId, session.user.id));
 
-    return { success: true, data: userContacts as Contact[] };
+    return ok(userContacts as Contact[]);
   } catch (error) {
     logger.error("Failed to fetch contacts", error as Error);
-    return { success: false, error: "Error al obtener contactos" };
+    return err(databaseError("select", "Error al obtener contactos"));
   }
 }
 
 /**
  * Buscar contactos por nombre
  */
-export async function searchContacts(searchTerm: string): Promise<{
-  success: boolean;
-  data?: Contact[];
-  error?: string;
-}> {
+export async function searchContacts(
+  searchTerm: string,
+): Promise<Result<Contact[], AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const results = await db
@@ -133,12 +134,12 @@ export async function searchContacts(searchTerm: string): Promise<{
         ),
       );
 
-    return { success: true, data: results as Contact[] };
+    return ok(results as Contact[]);
   } catch (error) {
     logger.error("Failed to search contacts", error as Error, {
       searchTerm,
     });
-    return { success: false, error: "Error al buscar contactos" };
+    return err(databaseError("select", "Error al buscar contactos"));
   }
 }
 
@@ -149,11 +150,11 @@ export async function createContactFolder(data: {
   name: string;
   color?: string;
   icon?: string;
-}): Promise<{ success: boolean; data?: any; error?: string }> {
+}): Promise<Result<any, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const folder = await db
@@ -166,12 +167,12 @@ export async function createContactFolder(data: {
       })
       .returning();
 
-    return { success: true, data: folder[0] };
+    return ok(folder[0]);
   } catch (error) {
     logger.error("Failed to create contact folder", error as Error, {
       folderName: data.name,
     });
-    return { success: false, error: "Error al crear la carpeta" };
+    return err(databaseError("insert", "Error al crear la carpeta"));
   }
 }
 
@@ -181,11 +182,11 @@ export async function createContactFolder(data: {
 export async function addContactToFolder(data: {
   contactId: string;
   folderId: string;
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const [contact] = await db
@@ -209,7 +210,7 @@ export async function addContactToFolder(data: {
       );
 
     if (!contact || !folder) {
-      return { success: false, error: "Contacto o carpeta inválidos" };
+      return err(validationError("contact", "Contacto o carpeta inválidos"));
     }
 
     await db.insert(contactFolderMembers).values({
@@ -217,13 +218,13 @@ export async function addContactToFolder(data: {
       folderId: data.folderId,
     });
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to add contact to folder", error as Error, {
       contactId: data.contactId,
       folderId: data.folderId,
     });
-    return { success: false, error: "Error al asignar el contacto" };
+    return err(databaseError("insert", "Error al asignar el contacto"));
   }
 }
 
@@ -233,11 +234,11 @@ export async function addContactToFolder(data: {
 export async function removeContactFromFolder(data: {
   contactId: string;
   folderId: string;
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const [contact] = await db
@@ -261,7 +262,7 @@ export async function removeContactFromFolder(data: {
       );
 
     if (!contact || !folder) {
-      return { success: false, error: "Contacto o carpeta inválidos" };
+      return err(validationError("contact", "Contacto o carpeta inválidos"));
     }
 
     await db
@@ -273,13 +274,13 @@ export async function removeContactFromFolder(data: {
         ),
       );
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to remove contact from folder", error as Error, {
       contactId: data.contactId,
       folderId: data.folderId,
     });
-    return { success: false, error: "Error al quitar el contacto" };
+    return err(databaseError("delete", "Error al quitar el contacto"));
   }
 }
 
@@ -288,11 +289,11 @@ export async function removeContactFromFolder(data: {
  */
 export async function searchContactByCBUOrAlias(
   cbuOrAlias: string,
-): Promise<{ success: boolean; data?: Contact; error?: string }> {
+): Promise<Result<Contact, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     const result = await db
@@ -306,18 +307,15 @@ export async function searchContactByCBUOrAlias(
       );
 
     if (result.length === 0) {
-      return { success: false, error: "Contacto no encontrado" };
+      return err(notFoundError("contact", cbuOrAlias));
     }
 
-    return { success: true, data: result[0] as any };
+    return ok(result[0] as Contact);
   } catch (error) {
     logger.error("Failed to search contact by CBU/Alias", error as Error, {
       cbuOrAlias,
     });
-    return {
-      success: false,
-      error: "Error al buscar el contacto",
-    };
+    return err(databaseError("select", "Error al buscar el contacto"));
   }
 }
 
@@ -327,11 +325,11 @@ export async function searchContactByCBUOrAlias(
 export async function updateContact(
   contactId: string,
   data: Partial<Contact>,
-): Promise<{ success: boolean; data?: Contact; error?: string }> {
+): Promise<Result<Contact, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     // Verificar que pertenece al usuario
@@ -343,7 +341,7 @@ export async function updateContact(
       );
 
     if (existingContact.length === 0) {
-      return { success: false, error: "Contacto no encontrado" };
+      return err(notFoundError("contact", contactId));
     }
 
     const updated = await db
@@ -355,15 +353,12 @@ export async function updateContact(
       .where(eq(contacts.id, contactId))
       .returning();
 
-    return { success: true, data: updated[0] as any };
+    return ok(updated[0] as Contact);
   } catch (error) {
     logger.error("Failed to update contact", error as Error, {
       contactId,
     });
-    return {
-      success: false,
-      error: "Error al actualizar el contacto",
-    };
+    return err(databaseError("update", "Error al actualizar el contacto"));
   }
 }
 
@@ -372,11 +367,11 @@ export async function updateContact(
  */
 export async function deleteContact(
   contactId: string,
-): Promise<{ success: boolean; error?: string }> {
+): Promise<Result<void, AppError>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: "No autenticado" };
+      return err(authorizationError("contacts"));
     }
 
     // Verificar que pertenece al usuario
@@ -388,19 +383,16 @@ export async function deleteContact(
       );
 
     if (existingContact.length === 0) {
-      return { success: false, error: "Contacto no encontrado" };
+      return err(notFoundError("contact", contactId));
     }
 
     await db.delete(contacts).where(eq(contacts.id, contactId));
 
-    return { success: true };
+    return ok(undefined);
   } catch (error) {
     logger.error("Failed to delete contact", error as Error, {
       contactId,
     });
-    return {
-      success: false,
-      error: "Error al eliminar el contacto",
-    };
+    return err(databaseError("delete", "Error al eliminar el contacto"));
   }
 }

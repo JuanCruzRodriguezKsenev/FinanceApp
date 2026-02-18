@@ -68,9 +68,11 @@ export default async function DashboardPage({ searchParams }: Props) {
     isTransferToThirdParty: t.isTransferToThirdParty ?? false,
   }));
 
-  const bankAccounts = bankAccountsResult.data || [];
-  const digitalWallets = walletsResult.data || [];
-  const contacts = contactsResult.data || [];
+  const bankAccounts = bankAccountsResult.isOk()
+    ? bankAccountsResult.value
+    : [];
+  const digitalWallets = walletsResult.isOk() ? walletsResult.value : [];
+  const contacts = contactsResult.isOk() ? contactsResult.value : [];
 
   return (
     <div className={styles.container}>

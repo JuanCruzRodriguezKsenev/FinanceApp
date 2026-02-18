@@ -6,92 +6,136 @@ import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { users } from "@/db/schema/identity";
 import { logger } from "@/lib/logger";
+import {
+  ok,
+  err,
+  authorizationError,
+  validationError,
+  databaseError,
+  type Result,
+  type AppError,
+} from "@/lib/result";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
-export async function loginAction(formData: FormData) {
+export async function loginActionResult(
+  formData: FormData,
+): Promise<Result<void, AppError>> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
   if (!email || !password) {
-    redirect("/auth/login?error=Todos los campos son requeridos");
+    return err(validationError("form", "Todos los campos son requeridos"));
   }
 
   if (!email.includes("@")) {
-    redirect("/auth/login?error=Email inválido");
+    return err(validationError("email", "Email inválido"));
   }
 
   try {
-    await signIn("credentials", {
+    const result = await signIn("credentials", {
       email,
       password,
-      redirect: true,
-      redirectTo: "/dashboard",
+      redirect: false,
     });
+
+    if (result?.error) {
+      return err(authorizationError("auth"));
+    }
+
+    return ok(undefined);
   } catch (error) {
     logger.error("Login failed", error as Error, { email });
-    redirect("/auth/login?error=Email o contraseña incorrectos");
+    return err(databaseError("select", "Error al iniciar sesión"));
   }
 }
 
-export async function registerAction(formData: FormData) {
+export async function loginAction(formData: FormData) {
+  const result = await loginActionResult(formData);
+  if (result.isErr()) {
+    const message =
+      result.error.type === "VALIDATION"
+        ? result.error.message
+        : "Email o contraseña incorrectos";
+    redirect(`/auth/login?error=${encodeURIComponent(message)}`);
+  }
+
+  redirect("/dashboard");
+}
+
+export async function registerActionResult(
+  formData: FormData,
+): Promise<Result<void, AppError>> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
   const name = formData.get("name") as string;
 
-  // Validaciones
   if (!email || !password || !confirmPassword || !name) {
-    redirect("/auth/register?error=Todos los campos son requeridos");
+    return err(validationError("form", "Todos los campos son requeridos"));
   }
 
   if (!email.includes("@") || !email.includes(".")) {
-    redirect("/auth/register?error=Email inválido");
+    return err(validationError("email", "Email inválido"));
   }
 
   if (password.length < 8) {
-    redirect(
-      "/auth/register?error=La contraseña debe tener al menos 8 caracteres",
+    return err(
+      validationError(
+        "password",
+        "La contraseña debe tener al menos 8 caracteres",
+      ),
     );
   }
 
   if (password !== confirmPassword) {
-    redirect("/auth/register?error=Las contraseñas no coinciden");
+    return err(validationError("password", "Las contraseñas no coinciden"));
   }
 
   if (name.length < 2) {
-    redirect("/auth/register?error=El nombre debe tener al menos 2 caracteres");
+    return err(
+      validationError("name", "El nombre debe tener al menos 2 caracteres"),
+    );
   }
 
   try {
-    // Verificar si el usuario ya existe
     const existingUser = await db
       .select()
       .from(users)
       .where(eq(users.email, email));
 
     if (existingUser.length > 0) {
-      redirect("/auth/register?error=Este email ya está registrado");
+      return err(validationError("email", "Este email ya está registrado"));
     }
 
-    // Hashear contraseña
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Crear usuario
     await db.insert(users).values({
       email,
       name,
       passwordHash,
     });
 
-    // Redirigir al login con mensaje de éxito
-    redirect(
-      "/auth/login?success=Cuenta creada exitosamente. Por favor inicia sesión",
-    );
+    return ok(undefined);
   } catch (error) {
     logger.error("Registration failed", error as Error, { email, name });
-    redirect("/auth/register?error=Error al crear la cuenta. Intenta de nuevo");
+    return err(databaseError("insert", "Error al crear la cuenta"));
   }
+}
+
+export async function registerAction(formData: FormData) {
+  const result = await registerActionResult(formData);
+  if (result.isErr()) {
+    const message =
+      result.error.type === "VALIDATION"
+        ? result.error.message
+        : "Error al crear la cuenta. Intenta de nuevo";
+    redirect(`/auth/register?error=${encodeURIComponent(message)}`);
+  }
+
+  redirect(
+    "/auth/login?success=Cuenta creada exitosamente. Por favor inicia sesión",
+  );
 }
 
 export async function logoutAction() {

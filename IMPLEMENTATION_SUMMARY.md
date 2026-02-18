@@ -20,6 +20,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 - ✅ TransactionForm migrado a useReducer (machine + hook)
 - ✅ Result Pattern base en `src/lib/result/`
 - ✅ Result Pattern aplicado a `transactions` y páginas consumidoras
+- ✅ Result Pattern aplicado a `bank-accounts`, `contacts`, `digital-wallets` y helpers de `auth`
 
 ---
 

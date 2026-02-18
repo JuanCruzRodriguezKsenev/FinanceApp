@@ -63,9 +63,11 @@ export default async function TransactionsPage({ searchParams }: Props) {
     : [];
   const accounts = accountsResult.isOk() ? accountsResult.value : [];
   const goals = goalsResult.isOk() ? goalsResult.value : [];
-  const bankAccounts = bankAccountsResult.data || [];
-  const digitalWallets = walletsResult.data || [];
-  const contacts = contactsResult.data || [];
+  const bankAccounts = bankAccountsResult.isOk()
+    ? bankAccountsResult.value
+    : [];
+  const digitalWallets = walletsResult.isOk() ? walletsResult.value : [];
+  const contacts = contactsResult.isOk() ? contactsResult.value : [];
 
   const accountMap = new Map(accounts.map((acc) => [acc.id, acc]));
   const bankAccountMap = new Map(bankAccounts.map((acc) => [acc.id, acc]));
