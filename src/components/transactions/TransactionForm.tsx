@@ -2,7 +2,7 @@
 "use client";
 
 import { memo, useEffect, useRef, useState, useTransition } from "react";
-import { createTransactionWithAutoDetection } from "@/core/actions/enhanced-transactions";
+import { createTransactionWithAutoDetection } from "@/core/actions/transactions";
 import Button from "@/components/ui/Buttons/Button";
 import { useMessage } from "@/hooks/useMessage";
 import { getCategorySelectOptions } from "@/constants/transactionLabels";
@@ -299,7 +299,7 @@ function TransactionForm({
         showError(result.error || "Error al crear la transaccion");
       } else {
         showSuccess("Transaccion creada correctamente");
-        
+
         // Notificar a otros componentes a través del EventBus (Observer Pattern)
         eventBus.publish(EVENTS.TRANSACTION.CREATED, {
           transaction: result.data,
@@ -307,7 +307,7 @@ function TransactionForm({
           amount,
           currency,
         });
-        
+
         onSuccess?.();
         setFormState({
           amount: "",
