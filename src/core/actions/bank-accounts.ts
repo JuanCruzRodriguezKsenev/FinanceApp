@@ -9,6 +9,7 @@ import { bankAccounts, transactions } from "@/db/schema/finance";
 import { users } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import { createIdempotencyKey } from "@/lib/idempotency";
 import {
   ok,
   err,
@@ -38,6 +39,7 @@ export async function createBankAccount(data: {
   ownerName: string;
   ownerDocument?: string;
   notes?: string;
+  idempotencyKey?: string;
 }): Promise<Result<BankAccount, AppError>> {
   try {
     const session = await auth();
@@ -45,10 +47,40 @@ export async function createBankAccount(data: {
       return err(authorizationError("bank_accounts"));
     }
 
+    const idempotencyKey = createIdempotencyKey(
+      "bank-accounts:create",
+      session.user.id,
+      [
+        data.accountName,
+        data.bank,
+        data.accountType,
+        data.accountNumber,
+        data.cbu,
+        data.alias,
+        data.iban,
+        data.currency,
+        data.ownerName,
+        data.ownerDocument,
+      ],
+      data.idempotencyKey,
+    );
+
+    const existingAccount = await db.query.bankAccounts.findFirst({
+      where: and(
+        eq(bankAccounts.userId, session.user.id),
+        eq(bankAccounts.idempotencyKey, idempotencyKey),
+      ),
+    });
+
+    if (existingAccount) {
+      return ok(existingAccount as BankAccount);
+    }
+
     const newAccount = await db
       .insert(bankAccounts)
       .values({
         userId: session.user.id,
+        idempotencyKey,
         accountName: data.accountName,
         bank: data.bank as any,
         accountType: data.accountType as any,

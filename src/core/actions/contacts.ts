@@ -12,6 +12,7 @@ import {
 } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import { createIdempotencyKey } from "@/lib/idempotency";
 import {
   ok,
   err,
@@ -44,6 +45,7 @@ export async function createContact(data: {
   bankAccountType?: string;
   isFavorite?: boolean;
   notes?: string;
+  idempotencyKey?: string;
 }): Promise<Result<Contact, AppError>> {
   try {
     const session = await auth();
@@ -51,10 +53,41 @@ export async function createContact(data: {
       return err(authorizationError("contacts"));
     }
 
+    const idempotencyKey = createIdempotencyKey(
+      "contacts:create",
+      session.user.id,
+      [
+        data.name,
+        data.displayName,
+        data.email,
+        data.phoneNumber,
+        data.document,
+        data.cbu,
+        data.alias,
+        data.iban,
+        data.bank,
+        data.accountNumber,
+        data.bankAccountType,
+      ],
+      data.idempotencyKey,
+    );
+
+    const existingContact = await db.query.contacts.findFirst({
+      where: and(
+        eq(contacts.userId, session.user.id),
+        eq(contacts.idempotencyKey, idempotencyKey),
+      ),
+    });
+
+    if (existingContact) {
+      return ok(existingContact as Contact);
+    }
+
     const newContact = await db
       .insert(contacts)
       .values({
         userId: session.user.id,
+        idempotencyKey,
         name: data.name,
         firstName: data.firstName,
         lastName: data.lastName,

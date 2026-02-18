@@ -165,6 +165,7 @@ export type WalletProvider =
 export interface BankAccount {
   id: string;
   userId: string;
+  idempotencyKey?: string | null;
   accountName: string; // "Mi caja de ahorro Santander"
   bank: Bank;
   accountType: BankAccountType;
@@ -188,6 +189,7 @@ export interface BankAccount {
 export interface DigitalWallet {
   id: string;
   userId: string;
+  idempotencyKey?: string | null;
   walletName: string; // "Mi Mercado Pago"
   provider: WalletProvider;
   email?: string | null;
@@ -207,6 +209,7 @@ export interface DigitalWallet {
 export interface Contact {
   id: string;
   userId: string;
+  idempotencyKey?: string | null;
   name: string;
   firstName?: string | null;
   lastName?: string | null;
@@ -249,6 +252,7 @@ export interface ContactFolderMember {
 export interface Transaction {
   id: string;
   userId: string;
+  idempotencyKey?: string | null;
   type: TransactionType;
   category: TransactionCategory;
   amount: string;

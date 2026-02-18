@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { digitalWallets } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
 import { logger } from "@/lib/logger";
+import { createIdempotencyKey } from "@/lib/idempotency";
 import {
   ok,
   err,
@@ -32,6 +33,7 @@ export async function createDigitalWallet(data: {
   currency: string;
   balance: string;
   linkedBankAccountId?: string;
+  idempotencyKey?: string;
 }): Promise<Result<DigitalWallet, AppError>> {
   try {
     const session = await auth();
@@ -39,10 +41,37 @@ export async function createDigitalWallet(data: {
       return err(authorizationError("digital_wallets"));
     }
 
+    const idempotencyKey = createIdempotencyKey(
+      "digital-wallets:create",
+      session.user.id,
+      [
+        data.walletName,
+        data.provider,
+        data.email,
+        data.phoneNumber,
+        data.username,
+        data.currency,
+        data.linkedBankAccountId,
+      ],
+      data.idempotencyKey,
+    );
+
+    const existingWallet = await db.query.digitalWallets.findFirst({
+      where: and(
+        eq(digitalWallets.userId, session.user.id),
+        eq(digitalWallets.idempotencyKey, idempotencyKey),
+      ),
+    });
+
+    if (existingWallet) {
+      return ok(existingWallet as DigitalWallet);
+    }
+
     const newWallet = await db
       .insert(digitalWallets)
       .values({
         userId: session.user.id,
+        idempotencyKey,
         walletName: data.walletName,
         provider: data.provider as any,
         email: data.email,

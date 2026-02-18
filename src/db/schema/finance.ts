@@ -157,6 +157,7 @@ export const bankAccounts = pgTable("bank_account", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  idempotencyKey: text("idempotency_key").unique(),
   accountName: text("account_name").notNull(), // Ej: "Mi caja de ahorro Santander"
   bank: bankEnum("bank").notNull(),
   accountType: bankAccountTypeEnum("account_type").notNull(),
@@ -184,6 +185,7 @@ export const digitalWallets = pgTable("digital_wallet", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  idempotencyKey: text("idempotency_key").unique(),
   walletName: text("wallet_name").notNull(), // Ej: "Mi Mercado Pago"
   provider: walletProviderEnum("provider").notNull(),
   email: text("email"),
@@ -210,6 +212,7 @@ export const contacts = pgTable("contact", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  idempotencyKey: text("idempotency_key").unique(),
   name: text("name").notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
@@ -301,6 +304,7 @@ export const transactions = pgTable("financial_transaction", {
   userId: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  idempotencyKey: text("idempotency_key").unique(),
 
   // Tipo y categoría
   type: transactionTypeEnum("type").notNull(),

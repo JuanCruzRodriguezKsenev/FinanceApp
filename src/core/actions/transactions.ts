@@ -28,6 +28,7 @@ import {
   detectTransactionType,
   detectCategoryFromDescription,
 } from "@/lib/transaction-detector";
+import { createIdempotencyKey } from "@/lib/idempotency";
 import { randomUUID } from "crypto";
 import type {
   Transaction,
@@ -56,6 +57,9 @@ export async function createTransaction(
   const goalId = formData.get("goalId") as string | null;
   const transferRecipient = formData.get("transferRecipient") as string | null;
   const transferSender = formData.get("transferSender") as string | null;
+  const providedIdempotencyKey = formData.get("idempotencyKey") as
+    | string
+    | null;
 
   // Validaciones
   if (!type || !category || !amount || !description || !date) {
@@ -104,11 +108,42 @@ export async function createTransaction(
     );
   }
 
+  const idempotencyKey = createIdempotencyKey(
+    "transactions:create",
+    session.user.id,
+    [
+      type,
+      category,
+      amount,
+      currency,
+      description,
+      date,
+      fromAccountId,
+      toAccountId,
+      goalId,
+      transferRecipient,
+      transferSender,
+    ],
+    providedIdempotencyKey,
+  );
+
+  const existingTransaction = await db.query.transactions.findFirst({
+    where: and(
+      eq(transactions.userId, session.user.id),
+      eq(transactions.idempotencyKey, idempotencyKey),
+    ),
+  });
+
+  if (existingTransaction) {
+    return ok(undefined);
+  }
+
   try {
     await db.transaction(async (tx) => {
       // Crear transacción
       await tx.insert(transactions).values({
         userId: session.user.id,
+        idempotencyKey,
         type,
         category,
         amount,
@@ -189,6 +224,7 @@ export async function createTransactionWithAutoDetection(data: {
   description: string;
   date: Date;
   paymentMethod?: PaymentMethod;
+  idempotencyKey?: string;
   fromAccountId?: string;
   toAccountId?: string;
   fromBankAccountId?: string;
@@ -333,8 +369,50 @@ export async function createTransactionWithAutoDetection(data: {
         ? randomUUID()
         : undefined;
 
+    const idempotencyBaseKey = createIdempotencyKey(
+      "transactions:auto",
+      session.user.id,
+      [
+        data.amount,
+        resolvedCurrency,
+        data.description,
+        data.date.toISOString(),
+        data.fromAccountId,
+        data.toAccountId,
+        data.fromBankAccountId,
+        data.toBankAccountId,
+        data.fromWalletId,
+        data.toWalletId,
+        data.contactId,
+        resolvedType,
+        category,
+        data.paymentMethod,
+      ],
+      data.idempotencyKey,
+    );
+
+    const outflowIdempotencyKey = `${idempotencyBaseKey}:outflow`;
+    const inflowIdempotencyKey = `${idempotencyBaseKey}:inflow`;
+
+    const lookupKey =
+      resolvedType === "transfer_own_accounts"
+        ? outflowIdempotencyKey
+        : idempotencyBaseKey;
+
+    const existingTransaction = await db.query.transactions.findFirst({
+      where: and(
+        eq(transactions.userId, session.user.id),
+        eq(transactions.idempotencyKey, lookupKey),
+      ),
+    });
+
+    if (existingTransaction) {
+      return ok(existingTransaction as Transaction);
+    }
+
     const baseValues = {
       userId: session.user.id,
+      idempotencyKey: idempotencyBaseKey,
       type: resolvedType,
       category,
       amount: data.amount.toString(),
@@ -501,6 +579,7 @@ export async function createTransactionWithAutoDetection(data: {
           .insert(transactions)
           .values({
             ...baseValues,
+            idempotencyKey: outflowIdempotencyKey,
             transferLeg: "outflow",
           })
           .returning();
@@ -509,6 +588,7 @@ export async function createTransactionWithAutoDetection(data: {
           .insert(transactions)
           .values({
             ...baseValues,
+            idempotencyKey: inflowIdempotencyKey,
             transferLeg: "inflow",
           })
           .returning();
