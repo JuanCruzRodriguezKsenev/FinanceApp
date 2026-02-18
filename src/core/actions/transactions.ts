@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { transactions, accounts, savingsGoals } from "@/db/schema/finance";
 import { revalidatePath } from "next/cache";
 import { eq, and, desc, or, sql, asc } from "drizzle-orm";
+import { logger } from "@/lib/logger";
 import type { TransactionType, TransactionCategory } from "@/types";
 
 export async function createTransaction(formData: FormData) {
@@ -138,7 +139,11 @@ export async function createTransaction(formData: FormData) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("Error creating transaction:", error);
+    logger.error("Failed to create transaction", error as Error, {
+      userId: session.user.id,
+      type,
+      amount,
+    });
     return { error: "Error al crear la transacción" };
   }
 }
@@ -283,7 +288,7 @@ export async function deleteTransaction(id: string) {
     revalidatePath("/dashboard");
     return { success: true };
   } catch (error) {
-    console.error("Error deleting transaction:", error);
+    logger.error("Failed to delete transaction", error as Error);
     return { error: "Error al eliminar la transacción" };
   }
 }
@@ -301,7 +306,9 @@ export async function getUserAccounts() {
       .from(accounts)
       .where(eq(accounts.userId, session.user.id));
   } catch (error) {
-    console.error("Error fetching accounts:", error);
+    logger.error("Failed to fetch user accounts", error as Error, {
+      userId: session.user.id,
+    });
     return [];
   }
 }
@@ -324,7 +331,9 @@ export async function getUserGoals() {
         ),
       );
   } catch (error) {
-    console.error("Error fetching goals:", error);
+    logger.error("Failed to fetch savings goals", error as Error, {
+      userId: session.user.id,
+    });
     return [];
   }
 }

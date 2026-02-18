@@ -11,6 +11,7 @@ import {
   contactFolderMembers,
 } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { eq, and, like, or } from "drizzle-orm";
 import type { Contact } from "@/types";
 
@@ -64,7 +65,10 @@ export async function createContact(data: {
 
     return { success: true, data: newContact[0] as any };
   } catch (error) {
-    console.error("Error creating contact:", error);
+    logger.error("Failed to create contact", error as Error, {
+      userId: session.user.id,
+      name: data.name,
+    });
     return {
       success: false,
       error: "Error al crear el contacto",
@@ -93,7 +97,9 @@ export async function getContacts(): Promise<{
 
     return { success: true, data: userContacts as Contact[] };
   } catch (error) {
-    console.error("Error fetching contacts:", error);
+    logger.error("Failed to fetch contacts", error as Error, {
+      userId: session.user.id,
+    });
     return { success: false, error: "Error al obtener contactos" };
   }
 }
@@ -132,7 +138,10 @@ export async function searchContacts(searchTerm: string): Promise<{
 
     return { success: true, data: results as Contact[] };
   } catch (error) {
-    console.error("Error searching contacts:", error);
+    logger.error("Failed to search contacts", error as Error, {
+      userId: session.user.id,
+      searchTerm,
+    });
     return { success: false, error: "Error al buscar contactos" };
   }
 }
@@ -163,7 +172,10 @@ export async function createContactFolder(data: {
 
     return { success: true, data: folder[0] };
   } catch (error) {
-    console.error("Error creating contact folder:", error);
+    logger.error("Failed to create contact folder", error as Error, {
+      userId: session.user.id,
+      folderName: data.name,
+    });
     return { success: false, error: "Error al crear la carpeta" };
   }
 }
@@ -212,7 +224,10 @@ export async function addContactToFolder(data: {
 
     return { success: true };
   } catch (error) {
-    console.error("Error adding contact to folder:", error);
+    logger.error("Failed to add contact to folder", error as Error, {
+      contactId: data.contactId,
+      folderId: data.folderId,
+    });
     return { success: false, error: "Error al asignar el contacto" };
   }
 }
@@ -265,7 +280,10 @@ export async function removeContactFromFolder(data: {
 
     return { success: true };
   } catch (error) {
-    console.error("Error removing contact from folder:", error);
+    logger.error("Failed to remove contact from folder", error as Error, {
+      contactId: data.contactId,
+      folderId: data.folderId,
+    });
     return { success: false, error: "Error al quitar el contacto" };
   }
 }
@@ -298,7 +316,9 @@ export async function searchContactByCBUOrAlias(
 
     return { success: true, data: result[0] as any };
   } catch (error) {
-    console.error("Error searching contact:", error);
+    logger.error("Failed to search contact by CBU/Alias", error as Error, {
+      cbuOrAlias,
+    });
     return {
       success: false,
       error: "Error al buscar el contacto",
@@ -342,7 +362,10 @@ export async function updateContact(
 
     return { success: true, data: updated[0] as any };
   } catch (error) {
-    console.error("Error updating contact:", error);
+    logger.error("Failed to update contact", error as Error, {
+      userId: session.user.id,
+      contactId,
+    });
     return {
       success: false,
       error: "Error al actualizar el contacto",
@@ -378,7 +401,10 @@ export async function deleteContact(
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting contact:", error);
+    logger.error("Failed to delete contact", error as Error, {
+      userId: session.user.id,
+      contactId,
+    });
     return {
       success: false,
       error: "Error al eliminar el contacto",

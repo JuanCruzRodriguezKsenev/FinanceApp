@@ -33,6 +33,7 @@
  *     └──────────┘  └──────────┘  └──────────┘
  * ```
  */
+import { logger } from "@/lib/logger";
 
 type EventCallback = (data?: any) => void;
 
@@ -84,7 +85,7 @@ class EventBus {
         try {
           callback(data);
         } catch (error) {
-          console.error(`Error en callback de evento '${event}':`, error);
+          logger.error(`Failed to execute event callback '${event}'`, error as Error, { event });
         }
       });
     }

@@ -28,6 +28,7 @@
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { eventBus, EVENTS } from "@/lib/eventBus";
+import { logger } from "@/lib/logger";
 import TransactionForm from "@/components/transactions/TransactionForm";
 import TransactionsTable from "@/components/transactions/TransactionsTable";
 import TransactionsSummary from "@/components/transactions/TransactionsSummary";
@@ -88,7 +89,7 @@ export default function DashboardContent({
     const unsubscribeCreated = eventBus.subscribe(
       EVENTS.TRANSACTION.CREATED,
       (data) => {
-        console.log("✅ Nueva transacción detectada:", data);
+        logger.debug("Nueva transacción detectada", { transaction: data });
 
         // Refrescar datos del servidor
         router.refresh();
@@ -99,7 +100,7 @@ export default function DashboardContent({
     const unsubscribeUpdated = eventBus.subscribe(
       EVENTS.TRANSACTION.UPDATED,
       (data) => {
-        console.log("🔄 Transacción actualizada:", data);
+        logger.debug("Transacción actualizada", { transaction: data });
         router.refresh();
       },
     );
@@ -108,7 +109,7 @@ export default function DashboardContent({
     const unsubscribeDeleted = eventBus.subscribe(
       EVENTS.TRANSACTION.DELETED,
       (data) => {
-        console.log("🗑️ Transacción eliminada:", data);
+        logger.debug("Transacción eliminada", { transaction: data });
         router.refresh();
       },
     );

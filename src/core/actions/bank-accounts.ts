@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { bankAccounts, transactions } from "@/db/schema/finance";
 import { users } from "@/db/schema/auth";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { eq, and } from "drizzle-orm";
 import type { BankAccount } from "@/types";
 
@@ -55,7 +56,10 @@ export async function createBankAccount(data: {
 
     return { success: true, data: newAccount[0] as any };
   } catch (error) {
-    console.error("Error creating bank account:", error);
+    logger.error("Failed to create bank account", error as Error, {
+      bank: data.bank,
+      accountType: data.accountType,
+    });
     return {
       success: false,
       error: "Error al crear la cuenta bancaria",
@@ -84,7 +88,7 @@ export async function getBankAccounts(): Promise<{
 
     return { success: true, data: accounts as BankAccount[] };
   } catch (error) {
-    console.error("Error fetching bank accounts:", error);
+    logger.error("Failed to fetch bank accounts", error as Error);
     return { success: false, error: "Error al obtener cuentas bancarias" };
   }
 }
@@ -128,7 +132,9 @@ export async function updateBankAccount(
 
     return { success: true, data: updated[0] as any };
   } catch (error) {
-    console.error("Error updating bank account:", error);
+    logger.error("Failed to update bank account", error as Error, {
+      accountId,
+    });
     return {
       success: false,
       error: "Error al actualizar la cuenta bancaria",
@@ -186,7 +192,9 @@ export async function deleteBankAccount(
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting bank account:", error);
+    logger.error("Failed to delete bank account", error as Error, {
+      accountId,
+    });
     return {
       success: false,
       error: "Error al eliminar la cuenta bancaria",
@@ -232,7 +240,10 @@ export async function updateBankAccountBalance(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating balance:", error);
+    logger.error("Failed to update bank account balance", error as Error, {
+      accountId,
+      newBalance,
+    });
     return {
       success: false,
       error: "Error al actualizar el saldo",
@@ -268,7 +279,9 @@ export async function searchBankAccountByCBUOrAlias(
 
     return { success: true, data: account[0] as any };
   } catch (error) {
-    console.error("Error searching bank account:", error);
+    logger.error("Failed to search bank account", error as Error, {
+      cbuOrAlias,
+    });
     return {
       success: false,
       error: "Error al buscar la cuenta",

@@ -5,6 +5,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { db } from "@/db";
 import {
   transactions,
@@ -418,7 +419,7 @@ export async function createTransactionWithAutoDetection(data: {
 
     return { success: true, data: primaryTransaction as any };
   } catch (error) {
-    console.error("Error creating transaction:", error);
+    logger.error("Failed to create transaction", error as Error);
     return {
       success: false,
       error: "Error al crear la transacción",
@@ -581,7 +582,7 @@ export async function updateBalancesAfterTransaction(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating balances:", error);
+    logger.error("Failed to update balances", error as Error);
     return {
       success: false,
       error: "Error al actualizar los saldos",
@@ -623,7 +624,7 @@ export async function getTransactionsWithMetadata(): Promise<
 
     return transactionsWithMetadata;
   } catch (error) {
-    console.error("Error fetching transactions with metadata:", error);
+    logger.error("Failed to fetch transactions with metadata", error as Error);
     return [];
   }
 }
@@ -681,7 +682,10 @@ export async function flagTransactionAsSuspicious(
 
     return { success: true };
   } catch (error) {
-    console.error("Error flagging transaction:", error);
+    logger.error("Failed to flag transaction", error as Error, {
+      transactionId,
+      reason,
+    });
     return {
       success: false,
       error: "Error al marcar la transacción",
@@ -726,7 +730,7 @@ export async function getSuspiciousTransactions(): Promise<Array<any>> {
 
     return results.filter((r) => r !== null && r !== undefined);
   } catch (error) {
-    console.error("Error fetching suspicious transactions:", error);
+    logger.error("Failed to fetch suspicious transactions", error as Error);
     return [];
   }
 }

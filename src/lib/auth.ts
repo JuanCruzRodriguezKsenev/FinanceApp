@@ -6,6 +6,7 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db";
 import bcrypt from "bcryptjs";
 import { users } from "@/db/schema/identity";
+import { logger } from "@/lib/logger";
 import { eq } from "drizzle-orm";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -62,7 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: dbUser.image,
           };
         } catch (error) {
-          console.error("Auth error:", error);
+          logger.error("Authentication failed", error as Error);
           throw error;
         }
       },
@@ -90,7 +91,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.id = dbUser[0].id;
           }
         } catch (error) {
-          console.error("Error fetching user in JWT callback:", error);
+          logger.error("Failed to fetch user in JWT callback", error as Error, { email: token.email });
         }
       }
 

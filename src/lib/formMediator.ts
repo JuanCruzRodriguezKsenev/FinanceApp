@@ -46,6 +46,7 @@
  * TODO pasa por el Mediator
  * ```
  */
+import { logger } from "@/lib/logger";
 
 export interface FieldConfig {
   visible: boolean;
@@ -211,7 +212,7 @@ export class FormMediator {
       try {
         listener();
       } catch (error) {
-        console.error("Error en listener de FormMediator:", error);
+        logger.error("Failed to notify FormMediator listener", error as Error);
       }
     });
   }

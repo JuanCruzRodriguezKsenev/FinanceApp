@@ -7,6 +7,7 @@
 import { db } from "@/db";
 import { digitalWallets } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { eq, and } from "drizzle-orm";
 import type { DigitalWallet } from "@/types";
 
@@ -46,7 +47,10 @@ export async function createDigitalWallet(data: {
 
     return { success: true, data: newWallet[0] as any };
   } catch (error) {
-    console.error("Error creating digital wallet:", error);
+    logger.error("Failed to create digital wallet", error as Error, {
+      userId: session.user.id,
+      provider: data.provider,
+    });
     return {
       success: false,
       error: "Error al crear la billetera digital",
@@ -75,7 +79,9 @@ export async function getDigitalWallets(): Promise<{
 
     return { success: true, data: wallets as DigitalWallet[] };
   } catch (error) {
-    console.error("Error fetching digital wallets:", error);
+    logger.error("Failed to fetch digital wallets", error as Error, {
+      userId: session.user.id,
+    });
     return { success: false, error: "Error al obtener billeteras digitales" };
   }
 }
@@ -119,7 +125,10 @@ export async function updateDigitalWallet(
 
     return { success: true, data: updated[0] as any };
   } catch (error) {
-    console.error("Error updating digital wallet:", error);
+    logger.error("Failed to update digital wallet", error as Error, {
+      userId: session.user.id,
+      walletId,
+    });
     return {
       success: false,
       error: "Error al actualizar la billetera digital",
@@ -158,7 +167,10 @@ export async function deleteDigitalWallet(
 
     return { success: true };
   } catch (error) {
-    console.error("Error deleting digital wallet:", error);
+    logger.error("Failed to delete digital wallet", error as Error, {
+      userId: session.user.id,
+      walletId,
+    });
     return {
       success: false,
       error: "Error al eliminar la billetera digital",
@@ -204,7 +216,10 @@ export async function updateWalletBalance(
 
     return { success: true };
   } catch (error) {
-    console.error("Error updating wallet balance:", error);
+    logger.error("Failed to update wallet balance", error as Error, {
+      walletId,
+      newBalance,
+    });
     return {
       success: false,
       error: "Error al actualizar el saldo",

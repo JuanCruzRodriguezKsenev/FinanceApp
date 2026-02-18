@@ -3,6 +3,7 @@
 
 import { signOut } from "next-auth/react";
 import Button from "@/components/ui/Buttons/Button";
+import { logger } from "@/lib/logger";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -16,7 +17,7 @@ export default function LogoutButton() {
       await signOut({ redirect: false });
       router.push("/auth/login");
     } catch (error) {
-      console.error("Logout error:", error);
+      logger.error("Logout failed", error as Error);
       setIsLoading(false);
     }
   };

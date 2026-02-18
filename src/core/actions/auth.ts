@@ -5,6 +5,7 @@ import { signIn, signOut } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { users } from "@/db/schema/identity";
+import { logger } from "@/lib/logger";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
@@ -28,7 +29,7 @@ export async function loginAction(formData: FormData) {
       redirectTo: "/dashboard",
     });
   } catch (error) {
-    console.error("Login error:", error);
+    logger.error("Login failed", error as Error, { email });
     redirect("/auth/login?error=Email o contraseña incorrectos");
   }
 }
@@ -88,7 +89,7 @@ export async function registerAction(formData: FormData) {
       "/auth/login?success=Cuenta creada exitosamente. Por favor inicia sesión",
     );
   } catch (error) {
-    console.error("Register error:", error);
+    logger.error("Registration failed", error as Error, { email, name });
     redirect("/auth/register?error=Error al crear la cuenta. Intenta de nuevo");
   }
 }

@@ -19,7 +19,7 @@ const eslintConfig = defineConfig([
   {
     plugins: {
       "simple-import-sort": simpleImportSort,
-      "import": importPlugin,
+      import: importPlugin,
     },
     rules: {
       // Import organization
@@ -28,7 +28,7 @@ const eslintConfig = defineConfig([
       "import/first": "error",
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
-      
+
       // Disable console in production code (allow in examples)
       "no-console": ["error", { allow: [] }],
     },
