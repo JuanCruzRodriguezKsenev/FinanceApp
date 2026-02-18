@@ -1,0 +1,26 @@
+.divider {
+  background-color: var(--navbar-divider, #e5e7eb);
+}
+
+.horizontal {
+  width: 0.5px;
+  height: 1.5rem;
+  margin: 0 0.75rem;
+}
+
+.vertical {
+  width: 100%;
+  height: 0.5px;
+  margin: 0.75rem 0;
+}
+
+@media (max-width: 768px) {
+  .vertical {
+    display: none;
+  }
+
+  .horizontal {
+    height: 1rem;
+    margin: 0 0.5rem;
+  }
+}

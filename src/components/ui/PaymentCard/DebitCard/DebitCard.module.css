@@ -1,0 +1,18 @@
+/* DebitCard hereda de PaymentCard, este archivo puede estar vacío o tener estilos específicos */
+
+.debitCardWrapper {
+  width: 100%;
+}
+
+.debitLabel {
+  text-align: right;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+}

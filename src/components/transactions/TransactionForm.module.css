@@ -1,0 +1,396 @@
+/* src/components/transactions/TransactionForm.module.css */
+.container {
+  background-color: var(--bg-primary);
+  padding: var(--spacing-2xl);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-primary);
+  position: sticky;
+  top: var(--spacing-xl);
+}
+
+.containerDialog {
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background-color: transparent;
+  position: static;
+  top: auto;
+}
+
+.header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.header h2 {
+  margin: 0 0 var(--spacing-xs) 0;
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+}
+
+.header p {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-primary);
+  background-color: var(--bg-secondary);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+}
+
+.sectionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.amountRow {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+}
+
+.segmented {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--border-primary);
+  background-color: var(--bg-tertiary);
+  overflow: hidden;
+}
+
+.segmentedType[data-active="expense"] {
+  --segment-bg: rgba(239, 68, 68, 0.2);
+  --segment-border: rgba(239, 68, 68, 0.5);
+  --segment-color: #ef4444;
+}
+
+.segmentedType[data-active="income"] {
+  --segment-bg: rgba(34, 197, 94, 0.2);
+  --segment-border: rgba(34, 197, 94, 0.5);
+  --segment-color: #22c55e;
+}
+
+.segmentedFlow[data-active="cash"] {
+  --segment-bg: rgba(34, 197, 94, 0.2);
+  --segment-border: rgba(34, 197, 94, 0.45);
+  --segment-color: #22c55e;
+}
+
+.segmentedFlow[data-active="transfer"] {
+  --segment-bg: rgba(59, 130, 246, 0.22);
+  --segment-border: rgba(59, 130, 246, 0.45);
+  --segment-color: #3b82f6;
+}
+
+.segmentIndicator {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  border-radius: 999px;
+  background-color: var(--segment-bg);
+  border: 1px solid var(--segment-border);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.segmentedType[data-active="income"] .segmentIndicator,
+.segmentedFlow[data-active="transfer"] .segmentIndicator {
+  transform: translateX(100%);
+}
+
+.segmentButton {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  padding: 0.65rem 0;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.segmentButtonActive {
+  color: var(--segment-color);
+}
+
+.segmentButton:focus-visible {
+  outline: 2px solid var(--segment-color);
+  outline-offset: 2px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.formGroup label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.formGroup input,
+.formGroup select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.amountInput {
+  font-size: clamp(1.875rem, 5vw, var(--font-size-3xl)) !important;
+  font-weight: 700 !important;
+  letter-spacing: -1px;
+  text-align: center;
+  padding: 2.4rem 1.5rem !important;
+  background-color: var(--bg-primary);
+  font-variant-numeric: tabular-nums;
+  border-radius: var(--border-radius-lg) !important;
+}
+
+.amountInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+.amountInput::-webkit-outer-spin-button,
+.amountInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.amountInput {
+  appearance: textfield;
+}
+
+.currencyField {
+  position: relative;
+}
+
+.currencyTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: var(--spacing-md) 0.8rem;
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  width: fit-content;
+  min-width: 5.5rem;
+}
+
+.currencyTrigger:hover {
+  border-color: var(--color-primary);
+}
+
+.currencyTrigger:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.currencyCode {
+  font-size: var(--font-size-lg);
+  letter-spacing: 1px;
+}
+
+.currencyChevron {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.currencyMenu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 16rem;
+  padding: 0.4rem;
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid var(--border-primary);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  margin-bottom: 0.25rem;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.currencyOption {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.65rem 0.8rem;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  background-color: transparent;
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  width: 100%;
+}
+
+.currencyOption:hover {
+  background-color: var(--bg-secondary);
+}
+
+.currencyOptionActive {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.currencyOptionCode {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  min-width: 2.5rem;
+}
+
+.currencyOptionText {
+  font-size: var(--font-size-sm);
+  color: currentColor;
+  opacity: 0.9;
+}
+
+.formStack {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+}
+
+.emptyHint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.submitButton {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-lg) !important;
+  font-size: var(--font-size-lg) !important;
+  font-weight: 700 !important;
+}
+
+.message {
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.message.success {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 2px solid #10b981;
+  color: #10b981;
+}
+
+.message.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 2px solid #ef4444;
+  color: #ef4444;
+}
+
+.message.warning {
+  background-color: rgba(245, 158, 11, 0.12);
+  border: 2px solid #f59e0b;
+  color: #b45309;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: var(--spacing-lg);
+    position: static;
+  }
+
+  .containerDialog {
+    padding: var(--spacing-lg);
+  }
+
+  .formGrid,
+  .sectionGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .segmentButton {
+    font-size: var(--font-size-sm);
+  }
+}

@@ -1,0 +1,19 @@
+.listContainer {
+    /* Estilos generales del contenedor de la página, por ejemplo, ancho máximo */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 0;
+}
+
+.cardsGrid {
+    /* Si necesitas dar estilos al contenedor de GenericList */
+    padding-bottom: 2rem;
+}
+
+.emptyState {
+    text-align: center;
+    color: #94a3b8; /* Slate gray */
+    padding: 3rem 0;
+    font-size: 1.1rem;
+    font-style: italic;
+}

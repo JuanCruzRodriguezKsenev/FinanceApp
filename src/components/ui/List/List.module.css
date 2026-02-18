@@ -1,0 +1,118 @@
+/* --- BASE --- */
+.emptyWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-gray-500);
+  font-style: italic;
+  text-align: center;
+  min-height: 200px;
+}
+
+.horizontalWrapper,
+.verticalWrapper {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* --- VERTICAL FLOW (Stack) --- */
+.verticalWrapper {
+  flex-direction: column;
+}
+
+.verticalItem {
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* --- HORIZONTAL FLOW (Row / Wrap) --- */
+.horizontalWrapper {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.horizontalItem {
+  flex-shrink: 0;
+}
+
+/* --- ALINEACIÓN (Modificadores) --- */
+.verticalWrapper.alignStart {
+  align-items: flex-start;
+}
+
+.verticalWrapper.alignCenter {
+  align-items: center;
+}
+
+.verticalWrapper.alignEnd {
+  align-items: flex-end;
+}
+
+.horizontalWrapper.alignStart {
+  justify-content: flex-start;
+}
+
+.horizontalWrapper.alignCenter {
+  justify-content: center;
+}
+
+.horizontalWrapper.alignEnd {
+  justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .emptyWrapper {
+    padding: var(--spacing-lg);
+  }
+
+  .horizontalItem {
+    width: 100%;
+  }
+}
+
+/* --- LIST --- */
+.listContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+
+.listItem {
+  display: flex;
+  justify-content: center;
+}
+
+.emptyState {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl);
+  color: var(--color-gray-500);
+  text-align: center;
+}
+
+.emptyStateText {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .listContainer {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .listContainer {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+}

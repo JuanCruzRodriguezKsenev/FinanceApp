@@ -1,0 +1,91 @@
+/* --- TUS ANIMACIONES CON PORCENTAJES (0 a 100%) --- */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    /* Comienza desplazado hacia arriba un 100% de su altura (escondido detrás del contenido superior) */
+    transform: translateY(-100%);
+    max-height: 0; /* Ayuda a suavizar el empuje del layout */
+    display: none;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0%); /* Termina en su posición natural (0%) */
+    max-height: 500px; /* Un valor lo suficientemente alto para permitir el contenido */
+    display: flex;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0%);
+    max-height: 500px;
+    display: flex;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-100%); /* Se esconde hacia arriba */
+    max-height: 0;
+    display: none;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+}
+
+/* --- WRAPPER PRINCIPAL --- */
+.slidingWrapper {
+  /* Estado base: oculto */
+  display: none;
+  flex-direction: column;
+  width: 100%;
+  padding-top: var(--spacing-md);
+  position: relative;
+  z-index: 1; /* Menor que el contenido fijo de la tarjeta (que pusimos en 20) */
+  will-change: transform, opacity, max-height;
+}
+
+/* --- ESTADOS DE ANIMACIÓN --- */
+
+/* Clase para ABRIR */
+.expanded {
+  display: flex; /* Se vuelve flexible al activarse */
+  animation: slideDown var(--transition-normal) ease-out forwards;
+}
+
+/* Clase para CERRAR */
+.collapsed {
+  display: flex; /* Mantenemos flex mientras se anima la salida */
+  animation: slideUp var(--transition-fast) ease-in forwards;
+}
+
+/* --- CONTENIDO INTERNO --- */
+.innerContent {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacing-md);
+  width: 100%;
+}

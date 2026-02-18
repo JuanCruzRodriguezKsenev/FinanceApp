@@ -1,0 +1,62 @@
+/* ... existing styles ... */
+
+/* --- FORM STYLES --- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9ca3af; /* Gray text */
+}
+
+.input, .select {
+  background-color: #1f2937; /* Dark gray bg */
+  border: 1px solid #374151; /* Border matching theme */
+  color: white;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input:focus, .select:focus {
+  border-color: #3b82f6; /* Focus blue */
+}
+
+/* Row for small inputs (Dates, CVC) */
+.row {
+  display: flex;
+  gap: 1rem;
+}
+
+.row .formGroup {
+  flex: 1;
+}
+
+.submitButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #2563eb;
+}

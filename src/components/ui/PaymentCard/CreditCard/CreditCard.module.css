@@ -1,0 +1,85 @@
+/* ==========================================================================
+   ESTRUCTURA INTERNA Y SEPARADOR
+   ========================================================================== */
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin: 0.6rem 0;
+}
+
+/* ==========================================================================
+   ETIQUETA "CREDIT"
+   ========================================================================== */
+
+/* 1. Definición de Keyframes (Tus animaciones exactas) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    display: none;
+    transform: translateY(10px); /* Un pequeño movimiento sutil desde abajo */
+  }
+  to {
+    opacity: 1;
+    display: block;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    display: block;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    display: none;
+    transform: translateY(10px);
+  }
+}
+
+/* 2. Estilos BASE (Estáticos) */
+.creditLabel {
+  text-align: right;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  /* Posicionamiento */
+  margin-top: auto;
+
+  /* Asegura que display sea block por defecto para el estado inicial */
+  display: block;
+}
+
+/* 3. Estados de Animación */
+
+/* Clase para MOSTRAR (cuando se deselecciona) */
+.creditLabelVisible {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Clase para OCULTAR (cuando se selecciona) */
+.creditLabelHidden {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+
+/* CreditCard hereda de PaymentCard, este archivo puede estar vacío o tener estilos específicos */
+
+.creditCardWrapper {
+  width: 100%;
+}

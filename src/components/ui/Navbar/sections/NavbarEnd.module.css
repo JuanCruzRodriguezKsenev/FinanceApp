@@ -1,0 +1,38 @@
+.end {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: auto;
+  gap: 1rem;
+}
+
+.gap-small {
+  gap: 0.5rem;
+}
+
+.gap-medium {
+  gap: 1rem;
+}
+
+.gap-large {
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .end {
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .gap-small {
+    gap: 0.25rem;
+  }
+
+  .gap-medium {
+    gap: 0.5rem;
+  }
+
+  .gap-large {
+    gap: 0.75rem;
+  }
+}

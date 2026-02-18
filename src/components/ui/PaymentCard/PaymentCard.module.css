@@ -1,0 +1,229 @@
+.card {
+  /* Dimensiones */
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1.586;
+
+  /* Estética */
+  border-radius: var(--border-radius-2xl);
+  padding: var(--spacing-lg);
+
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  color: var(--color-white);
+  position: relative;
+
+  /* Profundidad */
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  /* Interacción */
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  user-select: none;
+
+  /* Tipografía */
+  font-family: "Courier New", monospace;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-2xl);
+}
+
+.card:active {
+  transform: translateY(-2px);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-primary-light);
+  outline-offset: 3px;
+}
+
+.selected {
+  border-color: var(--color-primary-light);
+  box-shadow:
+    0 0 0 2px var(--color-primary-light),
+    var(--shadow-2xl);
+  transform: translateY(-4px);
+}
+
+/* --- BANCO (Top) --- */
+.bankRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: auto;
+  margin-bottom: var(--spacing-md);
+}
+
+.bankName {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.actionBtn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--color-white);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.actionBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.actionBtn:active {
+  transform: scale(0.95);
+}
+
+/* --- CHIP & CONTACTLESS --- */
+.chipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.chip {
+  width: 45px;
+  height: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.contactless {
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- NÚMERO DE TARJETA --- */
+.numberRow {
+  font-size: var(--font-size-xl);
+  letter-spacing: 3px;
+  display: flex;
+  gap: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* --- FECHA --- */
+.dateRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: auto;
+}
+
+.validThruLabel {
+  font-family: system-ui, sans-serif;
+  font-size: 10px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dateValue {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-family: var(--font-family-mono);
+}
+
+/* --- TITULAR & LOGO --- */
+.nameLogoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.nameGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.cardHolderLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 1px;
+}
+
+.cardHolder {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.networkLogo {
+  width: 50px;
+  height: 32px;
+}
+
+/* --- ÁREA INFERIOR --- */
+.bottomBarArea {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card {
+    max-width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  .bankName {
+    font-size: var(--font-size-base);
+  }
+
+  .numberRow {
+    font-size: var(--font-size-lg);
+    gap: 10px;
+  }
+
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}
