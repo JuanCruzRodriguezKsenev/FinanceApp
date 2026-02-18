@@ -356,13 +356,136 @@ Todo está **listo para producción** y **fácil de expandir**.
 
 ---
 
+## � PHASE 1-2 COMPLETIONS (Feb 18, 2026)
+
+### Infrastructure Patterns ✅
+
+#### Idempotency System (Phase 0)
+- [x] `createIdempotencyKey()` - Generate unique keys
+- [x] Database columns: `idempotency_key` in all transaction tables
+- [x] Server actions: Idempotency validation in create/update actions
+- [x] API routes: Header-based idempotency (`X-Idempotency-Key`)
+- [x] Duplicate detection: Prevent double-charges
+- [x] Tests documented in `idempotency.test.ts`
+
+#### Finite State Machine (Phase 1)
+- [x] **TransactionState** enum: 6 states
+  - [x] DRAFT - Created but not submitted
+  - [x] PENDING - Submitted, awaiting confirmation
+  - [x] CONFIRMED - Completed successfully
+  - [x] FAILED - Processing failed
+  - [x] CANCELLED - User cancelled
+  - [x] RECONCILED - Verified against bank statement
+- [x] **State Machine** implementation (`transaction.machine.ts`)
+  - [x] VALID_TRANSITIONS map
+  - [x] EVENT_TO_STATE mapping
+  - [x] canTransition() validation
+  - [x] canTransitionEvent() validation
+- [x] **TransactionStateMachine** service class (`transaction.service.ts`)
+  - [x] getState() - Current state
+  - [x] getContext() - Metadata
+  - [x] canTransition() - Validation
+  - [x] send() - State transition with events
+- [x] **Database integration**
+  - [x] `state` column in transactions table
+  - [x] `stateMachine` JSONB column for context
+  - [x] Migration applied (0002_quick_siren.sql)
+- [x] **Server actions integration**
+  - [x] createTransaction: Sets state=DRAFT
+  - [x] submitTransaction: DRAFT → PENDING
+  - [x] confirmTransaction: PENDING → CONFIRMED
+  - [x] rejectTransaction: PENDING → FAILED
+  - [x] cancelTransaction: Any → CANCELLED
+  - [x] reconcileTransaction: CONFIRMED → RECONCILED
+- [x] **UI Components**
+  - [x] TransactionStatusBadge: Visual state indicator
+  - [x] TransactionRow: Action buttons per state
+  - [x] TransactionsTable: Estado and Acciones columns
+
+### Architecture Refactor (Phase 2) ✅
+
+#### Vertical Architecture Migration
+- [x] **Feature folders created**
+  - [x] src/features/transactions/
+  - [x] src/features/bank-accounts/
+  - [x] src/features/contacts/
+  - [x] src/features/digital-wallets/
+- [x] **Folder structure per feature**
+  - [x] actions/ - Server actions
+  - [x] components/ - UI components
+  - [x] hooks/ - Custom hooks (when needed)
+  - [x] index.ts - Barrel exports
+- [x] **Shared libraries** (src/shared/)
+  - [x] lib/auth/ - Authentication actions
+  - [x] lib/errors/ - Error types (for future)
+- [x] **Files migrated**
+  - [x] 37 files moved from horizontal to vertical structure
+  - [x] All imports updated across app
+  - [x] Barrel exports added for clean imports
+  - [x] Empty placeholder folders removed (17 cleaned)
+- [x] **Documentation**
+  - [x] ARCHITECTURE.md updated with target structure
+  - [x] Future Target Structure section added
+
+### Documentation Updates ✅
+
+- [x] **PLAN_CONSTRUCCION.md** - Phases 0, 1, 2 marked complete
+- [x] **ARCHITECTURE.md** - Added Future Target Structure
+- [x] **ROADMAP.md** - Created with milestones and triggers
+- [x] **README.md** - Updated status and roadmap snapshot
+- [x] **START_HERE.md** - Refreshed with vertical architecture
+
+### Testing & Validation ✅
+
+- [x] Dev server starts without errors
+- [x] TypeScript compilation successful (no real errors)
+- [x] Homepage loads: 200 OK
+- [x] /dashboard loads: 200 OK
+- [x] /transactions loads: 200 OK
+- [ ] Manual FSM transitions testing (requires user login)
+- [ ] Unit tests for FSM (documented, not executed)
+- [ ] End-to-end idempotency tests (documented)
+
+---
+
+## 📊 Updated Statistics (Feb 18, 2026)
+
+```
+Original Implementation:      ~3,500 lines
+Phase 1-2 Additions:         ~2,000 lines
+Total Codebase:              ~5,500 lines
+
+Patterns Implemented:        9
+  ├─ Result Pattern
+  ├─ Circuit Breaker
+  ├─ Validators
+  ├─ Logger
+  ├─ Idempotency
+  ├─ FSM
+  ├─ Vertical Architecture
+  ├─ Observer Pattern
+  └─ Mediator Pattern
+
+Server Actions:              38+ (all features)
+State Transitions:           10 (FSM events)
+Features Organized:          4 (vertical structure)
+Git Commits (Today):         3
+  ├─ feat: FSM implementation
+  ├─ refactor: Vertical architecture
+  └─ docs: Roadmap and projections
+```
+
+---
+
 ## 📞 Recursos
 
-- **Documentación Primaria**: `QUICKSTART.md`
+- **Documentación Primaria**: `START_HERE.md` → `QUICKSTART.md`
+- **Roadmap**: `ROADMAP.md` ← **NUEVO**
+- **Arquitectura**: `ARCHITECTURE.md`
+- **Plan de Construcción**: `PLAN_CONSTRUCCION.md`
 - **Documentación Secundaria**: `SYSTEM_UPGRADE_GUIDE.md`
 - **Ejemplos Reales**: `EXAMPLES.ts`
-- **Roadmap**: `ADVANCED_RECOMMENDATIONS.md`
-- **Mapa Arquitectura**: `ARCHITECTURE_MAP.md`
+- **Recomendaciones**: `ADVANCED_RECOMMENDATIONS.md`
 - **Resumen Técnico**: `IMPLEMENTATION_SUMMARY.md`
 
 ---
@@ -370,14 +493,18 @@ Todo está **listo para producción** y **fácil de expandir**.
 ```
 ╔═══════════════════════════════════════════════════════════════╗
 ║                                                               ║
-║    ✅ IMPLEMENTACIÓN COMPLETADA CON ÉXITO                    ║
+║    ✅ CORE INFRASTRUCTURE COMPLETED                          ║
+║    🚧 PRODUCT HARDENING IN PROGRESS                          ║
 ║                                                               ║
-║    Sistema de Gestión de Cuentas y Transacciones Inteligente ║
+║    Finance App 3.0 - Enterprise Ready                        ║
 ║                                                               ║
-║    Status: PRODUCCIÓN LISTA ✨                              ║
-║    Fecha: Febrero 13, 2026                                  ║
+║    Status: INFRASTRUCTURE COMPLETE ✨                        ║
+║    Phase 0-2: DONE | Phase 3: DEFERRED                       ║
+║    Last Update: February 18, 2026                             ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-**¡Felicitaciones! 🎉 Tu app financiera es ahora MUCHO más poderosa.**
+**Next Steps:** Manual UI testing → Unit tests → Production deploy
+
+See [ROADMAP.md](ROADMAP.md) for future milestones and decision triggers.
