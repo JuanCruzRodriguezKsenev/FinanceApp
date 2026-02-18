@@ -29,6 +29,13 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
   - Decorador y utilidades para wrapping de funciones
   - Suite completa de tests con 20+ casos
   - Documentación: USAGE.md con best practices
+- ✅ **Validators Library** implementado en `src/lib/validators/`
+  - 20+ validadores reutilizables (email, CBU, IBAN, amount, creditCard, etc.)
+  - Fluent builder API para composición flexible
+  - Schema validation para objetos completos
+  - Error collection con información detallada
+  - Presets para casos comunes (userRegistration, bankAccount, transaction)
+  - Documentación: USAGE.md con 5+ patrones de uso y best practices
 
 ---
 
@@ -121,6 +128,30 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 - 🏭 Factory presets: `externalAPI`, `database`, `cache`, `webhook`
 - 🔧 Global registry: Monitoreo centralizado de todos los breakers
 - 🧪 Configuración personalizable: thresholds, timeout, callbacks
+
+### Infraestructura de Validadores
+
+#### `src/lib/validators/`
+
+```typescript
+✅ types.ts (ValidationResult, ValidationError, Validator, Schema)
+✅ fields.ts (20+ field validators: email, CBU, IBAN, amount, creditCard, etc.)
+✅ builder.ts (FluentValidatorBuilder para composición)
+✅ schema.ts (Schema validation con error collection)
+✅ index.ts (exports + presets)
+✅ USAGE.md (Comprehensive guide con 5+ usage patterns)
+```
+
+**Características:**
+
+- 🔤 String validators: text, email, url, phoneNumber
+- 🔐 Password validators: strong, basic
+- 💰 Financial validators: CBU, IBAN, amount (con constraints), creditCard (Luhn)
+- 🛠️ Common validators: required, enum, range, pattern, custom
+- 🔨 Fluent builder: API encadenable para composición flexible
+- 📋 Schema validation: Validación de objetos completos con error collection
+- 🎯 Presets: userRegistration, bankAccount, transaction, contact
+- ✅ Type-safe: Validación con TypeScript generics
 
 ### Server Actions (Backend)
 

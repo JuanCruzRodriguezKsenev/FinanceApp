@@ -49,11 +49,18 @@ Proyecto bien estructurado con patrones modernos de Next.js 16.1.6 y React 19.2.
   - Registry: Monitoreo global, estado agregado de todos los breakers
   - Tests: Suite completa con 20+ casos de prueba (state transitions, error handling, realistic scenarios)
   - Documentación: USAGE.md con patrones, mejores prácticas, ejemplos reales
+- ✅ **Validators Library** implementado en `src/lib/validators/`
+  - Types: ValidationResult, ValidationError, Validator, Schema, ValidatorBuilder
+  - Fields: String, password, financial validators (email, CBU, IBAN, amount, credit card)
+  - Builder: Fluent API para composición de validadores
+  - Schema: Validación de objetos completos con error collection
+  - Presets: Configuraciones predefinidas para casos comunes
+  - Documentación: USAGE.md con patrones, best practices, ejemplos
 
 **Pendiente (siguiente fase):**
 
-- ⏳ Validadores reutilizables (`src/lib/validators/`)
-- ⏳ Aplicar Circuit Breaker a server actions (cuando sea necesario)
+- ⏳ Aplicar validators a server actions (cuando sea necesario)
+- ⏳ Crear migration guide para usuarios finales
 
 ### 🔴 Problemas Críticos Confirmados
 
