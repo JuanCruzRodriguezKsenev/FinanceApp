@@ -3,6 +3,7 @@
 ## 🎯 Resumen Ejecutivo
 
 Se implementó **un cambio radical en la arquitectura de la app** para soportar:
+
 - ✅ Cuentas bancarias reales con datos completos (CBU, Alias, IBAN)
 - ✅ Billeteras digitales (Mercado Pago, PayPal, etc.)
 - ✅ Gestión de contactos/terceros
@@ -12,12 +13,23 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 
 ---
 
+## ✅ Actualizaciones recientes (18/02/2026)
+
+- ✅ Logger System centralizado en `src/lib/logger/`
+- ✅ Consolidación de transacciones: `enhanced-transactions.ts` eliminado y lógica movida a `transactions.ts`
+- ✅ TransactionForm migrado a useReducer (machine + hook)
+- ✅ Result Pattern base en `src/lib/result/`
+
+---
+
 ## 📂 Archivos Modificados
 
 ### 1. Schema de Base de Datos
+
 **Archivo:** `src/db/schema/finance.ts`
 
 **Cambios:**
+
 - ✅ Nuevos enums:
   - `bankEnum` - 20 bancos argentinos
   - `walletProviderEnum` - 9 proveedores de wallets
@@ -43,9 +55,11 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ---
 
 ### 2. Tipos TypeScript
+
 **Archivo:** `src/types/index.ts`
 
 **Cambios:**
+
 - ✅ Nuevos tipos:
   - `BankAccount`
   - `DigitalWallet`
@@ -65,9 +79,21 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 
 ## 📁 Archivos Nuevos Creados
 
+### Infraestructura de Result Pattern
+
+#### `src/lib/result/`
+
+```typescript
+✅ types.ts (Ok, Err, Result)
+✅ helpers.ts (combine, fromPromise, fromThrowable)
+✅ errors.ts (AppError + factories)
+✅ index.ts (exports)
+```
+
 ### Server Actions (Backend)
 
 #### 1. `src/core/actions/bank-accounts.ts`
+
 ```typescript
 ✅ createBankAccount()
 ✅ getBankAccounts()
@@ -76,11 +102,13 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ updateBankAccountBalance()
 ✅ searchBankAccountByCBUOrAlias()
 ```
+
 - Gestión completa de CRUD
 - Validación de seguridad
 - Búsqueda inteligente
 
 #### 2. `src/core/actions/digital-wallets.ts`
+
 ```typescript
 ✅ createDigitalWallet()
 ✅ getDigitalWallets()
@@ -88,11 +116,13 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ deleteDigitalWallet()
 ✅ updateWalletBalance()
 ```
+
 - Manejo de wallets
 - Vinculación a cuentas
 - Actualización de saldos
 
 #### 3. `src/core/actions/contacts.ts`
+
 ```typescript
 ✅ createContact()
 ✅ getContacts()
@@ -101,11 +131,13 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ updateContact()
 ✅ deleteContact()
 ```
+
 - Gestión de contactos
 - Búsqueda flexible
 - Información completa
 
-#### 4. `src/core/actions/enhanced-transactions.ts`
+#### 4. `src/core/actions/transactions.ts` (auto-detección y metadata)
+
 ```typescript
 ✅ createTransactionWithAutoDetection()
 ✅ updateBalancesAfterTransaction()
@@ -113,6 +145,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ✅ flagTransactionAsSuspicious()
 ✅ getSuspiciousTransactions()
 ```
+
 - Detección automática
 - Actualización de saldos
 - Análisis de anomalías
@@ -122,6 +155,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ### Utilidades (Lógica de Negocio)
 
 #### `src/lib/transaction-detector.ts`
+
 ```typescript
 ✅ detectTransactionType()
    - Detecta si es: propia, tercero, retiro, depósito, ingreso, gasto
@@ -140,6 +174,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ### Componentes (Frontend)
 
 #### `src/components/BankAccountManager.tsx`
+
 - Componente completo con:
   - Formulario para agregar cuentas
   - Listado con tarjetas bonitas
@@ -149,6 +184,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
   - Estados de carga
 
 #### `src/components/BankAccountManager.module.css`
+
 - Estilos modernos
 - Temas adaptativos
 - Mobile-first
@@ -159,24 +195,28 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ### Documentación
 
 #### 1. `QUICKSTART.md`
+
 - Guía rápida de uso
 - Ejemplos prácticos
 - Endpoints principales
 - Troubleshooting
 
 #### 2. `SYSTEM_UPGRADE_GUIDE.md`
+
 - Documentación de cambios
 - Nuevas tablas y campos
 - 12 recomendaciones adicionales
 - Roadmap
 
 #### 3. `ADVANCED_RECOMMENDATIONS.md`
+
 - 10 características avanzadas con ejemplos SQL
 - Implementación detallada
 - Prioridades de desarrollo
 - Tablas futuras
 
 #### 4. `EXAMPLES.ts`
+
 - 13 ejemplos prácticos
 - Casos de uso completos
 - Uso de detección automática
@@ -188,6 +228,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 **Archivo de migración creado:** `drizzle/0000_chilly_grim_reaper.sql`
 
 **Cambios en Base de Datos:**
+
 - ✅ 4 nuevas tablas
 - ✅ 1 tabla mejorada
 - ✅ 11 foreign keys
@@ -201,21 +242,25 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ## 📊 Estadísticas de Código
 
 ### Server Actions:
+
 - 📄 4 archivos
 - 🔧 25 funciones
 - 📝 ~1,200 líneas
 
 ### Utilidades:
+
 - 📄 1 archivo (`transaction-detector.ts`)
 - 🔧 3 funciones principales
 - 🧠 100+ palabras clave para detección
 
 ### Componentes:
+
 - 📄 2 archivos (TSX + CSS)
 - 🎨 600+ líneas CSS
 - 📱 Fully responsive
 
 ### Documentación:
+
 - 📄 4 archivos Markdown
 - 📖 1,000+ líneas
 - 💡 40+ ejemplos
@@ -225,6 +270,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ## 🔄 Integración con Sistema Existente
 
 ### ✅ Compatible Con:
+
 - Sistema de autenticación (NextAuth)
 - Base de datos Neon PostgreSQL
 - Drizzle ORM
@@ -233,12 +279,14 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 - TypeScript 5
 
 ### ✅ No Rompe:
+
 - Tablas existentes (`accounts`, `financial_transaction`)
 - Relaciones actuales
 - Funcionalidades anteriores
 - Componentes antiguos
 
 ### ✅ Mejora:
+
 - Detección de transacciones
 - Información de cuentas
 - Gestión de contactos
@@ -249,6 +297,7 @@ Se implementó **un cambio radical en la arquitectura de la app** para soportar:
 ## 🎯 Casos de Uso Ahora Soportados
 
 ### 1. Transferencia entre mis cuentas
+
 ```
 Usuario → Cuenta A → Transferencia → Cuenta B (Usuario)
 ↓
@@ -256,6 +305,7 @@ Sistema detecta: transfer_own_accounts = true
 ```
 
 ### 2. Transferencia a tercero
+
 ```
 Usuario → Cuenta → Transferencia → Tercero
 ↓
@@ -263,6 +313,7 @@ Sistema detecta: transfer_third_party = true
 ```
 
 ### 3. Retiro de efectivo
+
 ```
 Usuario → Cuenta Bancaria → ATM → Efectivo
 ↓
@@ -270,6 +321,7 @@ Sistema detecta: isCashWithdrawal = true
 ```
 
 ### 4. Depósito de efectivo
+
 ```
 Usuario → Efectivo → Banco → Cuenta
 ↓
@@ -277,6 +329,7 @@ Sistema detecta: isCashDeposit = true
 ```
 
 ### 5. Transacción normal
+
 ```
 Usuario → Compra en Restaurant
 ↓
@@ -302,6 +355,7 @@ Sistema detecta automáticamente:
 ## 📊 Datos Soportados
 
 ### Cuentas Bancarias:
+
 - ✅ Número de cuenta
 - ✅ CBU (22 dígitos)
 - ✅ Alias (Transferencia 3.0)
@@ -311,6 +365,7 @@ Sistema detecta automáticamente:
 - ✅ Moneda (ARS, USD, EUR)
 
 ### Billeteras Digitales:
+
 - ✅ Mercado Pago
 - ✅ PayPal
 - ✅ Ualá
@@ -319,6 +374,7 @@ Sistema detecta automáticamente:
 - ✅ Y más...
 
 ### Transacciones:
+
 - ✅ Tipo automático
 - ✅ Categoría automática
 - ✅ Método de pago
@@ -331,11 +387,13 @@ Sistema detecta automáticamente:
 ## 🚀 Cómo Empezar
 
 ### 1. Verificar migraciones
+
 ```bash
 npm run db:push ✅ (ya ejecutado)
 ```
 
 ### 2. Usar el componente
+
 ```typescript
 import { BankAccountManager } from "@/components/BankAccountManager";
 
@@ -343,14 +401,15 @@ import { BankAccountManager } from "@/components/BankAccountManager";
 ```
 
 ### 3. Crear transacciones
+
 ```typescript
-import { createTransactionWithAutoDetection } from "@/core/actions/enhanced-transactions";
+import { createTransactionWithAutoDetection } from "@/core/actions/transactions";
 
 await createTransactionWithAutoDetection({
-  amount: -250.50,
+  amount: -250.5,
   description: "Almuerzo en Restaurant",
   date: new Date(),
-  paymentMethod: "debit_card"
+  paymentMethod: "debit_card",
 });
 // Sistema detecta automáticamente todo
 ```
@@ -359,36 +418,40 @@ await createTransactionWithAutoDetection({
 
 ## 📚 Documentos de Referencia
 
-| Documento | Propósito | Cuando Leer |
-|-----------|-----------|-----------|
-| `QUICKSTART.md` | Guía rápida | Quieres empezar YA |
-| `SYSTEM_UPGRADE_GUIDE.md` | Cambios detallados | Necesitas entender arquitectura |
-| `ADVANCED_RECOMMENDATIONS.md` | Próximas features | Quieres expandir |
-| `EXAMPLES.ts` | Código de ejemplo | Quieres ver cómo se usa |
+| Documento                     | Propósito          | Cuando Leer                     |
+| ----------------------------- | ------------------ | ------------------------------- |
+| `QUICKSTART.md`               | Guía rápida        | Quieres empezar YA              |
+| `SYSTEM_UPGRADE_GUIDE.md`     | Cambios detallados | Necesitas entender arquitectura |
+| `ADVANCED_RECOMMENDATIONS.md` | Próximas features  | Quieres expandir                |
+| `EXAMPLES.ts`                 | Código de ejemplo  | Quieres ver cómo se usa         |
 
 ---
 
 ## ✨ Características Destacadas
 
 ### 🧠 Inteligencia Artificial
+
 - Detección de tipo automática
 - Categorización por keywords
 - Análisis de anomalías
 - Patrones de gasto
 
 ### 🔄 Automatización
+
 - Actualización de saldos
 - Metadata automática
 - Flags de seguridad
 - Revalidación de UI
 
 ### 🎨 Interfaz
+
 - Componentes modernos
 - Responsive design
 - Temas adaptativos
 - UX optimizada
 
 ### 🏗️ Arquitectura
+
 - Server actions seguras
 - Tipos bien definidos
 - Relaciones complejas
