@@ -1,5 +1,11 @@
-arquitectura hexagonal
+arquitectura
+    hexagonal
+    vertical
 
 maquinas de estados finitos
 
 message broker
+
+idempotencia
+
+side car

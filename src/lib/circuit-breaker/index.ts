@@ -6,8 +6,37 @@
  */
 
 import { CircuitBreaker } from "./circuit-breaker";
-import { CircuitBreakerConfig, ICircuitBreaker } from "./types";
+import {
+  CircuitBreakerConfig,
+  ICircuitBreaker,
+  CircuitBreakerOpenError,
+} from "./types";
 import { logger } from "../logger";
+
+/**
+ * Create a new circuit breaker instance
+ *
+ * Usage:
+ * ```typescript
+ * const breaker = createCircuitBreaker('api', { failureThreshold: 5 });
+ * ```
+ */
+export function createCircuitBreaker<T = any>(
+  name: string,
+  config?: Partial<CircuitBreakerConfig>,
+): CircuitBreaker<T> {
+  return new CircuitBreaker<T>(name, config);
+}
+
+/**
+ * Export the CircuitBreaker class for direct use
+ */
+export { CircuitBreaker };
+
+/**
+ * Export the error class for error handling
+ */
+export { CircuitBreakerOpenError };
 
 /**
  * Wraps an async function with a circuit breaker
