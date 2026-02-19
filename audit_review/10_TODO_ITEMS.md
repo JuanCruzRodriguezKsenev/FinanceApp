@@ -358,17 +358,33 @@ Effort: 2h
 
 **Archivos a documentar:**
 
-- [ ] `src/features/transactions/actions/transactions.ts` (1.5h)
-  - [ ] createTransactionWithAutoDetection
-  - [ ] updateBalancesAfterTransaction
-  - [ ] flagTransactionAsSuspicious
-  - [ ] getTransactionsWithMetadata
+- [x] `src/features/transactions/actions/transactions.ts` (1.5h) ✅
+  - [x] createTransactionWithAutoDetection
+  - [x] updateBalancesAfterTransaction
+  - [x] flagTransactionAsSuspicious
+  - [x] getTransactionsWithMetadata
 
-- [ ] `src/features/bank-accounts/actions/bank-accounts.ts` (1.5h)
-- [ ] `src/features/contacts/actions/contacts.ts` (1h)
-- [ ] `src/features/digital-wallets/actions/digital-wallets.ts` (1h)
+- [x] `src/features/bank-accounts/actions/bank-accounts.ts` (1.5h) ✅
+  - [x] createBankAccount
+  - [x] getBankAccounts
+  - [x] updateBankAccount
+  - [x] deleteBankAccount
+  - [x] updateBankAccountBalance
 
-**Total: 5h**
+- [x] `src/features/contacts/actions/contacts.ts` (1h) ✅
+  - [x] createContact
+  - [x] getContacts
+  - [x] searchContacts
+  - [x] addContactToFolder
+
+- [x] `src/features/digital-wallets/actions/digital-wallets.ts` (1h) ✅
+  - [x] createDigitalWallet
+  - [x] getDigitalWallets
+  - [x] updateDigitalWallet
+  - [x] deleteDigitalWallet
+  - [x] updateWalletBalance
+
+**Completed: 5h** ✅
 
 **Template:**
 
