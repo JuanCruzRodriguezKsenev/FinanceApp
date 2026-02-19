@@ -248,13 +248,14 @@ Effort: 4h
 
 **Setup:**
 
-1. [ ] Crear `src/lib/validators/__tests__/` folder
-2. [ ] Crear `validators.test.ts`
-3. [ ] Por cada validador:
-   - [ ] Casos válidos
-   - [ ] Casos inválidos
-   - [ ] Edge cases
-   - [ ] Async cases
+1. [x] Crear `src/lib/validators/__tests__/` folder
+2. [x] Crear `validators.test.ts`
+3. [x] Por cada validador:
+
+- [x] Casos válidos
+- [x] Casos inválidos
+- [x] Edge cases
+- [ ] Async cases (N/A - no async validator)
 
 ---
 
@@ -281,29 +282,29 @@ Effort: 2h
 **Archivo:** `src/lib/__tests__/transaction-detector.test.ts`
 
 ```
-- [ ] detectTransactionType: 15 tests
-  - [ ] Income keywords
-  - [ ] Expense keywords
-  - [ ] Transfer detection
-  - [ ] Amount patterns
-  - [ ] Withdrawal detection
+- [x] detectTransactionType: 15 tests
+  - [x] Income keywords
+  - [x] Expense keywords
+  - [x] Transfer detection
+  - [x] Amount patterns
+  - [x] Withdrawal detection
 
-- [ ] detectCategoryFromDescription: 20 tests
-  - [ ] Food keywords
-  - [ ] Transport keywords
-  - [ ] Entertainment keywords
-  - [ ] Health keywords
-  - [ ] Unknown category
+- [x] detectCategoryFromDescription: 20 tests
+  - [x] Food keywords
+  - [x] Transport keywords
+  - [x] Entertainment keywords
+  - [x] Health keywords
+  - [x] Unknown category
 
-- [ ] detectSuspiciousActivity: 10 tests
-  - [ ] Unusual amount
-  - [ ] Multiple transactions
-  - [ ] Late night tx
-  - [ ] Pattern change
+- [x] detectSuspiciousActivity: 10 tests
+  - [x] Unusual amount
+  - [x] Multiple transactions
+  - [x] Late night tx
+  - [x] Pattern change
 
 Total: 45 tests
 
-Status: ⏳ TO DO
+Status: ✅ COMPLETADO (45 tests passing)
 Effort: 2h
 ```
 
