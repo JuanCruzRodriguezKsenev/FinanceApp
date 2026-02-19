@@ -462,14 +462,20 @@ Todo está **listo para producción** y **fácil de expandir**.
 - [x] **FSM Unit Tests** - 46 tests covering all state transitions
 - [x] **FSM Service Tests** - 31 tests covering stateful behavior
 - [x] **Component Tests** - 7 tests for TransactionStatusBadge
+- [x] **Component Tests** - 20 tests for TransactionForm ✨
+- [x] **Component Tests** - 14 tests for BankAccountManager ✨
+- [x] **Component Tests** - 35 tests for TransactionRow ✨
+- [x] **Component Tests** - 32 tests for TransactionsSummary ✨
 - [x] **Test coverage report** - 100% statements, 83% branches
 - [x] **Documentation** - TESTING.md created with best practices
-- [ ] Component tests for TransactionRow (future work)
-- [ ] Component tests for TransactionForm (future work)
+- [ ] Component tests for additional UI components (future work)
 - [ ] Integration tests for transaction flows (future work)
 - [ ] E2E tests with Playwright (future work)
 
-**Current Test Status**: 85 passing tests | 0 failing | 100% coverage on FSM
+**Current Test Status**: 190 passing tests | 0 failing | Comprehensive component coverage
+
+- Server Actions: 82 tests ✓
+- Components: 108 tests ✓ (20 + 14 + 35 + 7 + 32)
 
 ---
 

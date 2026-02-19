@@ -116,29 +116,37 @@ Effort: 2h
 **Archivo:** `src/features/transactions/components/__tests__/TransactionForm.test.tsx`
 
 ```typescript
-// Tests a implementar:
-- [ ] Test: Render all form fields
-- [ ] Test: Submit form with valid data
-- [ ] Test: Show validation errors
-- [ ] Test: Show loading state
-- [ ] Test: Show error messages
-- [ ] Test: Call onSuccess callback
-- [ ] Test: Auto-categor description change
-- [ ] Test: Format currency input
+// Tests implementados:
+- [x] Test: Render all form fields
+- [x] Test: Submit form with valid data
+- [x] Test: Show validation errors
+- [x] Test: Show loading state
+- [x] Test: Show error messages
+- [x] Test: Call onSuccess callback
+- [x] Test: Type selection
+- [x] Test: Flow method selection
+- [x] Test: Amount input validation
+- [x] Test: Currency selection
+- [x] Test: Form submission with all fields
+- [x] Test: Currency mismatch validation
+- [x] Test: Insufficient funds validation
+- [x] Test: Account selection
+- [x] Test: Date selection
+- [x] Test: Description input
 
-Status: ⏳ TO DO
-Effort: 6h
+Status: ✅ COMPLETADO (20 tests passing)
+Effort: 6.5h
 ```
 
 **Steps:**
 
-1. [ ] Crear `__tests__` folder
-2. [ ] Crear `TransactionForm.test.tsx`
-3. [ ] Import React Testing Library
-4. [ ] Escribir 8+ tests
-5. [ ] Mock server action
-6. [ ] Ejecutar - pasen
-7. [ ] Commit
+1. [x] Crear `__tests__` folder
+2. [x] Crear `TransactionForm.test.tsx`
+3. [x] Import React Testing Library
+4. [x] Escribir 20 tests
+5. [x] Mock server action
+6. [x] Ejecutar - pasen
+7. [x] Commit: "test: add comprehensive TransactionForm component tests (20 tests)"
 
 ---
 
@@ -147,16 +155,22 @@ Effort: 6h
 **Archivo:** `src/features/bank-accounts/components/__tests__/BankAccountManager.test.tsx`
 
 ```
-- [ ] Test: Render account list
-- [ ] Test: Show empty state
-- [ ] Test: Open add form on button click
-- [ ] Test: Submit new account
-- [ ] Test: Delete account with confirmation
-- [ ] Test: Show validation errors
-- [ ] Test: Load accounts on mount
-- [ ] Test: Refetch after add/delete
+- [x] Test: Render account list
+- [x] Test: Show empty state
+- [x] Test: Open add form on button click
+- [x] Test: Submit new account
+- [x] Test: Delete account with confirmation
+- [x] Test: Show validation errors
+- [x] Test: Load accounts on mount
+- [x] Test: Refetch after add/delete
+- [x] Test: Display account details correctly
+- [x] Test: Display multiple accounts
+- [x] Test: Hide form when cancel clicked
+- [x] Test: Show error when creation fails
+- [x] Test: Show error when delete fails
+- [x] Test: Loading states during operations
 
-Status: ⏳ TO DO
+Status: ✅ COMPLETADO (14 tests passing)
 Effort: 4h
 ```
 
@@ -166,9 +180,28 @@ Effort: 4h
 
 **Components:**
 
-- [ ] `TransactionRow.test.tsx` (2h)
-- [ ] `TransactionsSummary.test.tsx` (2h)
-- [ ] `TransactionStatusBadge.test.tsx` (Already exists, verify)
+- [x] `TransactionRow.test.tsx` - ✅ COMPLETADO (35 tests passing, 2h)
+  - [x] Rendering and Data Display (4 tests)
+  - [x] Account Resolution (4 tests)
+  - [x] Contact Resolution (3 tests)
+  - [x] Amount Formatting and Color (4 tests)
+  - [x] Transaction Badges (4 tests)
+  - [x] State-Based Actions (4 tests)
+  - [x] Action Handlers (6 tests)
+  - [x] Delete Action (3 tests)
+  - [x] Loading States (2 tests)
+  - [x] Status Badge (1 test)
+
+- [x] `TransactionsSummary.test.tsx` - ✅ COMPLETADO (32 tests passing, 2h)
+  - [x] Rendering and Basic Display (6 tests)
+  - [x] Calculations and Statistics (8 tests)
+  - [x] Card Variants (6 tests)
+  - [x] Navigation (4 tests)
+  - [x] Number Formatting (2 tests)
+  - [x] Edge Cases (3 tests)
+  - [x] Complex Scenarios (3 tests)
+
+- [x] `TransactionStatusBadge.test.tsx` (Already exists ✓)
 
 ---
 
