@@ -5,32 +5,32 @@ import type { TransactionState } from "@/types";
 
 describe("TransactionStatusBadge", () => {
   it("renders DRAFT state correctly", () => {
-    render(<TransactionStatusBadge state="DRAFT" as TransactionState />);
+    render(<TransactionStatusBadge state="DRAFT" />);
     expect(screen.getByText("Borrador")).toBeInTheDocument();
   });
 
   it("renders PENDING state correctly", () => {
-    render(<TransactionStatusBadge state="PENDING" as TransactionState />);
+    render(<TransactionStatusBadge state="PENDING" />);
     expect(screen.getByText("Pendiente")).toBeInTheDocument();
   });
 
   it("renders CONFIRMED state correctly", () => {
-    render(<TransactionStatusBadge state="CONFIRMED" as TransactionState />);
+    render(<TransactionStatusBadge state="CONFIRMED" />);
     expect(screen.getByText("Confirmada")).toBeInTheDocument();
   });
 
   it("renders FAILED state correctly", () => {
-    render(<TransactionStatusBadge state="FAILED" as TransactionState />);
+    render(<TransactionStatusBadge state="FAILED" />);
     expect(screen.getByText("Fallida")).toBeInTheDocument();
   });
 
   it("renders CANCELLED state correctly", () => {
-    render(<TransactionStatusBadge state="CANCELLED" as TransactionState />);
+    render(<TransactionStatusBadge state="CANCELLED" />);
     expect(screen.getByText("Cancelada")).toBeInTheDocument();
   });
 
   it("renders RECONCILED state correctly", () => {
-    render(<TransactionStatusBadge state="RECONCILED" as TransactionState />);
+    render(<TransactionStatusBadge state="RECONCILED" />);
     expect(screen.getByText("Conciliada")).toBeInTheDocument();
   });
 
