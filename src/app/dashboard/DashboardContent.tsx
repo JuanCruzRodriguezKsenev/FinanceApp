@@ -64,26 +64,38 @@ export default function DashboardContent({
 }: Props) {
   const router = useRouter();
 
-  // Crear maps para lookups eficientes
-  const accountMap = useMemo(
-    () => new Map(accounts.map((acc) => [acc.id, acc])),
-    [accounts],
-  );
+  // Crear records para lookups eficientes
+  const accountMap = useMemo((): Record<string, Account> => {
+    const record: Record<string, Account> = {};
+    accounts.forEach((acc) => {
+      record[acc.id] = acc;
+    });
+    return record;
+  }, [accounts]);
 
-  const bankAccountMap = useMemo(
-    () => new Map(bankAccounts.map((acc) => [acc.id, acc])),
-    [bankAccounts],
-  );
+  const bankAccountMap = useMemo((): Record<string, BankAccount> => {
+    const record: Record<string, BankAccount> = {};
+    bankAccounts.forEach((acc) => {
+      record[acc.id] = acc;
+    });
+    return record;
+  }, [bankAccounts]);
 
-  const walletMap = useMemo(
-    () => new Map(digitalWallets.map((wallet) => [wallet.id, wallet])),
-    [digitalWallets],
-  );
+  const walletMap = useMemo((): Record<string, DigitalWallet> => {
+    const record: Record<string, DigitalWallet> = {};
+    digitalWallets.forEach((wallet) => {
+      record[wallet.id] = wallet;
+    });
+    return record;
+  }, [digitalWallets]);
 
-  const contactMap = useMemo(
-    () => new Map(contacts.map((contact) => [contact.id, contact])),
-    [contacts],
-  );
+  const contactMap = useMemo((): Record<string, Contact> => {
+    const record: Record<string, Contact> = {};
+    contacts.forEach((contact) => {
+      record[contact.id] = contact;
+    });
+    return record;
+  }, [contacts]);
 
   // Observer Pattern: Escuchar eventos de transacciones
   useEffect(() => {

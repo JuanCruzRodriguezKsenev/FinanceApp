@@ -79,15 +79,17 @@ export default async function TransactionsPage({ searchParams }: Props) {
   const serializedContacts = JSON.parse(JSON.stringify(contacts));
 
   // Create maps from SERIALIZED data
-  const accountMap = new Map(serializedAccounts.map((acc) => [acc.id, acc]));
+  const accountMap = new Map(
+    serializedAccounts.map((acc: any) => [acc.id, acc]),
+  );
   const bankAccountMap = new Map(
-    serializedBankAccounts.map((acc) => [acc.id, acc]),
+    serializedBankAccounts.map((acc: any) => [acc.id, acc]),
   );
   const walletMap = new Map(
-    serializedWallets.map((wallet) => [wallet.id, wallet]),
+    serializedWallets.map((wallet: any) => [wallet.id, wallet]),
   );
   const contactMap = new Map(
-    serializedContacts.map((contact) => [contact.id, contact]),
+    serializedContacts.map((contact: any) => [contact.id, contact]),
   );
 
   // Normalize transaction data for type safety
