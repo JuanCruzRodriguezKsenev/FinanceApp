@@ -16,5 +16,5 @@ const logger = new Logger({
 });
 
 export { logger };
-export * from "./types";
 export { Logger } from "./logger";
+export * from "./types";

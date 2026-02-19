@@ -5,7 +5,7 @@
  * Actual implementation tests would require database mocking setup.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, expect,it } from "vitest";
 
 describe("Idempotency (Documentation)", () => {
   it("placeholder test - idempotency implementation documented", () => {

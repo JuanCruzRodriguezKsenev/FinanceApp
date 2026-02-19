@@ -1,4 +1,4 @@
-import { LogLevel, LogEntry, LoggerConfig } from "./types";
+import { LogEntry, LoggerConfig,LogLevel } from "./types";
 
 export class Logger {
   private readonly config: LoggerConfig;

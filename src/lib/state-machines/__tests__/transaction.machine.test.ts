@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect,it } from "vitest";
+
 import {
-  TransactionState,
-  TransactionEventType,
-  VALID_TRANSITIONS,
-  EVENT_TO_STATE,
   canTransition,
   canTransitionEvent,
-  getValidTransitions,
+  EVENT_TO_STATE,
   getValidEvents,
+  getValidTransitions,
+  TransactionEventType,
+  TransactionState,
+  VALID_TRANSITIONS,
 } from "../transaction.machine";
 
 describe("Transaction State Machine", () => {

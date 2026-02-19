@@ -1,8 +1,10 @@
 "use client";
 
-import { ReactNode, useRef, useReducer } from "react";
-import styles from "./Widget.module.css";
+import { ReactNode, useReducer,useRef } from "react";
+
 import { LIMITS } from "@/constants/globals";
+
+import styles from "./Widget.module.css";
 
 interface WidgetProps {
   id: string;

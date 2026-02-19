@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+
 import styles from "./NavbarEnd.module.css";
 
 interface NavbarEndProps {

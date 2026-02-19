@@ -1,19 +1,19 @@
 "use client";
 
-import { ReactNode, ComponentProps } from "react";
-import styles from "./Form.module.css";
+import { ComponentProps,ReactNode } from "react";
 
 // Importaciones corregidas (ajusta según tu estructura real)
 import Button from "../Buttons/Button";
 import SubmitButton from "../Buttons/Submit/Submit";
+import Checkbox from "./Checkbox";
+import styles from "./Form.module.css";
+import FormField from "./FormField";
 import Input from "./Input";
+import PasswordInput from "./PasswordInput";
+import RadioGroup from "./RadioGroup";
 import Select from "./Select";
 import SelectCustom from "./SelectCustom";
-import PasswordInput from "./PasswordInput";
 import Textarea from "./Textarea";
-import RadioGroup from "./RadioGroup";
-import Checkbox from "./Checkbox";
-import FormField from "./FormField";
 
 /**
  * Props para el componente Form

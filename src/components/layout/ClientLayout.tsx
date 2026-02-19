@@ -1,7 +1,7 @@
 "use client";
 
-import { ThemeProvider } from "@/contexts";
 import { AppNavbar } from "@/components/layout/AppNavbar";
+import { ThemeProvider } from "@/contexts";
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
   return (

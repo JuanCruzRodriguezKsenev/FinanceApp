@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import PaymentCardComponent from "../PaymentCard";
-import ProgressBar from "@/components/ui/ProgressBar/ProgressBar";
+
 import ExpandablePanel from "@/components/ui/ExpandablePanel/ExpandablePanel";
-import { PaymentCard, CreditCardData } from "@/types";
+import ProgressBar from "@/components/ui/ProgressBar/ProgressBar";
 import { fmt } from "@/lib/formatters";
+import { CreditCardData,PaymentCard } from "@/types";
+
+import PaymentCardComponent from "../PaymentCard";
 import styles from "./CreditCard.module.css";
 
 interface Props {

@@ -5,9 +5,9 @@
  */
 
 import {
+  validationError,
   ValidationResult,
   validationSuccess,
-  validationError,
   Validator,
 } from "./types";
 

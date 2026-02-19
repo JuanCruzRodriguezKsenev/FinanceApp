@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+
 import styles from "./List.module.css";
 
 export type ListAlignment = "start" | "center" | "end";

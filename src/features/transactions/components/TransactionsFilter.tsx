@@ -1,14 +1,15 @@
 // src/components/transactions/TransactionsFilter.tsx
 "use client";
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import Filter, {
   FilterFieldDef,
   SortOptionDef,
 } from "@/components/ui/Filter/Filter";
-import { SortConfig } from "@/hooks/useDataFilters";
 import { CURRENCY_OPTIONS } from "@/constants/selectOptions";
+import { SortConfig } from "@/hooks/useDataFilters";
 
 // Mapeo de valores internos a etiquetas visuales
 const TYPE_OPTIONS = [
@@ -165,18 +166,15 @@ export default function TransactionsFilter() {
 
   // Convertir valores actuales a etiquetas para mostrar
   const displayFilters: Record<string, string[]> = {
-    type:
-      filters.type
-        ?.map((v) => TYPE_OPTIONS.find((t) => t.value === v)?.label)
-        .filter((v): v is string => Boolean(v)) || [],
-    category:
-      filters.category
-        ?.map((v) => CATEGORY_OPTIONS.find((c) => c.value === v)?.label)
-        .filter((v): v is string => Boolean(v)) || [],
-    currency:
-      filters.currency
-        ?.map((v) => CURRENCY_FILTER_OPTIONS.find((c) => c.value === v)?.label)
-        .filter((v): v is string => Boolean(v)) || [],
+    type: (filters.type
+      ?.map((v) => TYPE_OPTIONS.find((t) => t.value === v)?.label)
+      .filter(Boolean) || []) as string[],
+    category: (filters.category
+      ?.map((v) => CATEGORY_OPTIONS.find((c) => c.value === v)?.label)
+      .filter(Boolean) || []) as string[],
+    currency: (filters.currency
+      ?.map((v) => CURRENCY_FILTER_OPTIONS.find((c) => c.value === v)?.label)
+      .filter(Boolean) || []) as string[],
   };
 
   return (

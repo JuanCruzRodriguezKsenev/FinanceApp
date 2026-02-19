@@ -4,26 +4,27 @@
 
 "use server";
 
+import { and, eq, like, or } from "drizzle-orm";
+
 import { db } from "@/db";
 import {
-  contacts,
-  contactFolders,
   contactFolderMembers,
+  contactFolders,
+  contacts,
 } from "@/db/schema/finance";
 import { auth } from "@/lib/auth";
-import { logger } from "@/lib/logger";
 import { createIdempotencyKey } from "@/lib/idempotency";
+import { logger } from "@/lib/logger";
 import {
-  ok,
-  err,
-  authorizationError,
-  validationError,
-  databaseError,
-  notFoundError,
-  type Result,
   type AppError,
+  authorizationError,
+  databaseError,
+  err,
+  notFoundError,
+  ok,
+  type Result,
+  validationError,
 } from "@/lib/result";
-import { eq, and, like, or } from "drizzle-orm";
 import type { Contact } from "@/types";
 
 /**

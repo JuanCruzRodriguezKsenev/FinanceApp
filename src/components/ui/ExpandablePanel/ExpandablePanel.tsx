@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode, useEffect, useState } from "react";
+
 import styles from "./ExpandablePanel.module.css";
 
 interface Props {

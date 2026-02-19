@@ -3,11 +3,11 @@
  */
 
 import {
+  validationError,
   ValidationResult,
+  validationSuccess,
   Validator,
   ValidatorBuilder,
-  validationSuccess,
-  validationError,
 } from "./types";
 
 /**

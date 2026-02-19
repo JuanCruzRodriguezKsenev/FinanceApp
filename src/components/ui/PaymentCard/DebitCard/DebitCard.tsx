@@ -1,5 +1,6 @@
+import { DebitCardData,PaymentCard } from "@/types";
+
 import PaymentCardComponent from "../PaymentCard";
-import { PaymentCard, DebitCardData } from "@/types";
 import styles from "./DebitCard.module.css"; // Import the new CSS module
 
 interface Props {

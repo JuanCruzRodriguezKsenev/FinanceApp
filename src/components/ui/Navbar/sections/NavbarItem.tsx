@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
 import Link from "next/link";
+import { ReactNode } from "react";
+
 import styles from "./NavbarItem.module.css";
 
 interface NavbarItemProps {

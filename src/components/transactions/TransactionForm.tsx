@@ -2,22 +2,24 @@
 "use client";
 
 import { memo, useEffect, useRef, useTransition } from "react";
-import { createTransactionWithAutoDetection } from "@/features/transactions/actions/transactions";
+
 import Button from "@/components/ui/Buttons/Button";
-import { useMessage } from "@/hooks/useMessage";
 import { getCategorySelectOptions } from "@/constants/transactionLabels";
-import { eventBus, EVENTS } from "@/lib/eventBus";
+import { createTransactionWithAutoDetection } from "@/features/transactions/actions/transactions";
 import { useTransactionForm } from "@/features/transactions/hooks/useTransactionForm";
+import { useMessage } from "@/hooks/useMessage";
+import { eventBus, EVENTS } from "@/lib/eventBus";
 import type { AppError } from "@/lib/result";
-import styles from "./TransactionForm.module.css";
 import type {
   Account,
-  SavingsGoal,
   BankAccount,
-  DigitalWallet,
   Contact,
+  DigitalWallet,
+  SavingsGoal,
   TransactionType,
 } from "@/types";
+
+import styles from "./TransactionForm.module.css";
 
 interface Props {
   accounts: Account[];

@@ -12,21 +12,23 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
+import {
+  ACCOUNT_TYPE_OPTIONS,
+  BANK_OPTIONS,
+  CURRENCY_OPTIONS,
+} from "@/constants/selectOptions";
 import {
   createBankAccount,
-  getBankAccounts,
   deleteBankAccount,
+  getBankAccounts,
 } from "@/features/bank-accounts/actions";
 import { useFormInputs } from "@/hooks/useForm";
 import { useMessage } from "@/hooks/useMessage";
-import {
-  BANK_OPTIONS,
-  ACCOUNT_TYPE_OPTIONS,
-  CURRENCY_OPTIONS,
-} from "@/constants/selectOptions";
-import type { BankAccount } from "@/types";
 import type { AppError } from "@/lib/result";
+import type { BankAccount } from "@/types";
+
 import styles from "./BankAccountManager.module.css";
 
 const INITIAL_FORM_DATA = {
@@ -340,3 +342,5 @@ export function BankAccountManager() {
     </div>
   );
 }
+
+export default BankAccountManager;

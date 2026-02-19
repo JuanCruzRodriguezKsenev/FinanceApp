@@ -1,12 +1,14 @@
 // src/components/ui/PaymentCard/PaymentCard.tsx
 "use client";
 
-import styles from "./PaymentCard.module.css";
-import { PaymentCard } from "@/types";
 import { ReactNode } from "react";
-import PaymentCardHeader from "./PaymentCardHeader";
+
+import { PaymentCard } from "@/types";
+
+import styles from "./PaymentCard.module.css";
 import PaymentCardContent from "./PaymentCardContent";
 import PaymentCardFooter from "./PaymentCardFooter";
+import PaymentCardHeader from "./PaymentCardHeader";
 
 interface PaymentCardComponentProps {
   data: PaymentCard;

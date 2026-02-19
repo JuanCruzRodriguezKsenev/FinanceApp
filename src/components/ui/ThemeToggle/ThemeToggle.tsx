@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/contexts";
+
 import styles from "./ThemeToggle.module.css";
 
 interface ThemeToggleProps {

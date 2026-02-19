@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+
+import Button from "@/components/ui/Buttons/Button";
 import Dialog from "@/components/ui/Dialog/Dialog";
 import Form from "@/components/ui/Form/Form";
-import Button from "@/components/ui/Buttons/Button";
 
 export default function UITestPage() {
   const [dialogOpen, setDialogOpen] = useState(false);

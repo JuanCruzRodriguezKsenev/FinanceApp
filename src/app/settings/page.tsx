@@ -1,6 +1,7 @@
 "use client";
 
 import { useTheme } from "@/contexts";
+
 import styles from "./settings.module.css";
 
 export default function SettingsPage() {

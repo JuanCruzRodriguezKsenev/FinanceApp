@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+
 import Dialog from "@/components/ui/Dialog/Dialog";
-import TransactionForm from "./TransactionForm";
 import type {
   Account,
-  SavingsGoal,
   BankAccount,
-  DigitalWallet,
   Contact,
+  DigitalWallet,
+  SavingsGoal,
 } from "@/types";
+
+import TransactionForm from "./TransactionForm";
 
 interface Props {
   accounts: Account[];

@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent,render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import TransactionForm from "../TransactionForm";
+import { beforeEach,describe, expect, it, vi } from "vitest";
+
+import { err, ok, validationError } from "@/lib/result";
+import type { Account, BankAccount, DigitalWallet,SavingsGoal } from "@/types";
+
 import { createTransactionWithAutoDetection } from "../../actions";
-import type { Account, SavingsGoal, BankAccount, DigitalWallet } from "@/types";
-import { ok, err, validationError } from "@/lib/result";
+import TransactionForm from "../TransactionForm";
 
 // Mock the server action
 vi.mock("../../actions", () => ({

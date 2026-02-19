@@ -1,14 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { fireEvent,render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { BankAccountManager } from "../BankAccountManager";
+import { beforeEach,describe, expect, it, vi } from "vitest";
+
+import { err, ok, validationError } from "@/lib/result";
+import type { BankAccount } from "@/types";
+
 import {
   createBankAccount,
-  getBankAccounts,
   deleteBankAccount,
+  getBankAccounts,
 } from "../../actions";
-import type { BankAccount } from "@/types";
-import { ok, err, validationError } from "@/lib/result";
+import { BankAccountManager } from "../BankAccountManager";
 
 // Mock the server actions
 vi.mock("../../actions", () => ({

@@ -1,14 +1,16 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { auth } from "@/lib/auth";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
+
 import { db } from "@/db";
+import { auth } from "@/lib/auth";
+import type { DigitalWallet } from "@/types";
+
 import {
   createDigitalWallet,
+  deleteDigitalWallet,
   getDigitalWallets,
   updateDigitalWallet,
-  deleteDigitalWallet,
   updateWalletBalance,
 } from "../digital-wallets";
-import type { DigitalWallet } from "@/types";
 
 // Mock all external modules
 vi.mock("@/lib/auth", () => ({

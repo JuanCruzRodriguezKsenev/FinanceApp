@@ -1,10 +1,10 @@
 /* src/db/schema/auth.ts */
 import {
-  timestamp,
-  pgTable,
-  text,
-  primaryKey,
   integer,
+  pgTable,
+  primaryKey,
+  text,
+  timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccount } from "next-auth/adapters";

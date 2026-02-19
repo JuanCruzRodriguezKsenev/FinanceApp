@@ -1,11 +1,11 @@
+import { logger } from "../logger";
 import {
-  CircuitBreakerState,
   CircuitBreakerConfig,
   CircuitBreakerMetrics,
-  ICircuitBreaker,
   CircuitBreakerOpenError,
+  CircuitBreakerState,
+  ICircuitBreaker,
 } from "./types";
-import { logger } from "../logger";
 
 /**
  * Default configuration for circuit breaker

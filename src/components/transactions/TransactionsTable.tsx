@@ -1,15 +1,17 @@
 // src/components/transactions/TransactionsTable.tsx
 "use client";
 
+import { memo } from "react";
+
+import { Table } from "@/components/ui/Table";
 import type {
-  Transaction,
   Account,
   BankAccount,
-  DigitalWallet,
   Contact,
+  DigitalWallet,
+  Transaction,
 } from "@/types";
-import { memo } from "react";
-import { Table } from "@/components/ui/Table";
+
 import TransactionRow from "./TransactionRow";
 
 interface Props {

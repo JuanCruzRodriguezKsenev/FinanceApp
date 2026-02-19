@@ -3,7 +3,7 @@
  * Detecta automáticamente el tipo de transacción basándose en los datos
  */
 
-import type { TransactionType, PaymentMethod } from "@/types";
+import type { PaymentMethod,TransactionType } from "@/types";
 
 export interface TransactionDetectionInput {
   fromAccountId?: string;

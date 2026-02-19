@@ -1,6 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import styles from "./Filter.module.css";
+import { useEffect,useRef, useState } from "react";
+
 import { SortConfig } from "@/hooks/useDataFilters";
+
+import styles from "./Filter.module.css";
 
 // Definición de campos de filtrado
 export interface FilterFieldDef<T> {

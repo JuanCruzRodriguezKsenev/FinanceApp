@@ -12,18 +12,13 @@ export type EnrichedCard = (CreditCardData | DebitCardData) & {
  */
 export const CARD_FILTER_FIELDS = [
   {
-    name: "bank",
+    key: "bank" as const,
     label: "Bank",
-    type: "select" as const,
   },
   {
-    name: "type",
+    key: "type" as const,
     label: "Type",
-    type: "select" as const,
-    options: [
-      { value: "credit", label: "Credit Card" },
-      { value: "debit", label: "Debit Card" },
-    ],
+    options: ["Credit Card", "Debit Card"],
   },
 ];
 
@@ -32,13 +27,11 @@ export const CARD_FILTER_FIELDS = [
  */
 export const CARD_SORT_OPTIONS = [
   {
-    value: "bank",
+    key: "bank" as const,
     label: "Bank (A-Z)",
-    direction: "asc" as const,
   },
   {
-    value: "holder",
+    key: "holder" as const,
     label: "Holder (A-Z)",
-    direction: "asc" as const,
   },
 ];

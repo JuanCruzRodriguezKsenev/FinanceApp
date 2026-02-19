@@ -1,16 +1,18 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect,useState } from "react";
+
+import LogoutButton from "@/components/auth/LogoutButton";
 import {
   Navbar,
   NavbarBrand,
-  NavbarNav,
-  NavbarItem,
   NavbarDivider,
+  NavbarItem,
+  NavbarNav,
 } from "@/components/ui/Navbar";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import LogoutButton from "@/components/auth/LogoutButton";
+
 import styles from "./AppNavbar.module.css";
 
 export function AppNavbar() {

@@ -1,15 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { auth } from "@/lib/auth";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
+
 import { db } from "@/db";
+import { auth } from "@/lib/auth";
+import type { Contact } from "@/types";
+
 import {
   createContact,
-  getContacts,
-  searchContacts,
-  searchContactByCBUOrAlias,
-  updateContact,
   deleteContact,
+  getContacts,
+  searchContactByCBUOrAlias,
+  searchContacts,
+  updateContact,
 } from "../contacts";
-import type { Contact } from "@/types";
 
 // Mock all external modules
 vi.mock("@/lib/auth", () => ({

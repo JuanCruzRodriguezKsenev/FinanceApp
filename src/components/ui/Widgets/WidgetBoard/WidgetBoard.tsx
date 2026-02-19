@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef, ReactNode } from "react";
+import { ReactNode,useRef, useState } from "react";
+
 import Widget from "../Widget/Widget";
 import styles from "./WidgetBoard.module.css";
 

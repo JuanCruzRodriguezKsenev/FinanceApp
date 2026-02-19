@@ -1,4 +1,4 @@
-import { Result, Ok, ok, err } from "./types";
+import { err,Ok, ok, Result } from "./types";
 
 export function combine<T extends readonly Result<any, any>[]>(
   results: T,

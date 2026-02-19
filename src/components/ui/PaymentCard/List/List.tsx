@@ -1,22 +1,22 @@
 "use client";
 
-import styles from "./List.module.css";
-// ✅ Importamos los componentes específicos para el renderizado
-import CreditCard from "../CreditCard/CreditCard";
-import DebitCard from "../DebitCard/DebitCard";
-
+import {
+  CARD_FILTER_FIELDS,
+  CARD_SORT_OPTIONS,
+  EnrichedCard,
+} from "@/app/cards/constants";
+import GenericFilter from "@/components/ui/Filter/Filter";
 import GenericList, {
   ListAlignment,
   ListDirection,
 } from "@/components/ui/List/List";
-import GenericFilter from "@/components/ui/Filter/Filter";
-import {
-  EnrichedCard,
-  CARD_FILTER_FIELDS,
-  CARD_SORT_OPTIONS,
-} from "@/app/cards/constants";
-import { PaymentCard, CreditCardData, DebitCardData } from "@/types"; // Importamos CreditCardData y DebitCardData
 import { FilterLogic } from "@/hooks/useDataFilters";
+import { CreditCardData, DebitCardData, PaymentCard } from "@/types"; // Importamos CreditCardData y DebitCardData
+
+// ✅ Importamos los componentes específicos para el renderizado
+import CreditCard from "../CreditCard/CreditCard";
+import DebitCard from "../DebitCard/DebitCard";
+import styles from "./List.module.css";
 
 interface Props {
   cards: EnrichedCard[];
@@ -37,7 +37,7 @@ export default function PaymentCardsList({
   filterLogic,
 }: Props) {
   // USO SEGURO: Resolvemos processedCards.
-  const processedCards = filterLogic?.processedData || cards; // --- CONFIGURACIÓN DE LAYOUT ---
+  const processedCards = filterLogic?.filteredData || cards; // --- CONFIGURACIÓN DE LAYOUT ---
 
   const listDirection: ListDirection = "horizontal";
   const listAlignment: ListAlignment = "center";
@@ -62,7 +62,9 @@ export default function PaymentCardsList({
 
   const isFiltered =
     filterLogic &&
-    Object.values(filterLogic.filters).some((v) => v && v !== "all");
+    Object.values(filterLogic.filters).some(
+      (v) => v && Array.isArray(v) && v.length > 0,
+    );
   const emptyMessage = isFiltered
     ? "No cards match the current filters."
     : "No cards found.";
@@ -94,6 +96,7 @@ export default function PaymentCardsList({
         <GenericList<EnrichedCard>
           items={processedCards}
           renderItem={renderCard}
+          keyExtractor={(card) => card.id}
           direction={listDirection}
           alignment={listAlignment}
           gap={listGap}

@@ -1,8 +1,8 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
-import simpleImportSort from "eslint-plugin-simple-import-sort";
 import importPlugin from "eslint-plugin-import";
+import simpleImportSort from "eslint-plugin-simple-import-sort";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -29,8 +29,8 @@ const eslintConfig = defineConfig([
       "import/newline-after-import": "error",
       "import/no-duplicates": "error",
 
-      // Disable console in production code (allow in examples)
-      "no-console": ["error", { allow: [] }],
+      // Disable console in production code (allow log, warn, error for debugging)
+      "no-console": ["warn", { allow: ["warn", "error"] }],
     },
   },
 ]);

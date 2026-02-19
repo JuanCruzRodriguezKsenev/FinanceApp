@@ -1,10 +1,10 @@
 /* src/db/index.ts */
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { neonConfig,Pool } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-serverless";
 import ws from "ws";
 
-import * as identitySchema from "./schema/identity";
 import * as financeSchema from "./schema/finance";
+import * as identitySchema from "./schema/identity";
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL no definida en .env");
@@ -23,13 +23,13 @@ const schema = {
 export const db = drizzle(pool, { schema });
 
 // Exportar las tablas
+export { accounts, savingsGoals, transactions } from "./schema/finance";
 export {
-  users,
   accounts as accountsTable,
   sessions,
+  users,
   verificationTokens,
 } from "./schema/identity";
-export { accounts, savingsGoals, transactions } from "./schema/finance";
 
 export type TransactionCategory =
   // Gastos

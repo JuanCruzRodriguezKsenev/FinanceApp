@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { FormEvent,useEffect, useState } from "react";
+
 import Dialog from "@/components/ui/Dialog/Dialog";
-import { PaymentCard, CreditCardData, DebitCardData } from "@/types";
+import { CreditCardData, DebitCardData,PaymentCard } from "@/types";
+
 // Asegúrate de que este archivo exista en la misma carpeta
 import styles from "./FormModal.module.css";
 

@@ -1,8 +1,10 @@
 "use client";
 
 import { ButtonHTMLAttributes, ReactNode } from "react";
-import styles from "./Button.module.css";
+
 import { BUTTON_VARIANTS, ButtonVariant } from "@/constants/globals";
+
+import styles from "./Button.module.css";
 
 /**
  * Props para el componente Button

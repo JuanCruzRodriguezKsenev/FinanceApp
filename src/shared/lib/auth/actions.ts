@@ -1,22 +1,23 @@
 /* src/core/actions/auth.ts */
 "use server";
 
-import { signIn, signOut } from "@/lib/auth";
+import bcrypt from "bcryptjs";
+import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+
 import { db } from "@/db";
 import { users } from "@/db/schema/identity";
+import { signIn, signOut } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import {
-  ok,
-  err,
-  authorizationError,
-  validationError,
-  databaseError,
-  type Result,
   type AppError,
+  authorizationError,
+  databaseError,
+  err,
+  ok,
+  type Result,
+  validationError,
 } from "@/lib/result";
-import { eq } from "drizzle-orm";
-import bcrypt from "bcryptjs";
 
 export async function loginActionResult(
   formData: FormData,

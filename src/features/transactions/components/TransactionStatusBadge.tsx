@@ -1,4 +1,5 @@
 import type { TransactionState } from "@/types";
+
 import styles from "./TransactionStatusBadge.module.css";
 
 const STATUS_CONFIG: Record<

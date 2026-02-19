@@ -9,25 +9,9 @@
  */
 
 import {
-  createCircuitBreaker,
   CircuitBreakerFactory,
   CircuitBreakerOpenError,
-} from "./index";
-
-/**
- * Circuit Breaker Examples & Documentation
- *
- * This file demonstrates the Circuit Breaker pattern implementation
- * with realistic scenarios and edge cases.
- *
- * These are example use cases showing how to use the circuit breaker.
- * They are presented as commented code for reference.
- */
-
-import {
   createCircuitBreaker,
-  CircuitBreakerFactory,
-  CircuitBreakerOpenError,
 } from "./index";
 
 /**

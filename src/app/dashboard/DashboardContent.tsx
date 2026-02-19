@@ -25,24 +25,26 @@
  */
 "use client";
 
-import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { eventBus, EVENTS } from "@/lib/eventBus";
-import { logger } from "@/lib/logger";
+import { useEffect, useMemo } from "react";
+
 import {
   TransactionForm,
-  TransactionsTable,
-  TransactionsSummary,
   TransactionsFilter,
+  TransactionsSummary,
+  TransactionsTable,
 } from "@/features/transactions/components";
+import { eventBus, EVENTS } from "@/lib/eventBus";
+import { logger } from "@/lib/logger";
 import type {
-  Transaction,
   Account,
-  SavingsGoal,
   BankAccount,
-  DigitalWallet,
   Contact,
+  DigitalWallet,
+  SavingsGoal,
+  Transaction,
 } from "@/types";
+
 import styles from "./dashboard.module.css";
 
 interface Props {

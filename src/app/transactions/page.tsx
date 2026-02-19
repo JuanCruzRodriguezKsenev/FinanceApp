@@ -1,20 +1,22 @@
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { getBankAccounts } from "@/features/bank-accounts/actions";
+import { getContacts } from "@/features/contacts/actions";
+import { getDigitalWallets } from "@/features/digital-wallets/actions";
 import {
   getTransactions,
   getUserAccounts,
   getUserGoals,
 } from "@/features/transactions/actions";
-import { getBankAccounts } from "@/features/bank-accounts/actions";
-import { getDigitalWallets } from "@/features/digital-wallets/actions";
-import { getContacts } from "@/features/contacts/actions";
 import {
-  TransactionsTable,
-  TransactionsFilter,
   NewTransactionDialog,
+  TransactionsFilter,
+  TransactionsTable,
 } from "@/features/transactions/components";
-import { getTransactionStats } from "@/lib/transactionUtils";
+import { auth } from "@/lib/auth";
 import { fmt } from "@/lib/formatters";
+import { getTransactionStats } from "@/lib/transactionUtils";
+
 import styles from "./transactions.module.css";
 
 interface Props {

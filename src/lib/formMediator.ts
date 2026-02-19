@@ -46,6 +46,11 @@
  * TODO pasa por el Mediator
  * ```
  */
+/**
+ * Hook de React para usar FormMediator
+ */
+import { useCallback,useEffect, useState } from "react";
+
 import { logger } from "@/lib/logger";
 
 export interface FieldConfig {
@@ -230,11 +235,6 @@ export class FormMediator {
     };
   }
 }
-
-/**
- * Hook de React para usar FormMediator
- */
-import { useState, useEffect, useCallback } from "react";
 
 export function useFormMediator() {
   const [mediator] = useState(() => new FormMediator());

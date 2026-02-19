@@ -1,9 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import {
-  TransactionStateMachine,
-  type TransactionStateContext,
-} from "../transaction.service";
+import { beforeEach,describe, expect, it } from "vitest";
+
 import { TransactionState } from "../transaction.machine";
+import {
+  type TransactionStateContext,
+  TransactionStateMachine,
+} from "../transaction.service";
 
 describe("TransactionStateMachine Service", () => {
   describe("Constructor and Initial State", () => {

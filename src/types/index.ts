@@ -366,9 +366,9 @@ export interface SavingsGoal {
 
 // Tipos de tema
 export type {
-  Theme,
-  ThemeContextType,
   CSSThemeVariables,
-  ThemeOption,
+  Theme,
   ThemeConfig,
+  ThemeContextType,
+  ThemeOption,
 } from "./theme";

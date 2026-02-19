@@ -1,17 +1,19 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { auth } from "@/lib/auth";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
+
 import { db } from "@/db";
+import { auth } from "@/lib/auth";
 import {
-  createTransactionWithAutoDetection,
-  updateBalancesAfterTransaction,
-  flagTransactionAsSuspicious,
-  getTransactionsWithMetadata,
-} from "../transactions";
-import {
-  detectTransactionType,
   detectCategoryFromDescription,
+  detectTransactionType,
 } from "@/lib/transaction-detector";
 import type { TransactionCategory, TransactionType } from "@/types";
+
+import {
+  createTransactionWithAutoDetection,
+  flagTransactionAsSuspicious,
+  getTransactionsWithMetadata,
+  updateBalancesAfterTransaction,
+} from "../transactions";
 
 // Mock all external modules
 vi.mock("@/lib/auth", () => ({

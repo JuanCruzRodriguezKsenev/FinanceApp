@@ -1,12 +1,14 @@
 // src/components/transactions/TransactionsSummary.tsx
 "use client";
 
-import { Transaction } from "@/types";
 import { useRouter } from "next/navigation";
 import { memo } from "react";
+
 import Card from "@/components/ui/Card/Card";
-import { getTransactionStats } from "@/lib/transactionUtils";
 import { fmt } from "@/lib/formatters";
+import { getTransactionStats } from "@/lib/transactionUtils";
+import { Transaction } from "@/types";
+
 import styles from "./TransactionsSummary.module.css";
 
 interface Props {

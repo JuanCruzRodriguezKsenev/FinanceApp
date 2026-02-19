@@ -1,8 +1,9 @@
 // src/app/auth/register/page.tsx
-import { registerAction } from "@/shared/lib/auth/actions";
-import styles from "./register.module.css";
 import Button from "@/components/ui/Buttons/Button";
 import Card from "@/components/ui/Card/Card";
+import { registerAction } from "@/shared/lib/auth/actions";
+
+import styles from "./register.module.css";
 
 interface Props {
   searchParams: {

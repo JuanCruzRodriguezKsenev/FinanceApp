@@ -5,13 +5,13 @@
  * without modifying their implementation.
  */
 
+import { logger } from "../logger";
 import { CircuitBreaker } from "./circuit-breaker";
 import {
   CircuitBreakerConfig,
-  ICircuitBreaker,
   CircuitBreakerOpenError,
+  ICircuitBreaker,
 } from "./types";
-import { logger } from "../logger";
 
 /**
  * Create a new circuit breaker instance
@@ -80,7 +80,7 @@ export function circuitBreakerDecorator(
   config?: Partial<CircuitBreakerConfig>,
 ): MethodDecorator {
   return function (
-    target: Object,
+    target: object,
     propertyKey: string | symbol | undefined,
     descriptor: PropertyDescriptor,
   ) {

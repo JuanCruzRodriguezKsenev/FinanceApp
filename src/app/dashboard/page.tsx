@@ -1,16 +1,18 @@
 // src/app/dashboard/page.tsx
-import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+import { getBankAccounts } from "@/features/bank-accounts/actions";
+import { getContacts } from "@/features/contacts/actions";
+import { getDigitalWallets } from "@/features/digital-wallets/actions";
 import {
   getTransactions,
   getUserAccounts,
   getUserGoals,
 } from "@/features/transactions/actions";
-import { getBankAccounts } from "@/features/bank-accounts/actions";
-import { getDigitalWallets } from "@/features/digital-wallets/actions";
-import { getContacts } from "@/features/contacts/actions";
-import DashboardContent from "./DashboardContent";
+import { auth } from "@/lib/auth";
+
 import styles from "./dashboard.module.css";
+import DashboardContent from "./DashboardContent";
 
 interface Props {
   searchParams: Promise<{

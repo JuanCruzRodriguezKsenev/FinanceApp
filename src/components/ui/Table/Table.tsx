@@ -1,5 +1,6 @@
 // src/components/ui/Table/Table.tsx
 import { ReactNode } from "react";
+
 import styles from "./Table.module.css";
 
 interface Column<T> {
@@ -86,6 +87,6 @@ export default function Table<T extends { id?: string | number }>({
   );
 }
 
-export { default as TableRow } from "./TableRow";
 export { default as TableCell } from "./TableCell";
 export { default as TableHeader } from "./TableHeader";
+export { default as TableRow } from "./TableRow";

@@ -9,10 +9,10 @@
  * - Error handling
  */
 
-export * from "./types";
-export * from "./fields";
 export * from "./builder";
+export * from "./fields";
 export * from "./schema";
+export * from "./types";
 
 /**
  * Convenience presets for common validation scenarios

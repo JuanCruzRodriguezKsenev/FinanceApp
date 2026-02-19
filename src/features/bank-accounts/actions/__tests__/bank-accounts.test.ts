@@ -1,15 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { auth } from "@/lib/auth";
+import { afterEach,beforeEach, describe, expect, it, vi } from "vitest";
+
 import { db } from "@/db";
+import { auth } from "@/lib/auth";
+import type { BankAccount } from "@/types";
+
 import {
   createBankAccount,
-  getBankAccounts,
-  updateBankAccount,
   deleteBankAccount,
-  updateBankAccountBalance,
+  getBankAccounts,
   searchBankAccountByCBUOrAlias,
+  updateBankAccount,
+  updateBankAccountBalance,
 } from "../bank-accounts";
-import type { BankAccount } from "@/types";
 
 // Mock all external modules
 vi.mock("@/lib/auth", () => ({

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, ReactNode, useRef } from "react";
-import styles from "./Dialog.module.css";
+import { ReactNode, useEffect, useRef } from "react";
+
 import Button from "../Buttons/Button";
+import styles from "./Dialog.module.css";
 
 /**
  * Props para el componente Dialog

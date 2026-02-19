@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import TransactionsSummary from "../TransactionsSummary";
+import { beforeEach,describe, expect, it, vi } from "vitest";
+
 import type { Transaction } from "@/types";
+
+import TransactionsSummary from "../TransactionsSummary";
 
 // Mock next/navigation
 const mockPush = vi.fn();

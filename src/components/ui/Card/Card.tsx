@@ -1,4 +1,5 @@
-import { ReactNode, CSSProperties } from "react";
+import { CSSProperties,ReactNode } from "react";
+
 import styles from "./Card.module.css";
 
 interface CardProps {

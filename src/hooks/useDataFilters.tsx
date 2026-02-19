@@ -1,11 +1,25 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export interface SortConfig<T> {
   key: keyof T;
   direction: "asc" | "desc";
 }
 
-export function useDataFilters<T extends Record<string, any>>(data: T[]) {
+export interface FilterLogic<T extends Record<string, any>> {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filters: Partial<Record<keyof T, string[]>>;
+  setFilter: (key: keyof T, values: string[]) => void;
+  sortConfig: SortConfig<T> | null;
+  setSortConfig: (config: SortConfig<T> | null) => void;
+  getUniqueValues: (key: keyof T) => string[];
+  clearFilters: () => void;
+  filteredData: T[];
+}
+
+export function useDataFilters<T extends Record<string, any>>(
+  data: T[],
+): FilterLogic<T> {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState<Partial<Record<keyof T, string[]>>>(
     {},

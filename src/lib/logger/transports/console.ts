@@ -1,4 +1,4 @@
-import { Transport, LogEntry } from "../types";
+import { LogEntry,Transport } from "../types";
 
 export class ConsoleTransport implements Transport {
   log(entry: LogEntry): void {

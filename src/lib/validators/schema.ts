@@ -3,9 +3,9 @@
  */
 
 import {
-  ValidationResult,
   Schema,
   ValidationErrorCollection,
+  ValidationResult,
   validationSuccess,
 } from "./types";
 

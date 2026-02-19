@@ -1,5 +1,6 @@
 // src/components/ui/Table/TableCell.tsx
 import { ReactNode } from "react";
+
 import styles from "./Table.module.css";
 
 interface Props {

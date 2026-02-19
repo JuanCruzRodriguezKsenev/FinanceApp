@@ -1,8 +1,8 @@
 import {
-  TransactionEventType,
-  TransactionState,
   canTransitionEvent,
   EVENT_TO_STATE,
+  TransactionEventType,
+  TransactionState,
 } from "./transaction.machine";
 
 export type TransactionStateContext = Record<string, unknown>;

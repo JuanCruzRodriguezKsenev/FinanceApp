@@ -1,4 +1,5 @@
-import { InputHTMLAttributes, forwardRef } from "react";
+import { forwardRef,InputHTMLAttributes } from "react";
+
 import styles from "./Form.module.css";
 
 interface CheckboxProps extends Omit<

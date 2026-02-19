@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import TransactionStatusBadge from "../TransactionStatusBadge";
+import { describe, expect,it } from "vitest";
+
 import type { TransactionState } from "@/types";
+
+import TransactionStatusBadge from "../TransactionStatusBadge";
 
 describe("TransactionStatusBadge", () => {
   it("renders DRAFT state correctly", () => {

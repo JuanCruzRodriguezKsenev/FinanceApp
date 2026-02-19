@@ -1,6 +1,6 @@
 // drizzle.config.ts
-import { defineConfig } from "drizzle-kit";
 import dotenv from "dotenv";
+import { defineConfig } from "drizzle-kit";
 
 // Load environment variables from .env.local
 dotenv.config({ path: ".env.local" });

@@ -1,11 +1,13 @@
 import { useCallback, useReducer } from "react";
+
 import type { TransactionType } from "@/types";
+
 import {
   createInitialState,
-  transactionFormReducer,
   type DropdownName,
   type SearchName,
   type TransactionFormFields,
+  transactionFormReducer,
 } from "../components/TransactionForm.machine";
 
 export function useTransactionForm() {
