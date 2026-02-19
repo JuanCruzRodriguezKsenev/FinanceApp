@@ -220,7 +220,7 @@ Effort: 4h
   - [x] With spaces
   - [x] Multiple @
   - [x] No domain
-  - [ ] Already registered (async)
+  - [ ] Already registered (async) - N/A (no async validator)
   - [x] Case insensitive
 
 - [x] validatePassword: 8 tests
@@ -234,7 +234,7 @@ Effort: 4h
   - [x] Negative (should fail)
   - [x] Decimals
   - [x] Max value
-  - [ ] Currency specific
+  - [ ] Currency specific - N/A (not implemented)
 
 - [x] validateCBU: 8 tests
 - [x] validateIBAN: 8 tests
