@@ -90,10 +90,12 @@ Effort: 4h
 
 ```
 Contacts:
-- [ ] createContact - Valid data
-- [ ] getContacts - User specific
-- [ ] updateContact - Valid update
-- [ ] deleteContact - Validation
+- [x] createContact - 5 tests (valid data, idempotency, minimal, auth, error)
+- [x] getContacts - 4 tests (user specific, empty, auth, error)
+- [x] searchContacts - 5 tests (by name, email, empty, auth, error)
+- [x] searchContactByCBUOrAlias - 5 tests (CBU, alias, not found, auth, error)
+- [x] updateContact - 4 tests (valid update, not found, auth, error)
+- [x] deleteContact - 4 tests (valid delete, not found, auth, error)
 
 Wallets:
 - [x] createDigitalWallet - Valid data
@@ -101,7 +103,7 @@ Wallets:
 - [x] updateWallet - Balance update
 - [x] deleteWallet - With balance
 
-Status: ✅ Digital Wallets COMPLETADO (16 tests passing) | ⏳ Contacts TO DO
+Status: ✅ COMPLETADO - 43 tests passing (27 contacts + 16 digital wallets)
 Effort: 2h
 ```
 
