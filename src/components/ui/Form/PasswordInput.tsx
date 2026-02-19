@@ -111,12 +111,15 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
       input.setCustomValidity(isValid ? "" : validationMessage);
     }, [isValid, activeRules.length, currentValue, validationMessage]);
 
-    useImperativeHandle(ref, () => inputRef.current);
+    useImperativeHandle(ref, () => inputRef.current!);
 
-    const handleInput = (event: ChangeEvent<HTMLInputElement>) => {
-      onChange?.(event);
+    const handleInput = (
+      event: ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>,
+    ) => {
+      const target = event.currentTarget;
+      onChange?.(event as ChangeEvent<HTMLInputElement>);
       if (value === undefined) {
-        setInternalValue(event.currentTarget.value);
+        setInternalValue(target.value);
       }
     };
 
