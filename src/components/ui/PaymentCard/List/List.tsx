@@ -8,8 +8,8 @@ import DebitCard from "../DebitCard/DebitCard";
 import GenericList, {
   ListAlignment,
   ListDirection,
-} from "@/components/Generic/List/List";
-import GenericFilter from "@/components/Generic/Filter/Filter";
+} from "@/components/ui/List/List";
+import GenericFilter from "@/components/ui/Filter/Filter";
 import {
   EnrichedCard,
   CARD_FILTER_FIELDS,
@@ -69,7 +69,8 @@ export default function PaymentCardsList({
 
   return (
     <div className={styles.listContainer}>
-      {/* 1. ÁREA DE FILTROS/TOOLBAR (Solo si filterLogic existe) */}{""}
+      {/* 1. ÁREA DE FILTROS/TOOLBAR (Solo si filterLogic existe) */}
+      {""}
       {filterLogic && (
         <GenericFilter<EnrichedCard>
           searchQuery={filterLogic.searchQuery}
@@ -85,7 +86,8 @@ export default function PaymentCardsList({
           placeholder="Search by Bank or Holder..."
         />
       )}
-      {/* 2. LISTA DINÁMICA DE TARJETAS */}{""}
+      {/* 2. LISTA DINÁMICA DE TARJETAS */}
+      {""}
       {processedCards.length === 0 ? (
         <p className={styles.emptyState}>{emptyMessage}</p>
       ) : (
@@ -97,7 +99,8 @@ export default function PaymentCardsList({
           gap={listGap}
           className={styles.cardsGrid}
         />
-      )}{""}
+      )}
+      {""}
     </div>
   );
 }

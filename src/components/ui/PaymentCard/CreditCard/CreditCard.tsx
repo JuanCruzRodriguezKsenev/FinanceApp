@@ -5,7 +5,7 @@ import PaymentCardComponent from "../PaymentCard";
 import ProgressBar from "@/components/ui/ProgressBar/ProgressBar";
 import ExpandablePanel from "@/components/ui/ExpandablePanel/ExpandablePanel";
 import { PaymentCard, CreditCardData } from "@/types";
-import { formatMoney, formatDate } from "@/utils/formatters";
+import { fmt } from "@/lib/formatters";
 import styles from "./CreditCard.module.css";
 
 interface Props {
@@ -79,9 +79,9 @@ export default function CreditCard(props: Props) {
               {""}
               <ProgressBar
                 labelLeft="Total Debt" // 🌟 USAMOS consumedAmount (garantizado como number)
-                valueLeft={formatMoney(consumedAmount)}
+                valueLeft={fmt.currency(consumedAmount)}
                 labelRight="Due Date"
-                valueRight={formatDate(toLocalISO(dueDateObj))} // 🌟 USAMOS consumedAmount
+                valueRight={fmt.date(toLocalISO(dueDateObj))} // 🌟 USAMOS consumedAmount
                 current={consumedAmount}
                 total={data.limit}
                 isUrgent={true}
@@ -90,9 +90,9 @@ export default function CreditCard(props: Props) {
               {""}
               <ProgressBar
                 labelLeft="New Period"
-                valueLeft={formatMoney(0)}
+                valueLeft={fmt.currency(0)}
                 labelRight="Next Closing"
-                valueRight={formatDate(toLocalISO(nextClosingDateObj))}
+                valueRight={fmt.date(toLocalISO(nextClosingDateObj))}
                 current={0}
                 total={data.limit}
               />
@@ -101,9 +101,9 @@ export default function CreditCard(props: Props) {
           ) : (
             <ProgressBar
               labelLeft="Spent" // 🌟 USAMOS consumedAmount
-              valueLeft={formatMoney(consumedAmount)}
+              valueLeft={fmt.currency(consumedAmount)}
               labelRight="Closing"
-              valueRight={formatDate(data.closingDate)} // 🌟 USAMOS consumedAmount
+              valueRight={fmt.date(data.closingDate)} // 🌟 USAMOS consumedAmount
               current={consumedAmount}
               total={data.limit}
             />

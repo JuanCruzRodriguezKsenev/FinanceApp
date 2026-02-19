@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect, FormEvent } from "react";
-import FormDialog from "@/components/Generic/FormDialog/FormDialog";
-import { PaymentCard } from "@/types";
+import Dialog from "@/components/ui/Dialog/Dialog";
+import { PaymentCard, CreditCardData, DebitCardData } from "@/types";
 // Asegúrate de que este archivo exista en la misma carpeta
 import styles from "./FormModal.module.css";
 
@@ -10,7 +10,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: any) => void;
-  editingCard?: PaymentCard | null;
+  editingCard?: CreditCardData | DebitCardData | null;
 }
 
 const EMPTY_FORM = {
@@ -62,7 +62,7 @@ export default function CardFormModal({
 
   // 2. Manejar cambios en los inputs
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -109,7 +109,7 @@ export default function CardFormModal({
   };
 
   return (
-    <FormDialog
+    <Dialog
       open={isOpen}
       onClose={onClose}
       title={editingCard ? "Edit Card" : "Add New Card"}
@@ -237,6 +237,6 @@ export default function CardFormModal({
           {editingCard ? "Save Changes" : "Create Card"}
         </button>
       </form>
-    </FormDialog>
+    </Dialog>
   );
 }

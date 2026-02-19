@@ -18,6 +18,9 @@ export interface CreditCardData extends PaymentCard {
   cardNumber: string;
   cvv: string;
   type: "credit";
+  limit: number;
+  consumed: number;
+  closingDate: string;
 }
 
 /**
