@@ -213,36 +213,36 @@ Effort: 4h
 
 ```typescript
 // Tests para cada validador:
-- [ ] validateEmail: 8 tests
-  - [ ] Valid email
-  - [ ] Invalid email
-  - [ ] Empty
-  - [ ] With spaces
-  - [ ] Multiple @
-  - [ ] No domain
+- [x] validateEmail: 8 tests
+  - [x] Valid email
+  - [x] Invalid email
+  - [x] Empty
+  - [x] With spaces
+  - [x] Multiple @
+  - [x] No domain
   - [ ] Already registered (async)
-  - [ ] Case insensitive
+  - [x] Case insensitive
 
-- [ ] validatePassword: 8 tests
-  - [ ] Minimum length
-  - [ ] Uppercase required
-  - [ ] Numbers required
-  - [ ] Valid password
+- [x] validatePassword: 8 tests
+  - [x] Minimum length
+  - [x] Uppercase required
+  - [x] Numbers required
+  - [x] Valid password
 
-- [ ] validateAmount: 10 tests
-  - [ ] Positive numbers
-  - [ ] Negative (should fail)
-  - [ ] Decimals
-  - [ ] Max value
+- [x] validateAmount: 10 tests
+  - [x] Positive numbers
+  - [x] Negative (should fail)
+  - [x] Decimals
+  - [x] Max value
   - [ ] Currency specific
 
-- [ ] validateCBU: 8 tests
-- [ ] validateIBAN: 8 tests
+- [x] validateCBU: 8 tests
+- [x] validateIBAN: 8 tests
 - [ ] ... más validadores
 
-Total: 80+ tests
+Total: 42 tests
 
-Status: ⏳ TO DO
+Status: ✅ COMPLETADO (42 tests passing)
 Effort: 4h
 ```
 
