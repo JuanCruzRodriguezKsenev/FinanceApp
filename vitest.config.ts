@@ -19,10 +19,17 @@ export default defineConfig({
         "drizzle/",
       ],
     },
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
   },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "next/server": path.resolve(__dirname, "./src/__mocks__/next-server.ts"),
+      "next/cache": path.resolve(__dirname, "./src/__mocks__/next-cache.ts"),
     },
   },
 });
