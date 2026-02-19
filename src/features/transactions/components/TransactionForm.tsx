@@ -82,6 +82,26 @@ function formatNumberWithThousands(value: string): string {
   return withThousands;
 }
 
+/**
+ * TransactionForm - Formulario de creación de transacciones.
+ *
+ * Maneja selección de tipo, cuentas origen/destino y validaciones
+ * básicas antes de enviar la acción de creación.
+ *
+ * @component
+ * @param accounts - Cuentas del usuario.
+ * @param goals - Objetivos de ahorro disponibles.
+ * @param bankAccounts - Cuentas bancarias disponibles.
+ * @param digitalWallets - Billeteras digitales disponibles.
+ * @param contacts - Contactos/terceros disponibles.
+ * @param onSuccess - Callback al crear la transacción.
+ * @param showHeader - Muestra encabezado del formulario.
+ * @param variant - Variante visual del formulario.
+ * @returns JSX.Element
+ *
+ * @example
+ * <TransactionForm accounts={accounts} goals={goals} />
+ */
 function TransactionForm({
   accounts,
   goals,

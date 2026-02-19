@@ -34,6 +34,22 @@ interface Props {
   contactMap: Map<string, Contact>;
 }
 
+/**
+ * TransactionRow - Fila de tabla para una transacción.
+ *
+ * Resuelve etiquetas de cuentas/contactos y expone acciones de estado.
+ *
+ * @component
+ * @param transaction - Transacción a renderizar.
+ * @param accountMap - Mapa de cuentas por id.
+ * @param bankAccountMap - Mapa de cuentas bancarias por id.
+ * @param walletMap - Mapa de billeteras por id.
+ * @param contactMap - Mapa de contactos por id.
+ * @returns JSX.Element
+ *
+ * @example
+ * <TransactionRow transaction={tx} accountMap={accMap} bankAccountMap={bankMap} walletMap={walletMap} contactMap={contactMap} />
+ */
 function TransactionRow({
   transaction,
   accountMap,

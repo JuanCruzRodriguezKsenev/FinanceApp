@@ -1,5 +1,13 @@
 /**
- * Componente para gestionar cuentas bancarias
+ * BankAccountManager - Gestión de cuentas bancarias del usuario.
+ *
+ * Permite crear, listar y eliminar cuentas con feedback de estado.
+ *
+ * @component
+ * @returns JSX.Element
+ *
+ * @example
+ * <BankAccountManager />
  */
 
 "use client";

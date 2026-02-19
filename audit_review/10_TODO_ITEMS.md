@@ -316,17 +316,17 @@ Effort: 2h
 
 **Archivos a documentar:**
 
-- [ ] `src/features/transactions/components/TransactionForm.tsx` (1h)
-  - [ ] Add component JSDoc
-  - [ ] Document Props interface
-  - [ ] Add usage example
+- [x] `src/features/transactions/components/TransactionForm.tsx` (1h)
+  - [x] Add component JSDoc
+  - [x] Document Props interface
+  - [x] Add usage example
   - [ ] Document inner functions
 
-- [ ] `src/features/transactions/components/TransactionRow.tsx` (0.5h)
-- [ ] `src/features/transactions/components/TransactionsSummary.tsx` (0.5h)
-- [ ] `src/features/bank-accounts/components/BankAccountManager.tsx` (1h)
-- [ ] `src/components/ui/Buttons/Button.tsx` (0.5h)
-- [ ] `src/components/ui/Form/Form.tsx` (0.5h)
+- [x] `src/features/transactions/components/TransactionRow.tsx` (0.5h)
+- [x] `src/features/transactions/components/TransactionsSummary.tsx` (0.5h)
+- [x] `src/features/bank-accounts/components/BankAccountManager.tsx` (1h)
+- [x] `src/components/ui/Buttons/Button.tsx` (0.5h)
+- [x] `src/components/ui/Form/Form.tsx` (0.5h)
 
 **Total:4h**
 

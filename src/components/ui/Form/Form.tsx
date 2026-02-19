@@ -37,7 +37,10 @@ interface FormProps extends Omit<
 }
 
 /**
- * Componente Form que integra campos de entrada
+ * Componente Form que integra campos de entrada.
+ *
+ * @component
+ * @returns JSX.Element
  *
  * @example
  * <Form action={handleSubmit} onCancel={handleCancel}>

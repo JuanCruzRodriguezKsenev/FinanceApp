@@ -17,7 +17,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * Componente Button reutilizable con múltiples variantes
+ * Componente Button reutilizable con múltiples variantes.
+ *
+ * @component
+ * @returns JSX.Element
  *
  * @example
  * <Button variant="primary" onClick={handleClick}>

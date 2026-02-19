@@ -21,6 +21,19 @@ const PERIOD_LABELS = {
   all: "Todos",
 };
 
+/**
+ * TransactionsSummary - Resumen de ingresos, gastos y balance.
+ *
+ * Usa estadísticas calculadas y permite navegación a la pantalla de stats.
+ *
+ * @component
+ * @param transactions - Transacciones a resumir.
+ * @param period - Etiqueta del período mostrado.
+ * @returns JSX.Element
+ *
+ * @example
+ * <TransactionsSummary transactions={transactions} period="month" />
+ */
 function TransactionsSummary({ transactions, period = "all" }: Props) {
   const router = useRouter();
 
