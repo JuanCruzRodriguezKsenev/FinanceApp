@@ -40,6 +40,7 @@
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
     "babel-plugin-react-compiler": "1.0.0",
+    "depcheck": "^1.4.7",
     "dotenv": "^17.2.4",
     "drizzle-kit": "^0.31.9",
     "eslint": "^9",
@@ -49,6 +50,7 @@
     "jsdom": "^28.1.0",
     "tsx": "^4.21.0",
     "typescript": "^5",
+    "unimported": "^1.31.0",
     "vitest": "^4.0.18"
   }
 }
