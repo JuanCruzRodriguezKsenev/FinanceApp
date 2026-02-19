@@ -324,8 +324,8 @@ describe("TransactionStateMachine Service", () => {
       });
       const context = fsm.getContext();
       expect(context.metadata).toBeDefined();
-      expect(context.metadata.bank.name).toBe("Test Bank");
-      expect(context.metadata.amount.value).toBe(100.5);
+      expect((context.metadata as any).bank.name).toBe("Test Bank");
+      expect((context.metadata as any).amount.value).toBe(100.5);
     });
   });
 });
