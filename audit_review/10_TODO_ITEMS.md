@@ -96,12 +96,12 @@ Contacts:
 - [ ] deleteContact - Validation
 
 Wallets:
-- [ ] createDigitalWallet - Valid data
-- [ ] getDigitalWallets - User specific
-- [ ] updateWallet - Balance update
-- [ ] deleteWallet - With balance
+- [x] createDigitalWallet - Valid data
+- [x] getDigitalWallets - User specific
+- [x] updateWallet - Balance update
+- [x] deleteWallet - With balance
 
-Status: ⏳ TO DO
+Status: ✅ Digital Wallets COMPLETADO (16 tests passing) | ⏳ Contacts TO DO
 Effort: 2h
 ```
 
