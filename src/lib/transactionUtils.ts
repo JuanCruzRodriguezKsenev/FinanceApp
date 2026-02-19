@@ -43,8 +43,12 @@ export function calculateTotals(
  * Calcula balance (ingresos - gastos)
  */
 export function calculateBalance(transactions: Transaction[]): number {
-  const income = calculateTotalByType(transactions, "income");
-  const expenses = calculateTotalByType(transactions, "expense");
+  const income =
+    calculateTotalByType(transactions, "income") +
+    calculateTotalByType(transactions, "deposit");
+  const expenses =
+    calculateTotalByType(transactions, "expense") +
+    calculateTotalByType(transactions, "withdrawal");
   return income - expenses;
 }
 
@@ -61,8 +65,12 @@ export interface TransactionStats {
 export function getTransactionStats(
   transactions: Transaction[],
 ): TransactionStats {
-  const totalIncome = calculateTotalByType(transactions, "income");
-  const totalExpenses = calculateTotalByType(transactions, "expense");
+  const totalIncome =
+    calculateTotalByType(transactions, "income") +
+    calculateTotalByType(transactions, "deposit");
+  const totalExpenses =
+    calculateTotalByType(transactions, "expense") +
+    calculateTotalByType(transactions, "withdrawal");
   const totalSavings = calculateTotalByType(transactions, "saving");
   const balance = totalIncome - totalExpenses;
 

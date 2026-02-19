@@ -46,7 +46,7 @@ describe("TransactionsSummary", () => {
     type: "income",
     amount: "1000.00",
     currency: "ARS",
-    date: "2026-02-19",
+    date: new Date("2026-02-19"),
     description: "Test income",
     category: "salary",
     state: "CONFIRMED",
@@ -582,7 +582,7 @@ describe("TransactionsSummary", () => {
       expect(expensesCard).toHaveTextContent("0"); // Transfer not counted
     });
 
-    it("should handle withdrawals and deposits without counting them in statistics", () => {
+    it("should handle withdrawals as expenses and deposits as income", () => {
       const transactions = [
         {
           ...baseMockTransaction,
@@ -606,7 +606,7 @@ describe("TransactionsSummary", () => {
 
       render(<TransactionsSummary transactions={transactions} />);
 
-      // Withdrawals and deposits are money movements, not income/expenses
+      // Withdrawals count as expenses and deposits count as income
       const cards = screen.getAllByTestId("card");
       const incomeCard = cards.find((card) =>
         card.textContent?.includes("Ingresos"),
@@ -615,8 +615,8 @@ describe("TransactionsSummary", () => {
         card.textContent?.includes("Gastos"),
       );
 
-      expect(incomeCard).toHaveTextContent("1000"); // Only actual income
-      expect(expensesCard).toHaveTextContent("0"); // No expenses
+      expect(incomeCard).toHaveTextContent("1400");
+      expect(expensesCard).toHaveTextContent("300");
     });
   });
 });
