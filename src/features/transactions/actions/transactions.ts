@@ -255,6 +255,58 @@ export async function createTransaction(
   }
 }
 
+/**
+ * Creates a transaction with automatic type and category detection
+ *
+ * Analyzes transaction data to automatically detect:
+ * - Type: income, expense, transfer_own_accounts, transfer_third_party, withdrawal, deposit
+ * - Category: 30+ predefined categories based on keywords in description
+ * - Suspicious activity flags based on amount thresholds and patterns
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Account/wallet ownership and currency compatibility
+ * - Amount is positive and numeric
+ * - Date is valid
+ * - Idempotency key to prevent duplicate transactions
+ *
+ * @param {Object} data - Transaction data
+ * @param {number} data.amount - Transaction amount (must be positive)
+ * @param {string} [data.currency='ARS'] - Currency code (ISO 4217)
+ * @param {string} data.description - Transaction description (used for auto-detection)
+ * @param {Date} data.date - Transaction date
+ * @param {PaymentMethod} [data.paymentMethod] - Payment method (card, transfer, cash, etc.)
+ * @param {string} [data.idempotencyKey] - Unique key to prevent duplicate submissions
+ * @param {string} [data.fromAccountId] - Source account ID
+ * @param {string} [data.toAccountId] - Destination account ID
+ * @param {string} [data.fromBankAccountId] - Source bank account ID
+ * @param {string} [data.toBankAccountId] - Destination bank account ID
+ * @param {string} [data.fromWalletId] - Source digital wallet ID
+ * @param {string} [data.toWalletId] - Destination digital wallet ID
+ * @param {string} [data.contactId] - Associated contact ID
+ * @param {TransactionCategory} [data.category] - Explicit category (overrides auto-detection)
+ * @param {TransactionType} [data.type] - Explicit type (overrides auto-detection)
+ * @param {string} [data.transferRecipient] - Recipient name for transfer transactions
+ * @param {string} [data.transferSender] - Sender name for transfer transactions
+ * @returns {Promise<Result<Transaction, AppError>>} Transaction object on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated or not authorized
+ * @throws {AppError} Validation error if data is invalid or currency mismatch
+ * @throws {AppError} Database error if transaction creation fails
+ *
+ * @example
+ * const result = await createTransactionWithAutoDetection({
+ *   amount: 500,
+ *   currency: 'ARS',
+ *   description: 'Compra en MercadoLibre',
+ *   date: new Date(),
+ *   fromBankAccountId: 'bank_123'
+ * });
+ * if (result.isOk()) {
+ *   console.log('Transaction created:', result.value);
+ * } else {
+ *   console.error('Error:', result.error.message);
+ * }
+ */
 export async function createTransactionWithAutoDetection(data: {
   amount: number;
   currency?: string;
@@ -954,6 +1006,39 @@ export async function deleteTransaction(
   }
 }
 
+/**
+ * Updates account/wallet balances after a transaction is confirmed
+ *
+ * Handles balance updates for:
+ * - Outflow transactions: reduces source account balance
+ * - Inflow transactions: increases destination account balance
+ * - Transfers: updates both source and destination balances
+ * - Supports accounts, bank accounts, and digital wallets
+ *
+ * Note: Does NOT recalculate savings goals or update metadata.
+ * Use in conjunction with transaction state transitions for complete updates.
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Transaction exists and belongs to user
+ * - Source/destination accounts belong to user
+ * - Sufficient balance for outflows
+ *
+ * @param {string} transactionId - ID of the transaction to process
+ * @returns {Promise<Result<void, AppError>>} Void on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Not found error if transaction doesn't exist
+ * @throws {AppError} Database error if balance update fails
+ * @throws {AppError} Validation error if insufficient balance or account mismatch
+ *
+ * @example
+ * const result = await updateBalancesAfterTransaction('txn_123');
+ * if (result.isOk()) {
+ *   console.log('Balances updated successfully');
+ * } else {
+ *   console.error('Balance update failed:', result.error.message);
+ * }
+ */
 export async function updateBalancesAfterTransaction(
   transactionId: string,
 ): Promise<Result<void, AppError>> {
@@ -1104,6 +1189,36 @@ export async function updateBalancesAfterTransaction(
   }
 }
 
+/**
+ * Retrieves all transactions for the authenticated user with associated metadata
+ *
+ * Fetches:
+ * - All user transactions with complete transaction details
+ * - Associated metadata (flags, reasons, custom data) if available
+ * - Combines transaction and metadata records into single objects
+ *
+ * Metadata includes:
+ * - Suspicious transaction flags and reasons
+ * - Custom notes and tags
+ * - Processing status and timestamps
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Only returns transactions belonging to the user
+ *
+ * @returns {Promise<Result<Array<Transaction & { metadata?: any }>, AppError>>}
+ * Array of transactions with optional metadata, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Database error if query fails
+ *
+ * @example
+ * const result = await getTransactionsWithMetadata();
+ * if (result.isOk()) {
+ *   result.value.forEach(transaction => {
+ *     console.log(transaction.description, transaction.metadata?.isFlagged);
+ *   });
+ * }
+ */
 export async function getTransactionsWithMetadata(): Promise<
   Result<Array<Transaction & { metadata?: any }>, AppError>
 > {
@@ -1139,6 +1254,42 @@ export async function getTransactionsWithMetadata(): Promise<
   }
 }
 
+/**
+ * Flags a transaction as suspicious and stores the reason for manual review
+ *
+ * Updates or creates metadata record to:
+ * - Mark transaction as flagged (suspicious)
+ * - Store the reason for flagging
+ * - Update timestamp for audit trail
+ *
+ * Reasons may include:
+ * - Unusual amount (very high/low)
+ * - Unusual frequency (too many in short time)
+ * - Unusual payee/payer
+ * - Pattern matching vs behavioral norms
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Transaction exists and belongs to user
+ * - Reason is provided
+ *
+ * @param {string} transactionId - ID of the transaction to flag
+ * @param {string} reason - Human-readable reason for flagging
+ * @returns {Promise<Result<void, AppError>>} Void on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Not found error if transaction doesn't exist
+ * @throws {AppError} Validation error if reason is empty
+ * @throws {AppError} Database error if update fails
+ *
+ * @example
+ * const result = await flagTransactionAsSuspicious(
+ *   'txn_123',
+ *   'Unusual high amount for weekend transaction'
+ * );
+ * if (result.isOk()) {
+ *   console.log('Transaction flagged for review');
+ * }
+ */
 export async function flagTransactionAsSuspicious(
   transactionId: string,
   reason: string,

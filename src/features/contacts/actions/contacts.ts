@@ -29,6 +29,58 @@ import type { Contact } from "@/types";
 /**
  * Crear un nuevo contacto
  */
+/**
+ * Creates a new contact for the authenticated user
+ *
+ * Stores contact information including:
+ * - Personal details (name, email, phone, document)
+ * - Financial information (CBU, alias, IBAN, bank account details)
+ * - Metadata (notes, favorite status)
+ *
+ * Contacts can be used for quick transaction creation,
+ * recipient lookups, and expense tracking categorization.
+ *
+ * Uses idempotency keys to prevent duplicate contacts on retry.
+ * Returns existing contact if identical data already exists.
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Email format (if provided)
+ * - Phone number format (if provided)
+ * - CBU format (if provided)
+ * - IBAN format (if provided)
+ * - Contact name is not empty
+ *
+ * @param {Object} data - Contact creation data
+ * @param {string} data.name - Full contact name
+ * @param {string} [data.firstName] - First name
+ * @param {string} [data.lastName] - Last name
+ * @param {string} [data.displayName] - Display name (for UI)
+ * @param {string} [data.email] - Email address
+ * @param {string} [data.phoneNumber] - Phone number
+ * @param {string} [data.document] - Document ID (DNI, RUC, etc.)
+ * @param {string} [data.cbu] - CBU for transfers (Argentina, 22 digits)
+ * @param {string} [data.alias] - CBU alias (e.g., "alias.example")
+ * @param {string} [data.iban] - IBAN for international transfers
+ * @param {string} [data.bank] - Associated bank name
+ * @param {string} [data.accountNumber] - Bank account number
+ * @param {string} [data.bankAccountType] - Account type (checking, savings, etc.)
+ * @param {boolean} [data.isFavorite=false] - Mark as favorite for quick access
+ * @param {string} [data.notes] - Additional notes
+ * @param {string} [data.idempotencyKey] - Optional custom idempotency key
+ * @returns {Promise<Result<Contact, AppError>>} Created contact object on success
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Validation error if data is invalid
+ * @throws {AppError} Database error if creation fails
+ *
+ * @example
+ * const result = await createContact({
+ *   name: 'Juan Pérez',
+ *   email: 'juan@example.com',
+ *   cbu: '0170123456789012345678',
+ *   isFavorite: true
+ * });
+ */
 export async function createContact(data: {
   name: string;
   firstName?: string;
@@ -116,7 +168,27 @@ export async function createContact(data: {
 }
 
 /**
- * Obtener todos los contactos del usuario
+ * Retrieves all contacts for the authenticated user
+ *
+ * Returns all stored contact records with complete details.
+ * Ordered by creation date or favorites first (implementation-dependent).
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Only returns contacts belonging to the user
+ *
+ * @returns {Promise<Result<Contact[], AppError>>}
+ * Array of contacts on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Database error if query fails
+ *
+ * @example
+ * const result = await getContacts();
+ * if (result.isOk()) {
+ *   result.value.forEach(contact => {
+ *     console.log(contact.name, contact.email);
+ *   });
+ * }
  */
 export async function getContacts(): Promise<Result<Contact[], AppError>> {
   try {
@@ -139,6 +211,35 @@ export async function getContacts(): Promise<Result<Contact[], AppError>> {
 
 /**
  * Buscar contactos por nombre
+ */
+/**
+ * Searches contacts by keyword across multiple fields
+ *
+ * Performs case-insensitive partial matching on:
+ * - Name (full name and display name)
+ * - First/last names (if stored separately)
+ * - Email address
+ * - CBU and CBU alias
+ *
+ * Useful for quick contact lookup during transaction creation
+ * or contact manager search functionality.
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Search term is not empty
+ * - Only returns contacts belonging to the user
+ *
+ * @param {string} searchTerm - Search keyword (case-insensitive, partial match)
+ * @returns {Promise<Result<Contact[], AppError>>}
+ * Array of matching contacts on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Database error if query fails
+ *
+ * @example
+ * const result = await searchContacts('juan');
+ * if (result.isOk()) {
+ *   console.log(`Found ${result.value.length} contacts`);
+ * }
  */
 export async function searchContacts(
   searchTerm: string,
@@ -211,6 +312,33 @@ export async function createContactFolder(data: {
 
 /**
  * Asignar contacto a carpeta
+ */
+/**
+ * Adds a contact to a contact folder for organization
+ *
+ * Creates membership between contact and folder.
+ * Folders allow grouping contacts by category (e.g., "Vendors", "Family", "Services").
+ * A contact can belong to multiple folders.
+ *
+ * Validates:
+ * - User authentication and authorization
+ * - Both contact and folder exist
+ * - Contact and folder belong to the authenticated user
+ * - Contact is not already in the folder (depends on schema constraints)
+ *
+ * @param {Object} data - Folder assignment data
+ * @param {string} data.contactId - ID of the contact to add
+ * @param {string} data.folderId - ID of the target folder
+ * @returns {Promise<Result<void, AppError>>} Void on success, AppError on failure
+ * @throws {AppError} Authorization error if user not authenticated
+ * @throws {AppError} Validation error if contact or folder not found or invalid
+ * @throws {AppError} Database error if operation fails
+ *
+ * @example
+ * const result = await addContactToFolder({
+ *   contactId: 'contact_123',
+ *   folderId: 'folder_456'
+ * });
  */
 export async function addContactToFolder(data: {
   contactId: string;
