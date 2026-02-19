@@ -174,7 +174,7 @@ export async function createTransaction(
   });
 
   try {
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       // Crear transacción
       await tx.insert(transactions).values({
         userId: session.user.id,
@@ -295,9 +295,9 @@ export async function createTransactionWithAutoDetection(data: {
       .from(accounts)
       .where(eq(accounts.userId, session.user.id));
 
-    const userBankAccountIds = userBankAccounts.map((a) => a.id);
-    const userWalletIds = userWallets.map((w) => w.id);
-    const userAccountIds = userAccounts.map((a) => a.id);
+    const userBankAccountIds = userBankAccounts.map((a: any) => a.id);
+    const userWalletIds = userWallets.map((w: any) => w.id);
+    const userAccountIds = userAccounts.map((a: any) => a.id);
 
     const detectionResult = detectTransactionType({
       fromAccountId: data.fromAccountId,
@@ -616,7 +616,7 @@ export async function createTransactionWithAutoDetection(data: {
 
     let primaryTransaction: Transaction | undefined;
 
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       if (resolvedType === "transfer_own_accounts") {
         const outflow = await tx
           .insert(transactions)
@@ -907,7 +907,7 @@ export async function deleteTransaction(
 
     const amount = parseFloat(transaction.amount);
 
-    await db.transaction(async (tx) => {
+    await db.transaction(async (tx: any) => {
       // Revertir balance de cuenta origen
       if (transaction.fromAccountId) {
         await tx
@@ -1119,7 +1119,7 @@ export async function getTransactionsWithMetadata(): Promise<
       .where(eq(transactions.userId, session.user.id));
 
     const transactionsWithMetadata = await Promise.all(
-      userTransactions.map(async (txn) => {
+      userTransactions.map(async (txn: any) => {
         const metadata = await db
           .select()
           .from(transactionMetadata)
@@ -1210,7 +1210,7 @@ export async function getSuspiciousTransactions(): Promise<
       .where(eq(transactionMetadata.isFlagged, true));
 
     const results = await Promise.all(
-      flaggedTransactions.map(async (meta) => {
+      flaggedTransactions.map(async (meta: any) => {
         const txn = await db
           .select()
           .from(transactions)
@@ -1228,7 +1228,7 @@ export async function getSuspiciousTransactions(): Promise<
       }),
     );
 
-    return ok(results.filter((r) => r !== null && r !== undefined));
+    return ok(results.filter((r: any) => r !== null && r !== undefined));
   } catch (error) {
     logger.error("Failed to fetch suspicious transactions", error as Error);
     return err(databaseError("select", "Error al obtener transacciones"));
