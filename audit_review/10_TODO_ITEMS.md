@@ -57,27 +57,27 @@ Effort: 6h
 **Archivo:** `src/features/bank-accounts/actions/__tests__/bank-accounts.test.ts`
 
 ```
-- [ ] Test: createBankAccount - Valid data
-- [ ] Test: createBankAccount - Duplicate account (CBU)
-- [ ] Test: createBankAccount - Invalid amount
-- [ ] Test: getBankAccounts - Returns user accounts only
-- [ ] Test: updateBankAccount - Valid update
-- [ ] Test: updateBankAccount - CBU conflict
-- [ ] Test: deleteBankAccount - With active transactions (should fail)
-- [ ] Test: deleteBankAccount - Without transactions (should succeed)
-- [ ] Test: updateBankAccountBalance - Correct calculation
+- [x] Test: createBankAccount - Valid data
+- [x] Test: createBankAccount - Duplicate account (CBU)
+- [x] Test: createBankAccount - Invalid amount
+- [x] Test: getBankAccounts - Returns user accounts only
+- [x] Test: updateBankAccount - Valid update
+- [x] Test: updateBankAccount - CBU conflict
+- [x] Test: deleteBankAccount - With active transactions (should fail)
+- [x] Test: deleteBankAccount - Without transactions (should succeed)
+- [x] Test: updateBankAccountBalance - Correct calculation
 
-Status: ⏳ TO DO
+Status: ✅ COMPLETADO (21 tests passing)
 Effort: 4h
 ```
 
 **Checklist:**
 
-- [ ] Crear `bank-accounts.test.ts`
-- [ ] Setup mocks
-- [ ] Escribir 9+ tests
-- [ ] Ejecutar tests - pasen
-- [ ] Commit
+- [x] Crear `bank-accounts.test.ts`
+- [x] Setup mocks
+- [x] Escribir 9+ tests (21 tests implementados)
+- [x] Ejecutar tests - pasen
+- [x] Commit
 
 ---
 
